@@ -1,0 +1,5 @@
+.vscode/
+.env
+.idea
+go.sum
+lit-edu-go
