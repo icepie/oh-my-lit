@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
+	"strconv"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -59,18 +60,8 @@ func chkpwd(username string, password string) string {
 	return strings.ToUpper(md5s(username + strings.ToUpper(md5s(password)[0:30]) + SchoolCode)[0:30])
 }
 
-// getNewCookie 获取新 Cookie, 主要是新 ASP.NET_SessionId
-func getNewCookie() ([]*http.Cookie, error) {
-	res, err := http.Get(DefaultURL)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return res.Cookies(), err
-}
-
-// getViewState 获取 _VIEWSTATE
-func getViewState() (string, error) {
+// getVSAndCookie 获取 _VIEWSTAT和 Cookie
+func getVSAndCookie() (string, []*http.Cookie, error) {
 	res, err := http.Get(LoginURL)
 	if err != nil {
 		log.Fatal(err)
@@ -102,19 +93,14 @@ func getViewState() (string, error) {
 		}
 	})
 
-	return VS, err
+	return VS, res.Cookies(), err
 }
 
 // SendLogin 发送登陆表单
 func SendLogin(username string, password string) ([]*http.Cookie, error) {
 
-	cookie, err := getNewCookie()
+	vs, cookie, err := getVSAndCookie()
 
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	vs, err := getViewState()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -134,16 +120,16 @@ func SendLogin(username string, password string) ([]*http.Cookie, error) {
 	r, _ := http.NewRequest(http.MethodPost, LoginURL, strings.NewReader(data.Encode()))
 	r.Header.Add("Host", "jw.sec.lit.edu.cn")
 	r.Header.Add("Proxy-Connection", "keep-alive")
-	// r.Header.Add("Content-Length", strconv.Itoa(len(data.Encode())))
-	// r.Header.Add("Origin", "http://jw.sec.lit.edu.cn")
-	// r.Header.Add("Upgrade-Insecure-Requests", "1")
-	// r.Header.Add("DNT", "1")
-	// r.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	// r.Header.Add("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36")
-	// r.Header.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
-	// r.Header.Add("Referer", LoginURL)
-	// r.Header.Add("Accept-Encoding", "gzip, deflate")
-	// r.Header.Add("Accept-Language", "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7")
+	r.Header.Add("Content-Length", strconv.Itoa(len(data.Encode())))
+	r.Header.Add("Origin", "http://jw.sec.lit.edu.cn")
+	r.Header.Add("Upgrade-Insecure-Requests", "1")
+	r.Header.Add("DNT", "1")
+	r.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	r.Header.Add("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36")
+	r.Header.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
+	r.Header.Add("Referer", LoginURL)
+	r.Header.Add("Accept-Encoding", "gzip, deflate")
+	r.Header.Add("Accept-Language", "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7")
 
 	jar, _ := cookiejar.New(nil)
 	jar.SetCookies(r.URL, cookie)
@@ -154,23 +140,19 @@ func SendLogin(username string, password string) ([]*http.Cookie, error) {
 
 	fmt.Println(resp.Request)
 
-	//clt := http.Client{Transport: nil, Jar: jar}
-
-	// clt.PostForm(url.String(), map[string][]string{
-	// 	"__VIEWSTATE":             {vs},
-	// 	"Sel_Type":                {"SYS"}, // only for SYS
-	// 	"txt_sdsdfdsfryuiighgdf":  {username},
-	// 	"txt_dsfdgtjhjuixssdsdf":  {},
-	// 	"txt_sftfgtrefjdndcfgerg": {},
-	// 	"typeName":                {},
-	// 	"sdfdfdhgwerewt":          {chkpwd(username, password)},
-	// 	"cxfdsfdshjhjlk":          {},
-	// })
-
 	r, _ = http.NewRequest(http.MethodGet, MenuURL, nil)
 
 	jar, _ = cookiejar.New(nil)
 	jar.SetCookies(r.URL, cookie)
+
+	r.Header.Add("Host", "jw.sec.lit.edu.cn")
+	r.Header.Add("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0")
+	r.Header.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
+	r.Header.Add("Accept-Language", "zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2")
+	r.Header.Add("Accept-Encoding", "gzip, deflate")
+	r.Header.Add("Connection", "keep-alive")
+	r.Header.Add("Referer", MenuURL)
+	r.Header.Add("Upgrade-Insecure-Requests", "1")
 
 	resp, _ = client.Do(r)
 
@@ -188,38 +170,4 @@ func SendLogin(username string, password string) ([]*http.Cookie, error) {
 	fmt.Println(string(b))
 
 	return cookie, err
-}
-
-// ISLogin 判是登陆成功性 for test
-func ISLogin(username string, pasword string) {
-	cookie, err := SendLogin(username, pasword)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	url, err := url.Parse("http://jw.sec.lit.edu.cn/frame/menu.aspx")
-
-	jar, err := cookiejar.New(nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	jar.SetCookies(url, cookie) //这里的cookies是[]*http.Cookie
-
-	//fmt.Println(cookie)
-
-	clt := http.Client{Transport: nil, Jar: jar}
-
-	resp, _ := clt.Get(url.String())
-
-	utf8Body, err := iconv.NewReader(resp.Body, "gb2312", "utf-8")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	b, _ := ioutil.ReadAll(utf8Body)
-	resp.Body.Close()
-
-	fmt.Println(string(b))
-
 }
