@@ -11,7 +11,6 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/djimenez/iconv-go"
 )
 
 const (
@@ -76,13 +75,13 @@ func getVSAndCookie() (string, []*http.Cookie, error) {
 		log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
 	}
 
-	// 青果不是utf-8 所以要转换一下
-	utf8Body, err := iconv.NewReader(res.Body, "gb2312", "utf-8")
-	if err != nil {
-		log.Fatal(err)
-	}
+	// // 青果不是utf-8 所以要转换一下
+	// utf8Body, err := iconv.NewReader(res.Body, "gb2312", "utf-8")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
-	doc, err := goquery.NewDocumentFromReader(utf8Body)
+	doc, err := goquery.NewDocumentFromReader(res.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -135,7 +134,10 @@ func SendLogin(username string, password string) ([]*http.Cookie, error) {
 	r.Header.Add("Accept-Encoding", "gzip, deflate")
 	r.Header.Add("Accept-Language", "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7")
 
-	resp, _ := client.Do(r)
+	resp, err := client.Do(r)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	fmt.Println(resp.Cookies())
 
@@ -158,13 +160,13 @@ func SendLogin(username string, password string) ([]*http.Cookie, error) {
 
 	fmt.Println(resp.Cookies())
 
-	// 青果不是utf-8 所以要转换一下
-	utf8Body, err := iconv.NewReader(resp.Body, "gb2312", "utf-8")
-	if err != nil {
-		log.Fatal(err)
-	}
+	// // 青果不是utf-8 所以要转换一下
+	// utf8Body, err := iconv.NewReader(resp.Body, "gb2312", "utf-8")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
-	b, err := ioutil.ReadAll(utf8Body)
+	b, err := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
 
 	fmt.Println(string(b))
