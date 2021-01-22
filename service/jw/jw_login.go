@@ -1,4 +1,4 @@
-package service
+package jw
 
 import (
 	"crypto/md5"
@@ -104,10 +104,6 @@ func SendLogin(username string, password string) ([]*http.Cookie, error) {
 
 	vs, cookies, err := getVSAndCookie()
 
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	data := url.Values{
 		"__VIEWSTATE":             {vs},
 		"Sel_Type":                {"SYS"}, // only for SYS
@@ -129,7 +125,7 @@ func SendLogin(username string, password string) ([]*http.Cookie, error) {
 	r.Header.Add("Host", HostURL)
 	r.Header.Add("Proxy-Connection", "keep-alive")
 	r.Header.Add("Content-Length", strconv.Itoa(len(data.Encode())))
-	r.Header.Add("Origin", "http://"+HostURL)
+	r.Header.Add("Origin", "http://jw.sec.lit.edu.cn")
 	r.Header.Add("Upgrade-Insecure-Requests", "1")
 	r.Header.Add("DNT", "1")
 	r.Header.Add("Content-Type", "application/x-www-form-urlencoded")
@@ -149,7 +145,7 @@ func SendLogin(username string, password string) ([]*http.Cookie, error) {
 	for _, cookie := range cookies {
 		r.AddCookie(cookie)
 	}
-	r.Header.Add("Host", HostURL)
+	r.Header.Add("Host", "jw.sec.lit.edu.cn")
 	r.Header.Add("User-Agent", UserAgent)
 	r.Header.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 	r.Header.Add("Accept-Language", "zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2")
@@ -158,7 +154,7 @@ func SendLogin(username string, password string) ([]*http.Cookie, error) {
 	r.Header.Add("Referer", MenuURL)
 	r.Header.Add("Upgrade-Insecure-Requests", "1")
 
-	resp, _ = client.Do(r)
+	resp, err = client.Do(r)
 
 	fmt.Println(resp.Cookies())
 
@@ -168,7 +164,7 @@ func SendLogin(username string, password string) ([]*http.Cookie, error) {
 		log.Fatal(err)
 	}
 
-	b, _ := ioutil.ReadAll(utf8Body)
+	b, err := ioutil.ReadAll(utf8Body)
 	resp.Body.Close()
 
 	fmt.Println(string(b))

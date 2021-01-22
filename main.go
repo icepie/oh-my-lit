@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/icepie/lit-edu-go/service"
+	"github.com/icepie/lit-edu-go/service/jw"
 )
 
 func main() {
-	service.SendLogin("", "")
+	jw.SendLogin("", "")
 }
