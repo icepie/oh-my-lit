@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	service.FetchHomePage()
+	service.SendLogin()
 }
