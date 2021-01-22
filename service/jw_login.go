@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"net/http/cookiejar"
 	"net/url"
 	"strconv"
 	"strings"
@@ -99,7 +98,7 @@ func getVSAndCookie() (string, []*http.Cookie, error) {
 // SendLogin 发送登陆表单
 func SendLogin(username string, password string) ([]*http.Cookie, error) {
 
-	vs, cookie, err := getVSAndCookie()
+	vs, cookies, err := getVSAndCookie()
 
 	if err != nil {
 		log.Fatal(err)
@@ -118,6 +117,11 @@ func SendLogin(username string, password string) ([]*http.Cookie, error) {
 
 	client := &http.Client{}
 	r, _ := http.NewRequest(http.MethodPost, LoginURL, strings.NewReader(data.Encode()))
+
+	for _, cookie := range cookies {
+		r.AddCookie(cookie)
+	}
+
 	r.Header.Add("Host", "jw.sec.lit.edu.cn")
 	r.Header.Add("Proxy-Connection", "keep-alive")
 	r.Header.Add("Content-Length", strconv.Itoa(len(data.Encode())))
@@ -131,9 +135,6 @@ func SendLogin(username string, password string) ([]*http.Cookie, error) {
 	r.Header.Add("Accept-Encoding", "gzip, deflate")
 	r.Header.Add("Accept-Language", "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7")
 
-	jar, _ := cookiejar.New(nil)
-	jar.SetCookies(r.URL, cookie)
-
 	resp, _ := client.Do(r)
 
 	fmt.Println(resp.Cookies())
@@ -141,10 +142,9 @@ func SendLogin(username string, password string) ([]*http.Cookie, error) {
 	fmt.Println(resp.Request)
 
 	r, _ = http.NewRequest(http.MethodGet, MenuURL, nil)
-
-	jar, _ = cookiejar.New(nil)
-	jar.SetCookies(r.URL, cookie)
-
+	for _, cookie := range cookies {
+		r.AddCookie(cookie)
+	}
 	r.Header.Add("Host", "jw.sec.lit.edu.cn")
 	r.Header.Add("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0")
 	r.Header.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
@@ -169,5 +169,5 @@ func SendLogin(username string, password string) ([]*http.Cookie, error) {
 
 	fmt.Println(string(b))
 
-	return cookie, err
+	return cookies, err
 }
