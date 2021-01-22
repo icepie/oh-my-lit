@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	service.SendLogin()
+	service.SendLogin("", "")
 }
