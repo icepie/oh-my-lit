@@ -15,6 +15,8 @@ import (
 )
 
 const (
+	// HostURL 主网址
+	HostURL = "jw.sec.lit.edu.cn"
 	// DefaultURL 首页
 	DefaultURL = "http://jw.sec.lit.edu.cn/default.aspx"
 	// LoginURL 登陆地址
@@ -23,6 +25,8 @@ const (
 	MenuURL = "http://jw.sec.lit.edu.cn/frame/menu.aspx"
 	// MAINFRMURL 主页
 	MAINFRMURL = "http://jw.sec.lit.edu.cn/MAINFRM.aspx"
+	// UserAgent UA
+	UserAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36"
 	// SchoolCode 院校代号
 	SchoolCode = "11070"
 )
@@ -122,14 +126,14 @@ func SendLogin(username string, password string) ([]*http.Cookie, error) {
 		r.AddCookie(cookie)
 	}
 
-	r.Header.Add("Host", "jw.sec.lit.edu.cn")
+	r.Header.Add("Host", HostURL)
 	r.Header.Add("Proxy-Connection", "keep-alive")
 	r.Header.Add("Content-Length", strconv.Itoa(len(data.Encode())))
-	r.Header.Add("Origin", "http://jw.sec.lit.edu.cn")
+	r.Header.Add("Origin", "http://"+HostURL)
 	r.Header.Add("Upgrade-Insecure-Requests", "1")
 	r.Header.Add("DNT", "1")
 	r.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	r.Header.Add("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36")
+	r.Header.Add("User-Agent", UserAgent)
 	r.Header.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
 	r.Header.Add("Referer", LoginURL)
 	r.Header.Add("Accept-Encoding", "gzip, deflate")
@@ -145,8 +149,8 @@ func SendLogin(username string, password string) ([]*http.Cookie, error) {
 	for _, cookie := range cookies {
 		r.AddCookie(cookie)
 	}
-	r.Header.Add("Host", "jw.sec.lit.edu.cn")
-	r.Header.Add("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0")
+	r.Header.Add("Host", HostURL)
+	r.Header.Add("User-Agent", UserAgent)
 	r.Header.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 	r.Header.Add("Accept-Language", "zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2")
 	r.Header.Add("Accept-Encoding", "gzip, deflate")

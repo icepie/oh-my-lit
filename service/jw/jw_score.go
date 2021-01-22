@@ -1,4 +1,4 @@
-package service
+package jw
 
 func QueryScoreByStuNum(stunum string) {
 
