@@ -132,7 +132,7 @@ func getVSAndCookie() (string, []*http.Cookie, error) {
 	return VS, res.Cookies(), nil
 }
 
-func isLoged(cookies []*http.Cookie) (bool, error) {
+func isLogged(cookies []*http.Cookie) (bool, error) {
 	client := &http.Client{}
 
 	r, _ := http.NewRequest(http.MethodGet, MenuURL, nil)
@@ -217,7 +217,7 @@ func SendLogin(username string, password string) ([]*http.Cookie, error) {
 
 	defer resp.Body.Close()
 
-	lflag, err := isLoged(cookies)
+	lflag, err := isLogged(cookies)
 	if err != nil || lflag == false {
 		var t []*http.Cookie
 		return t, err
