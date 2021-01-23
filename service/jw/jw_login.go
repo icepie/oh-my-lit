@@ -13,24 +13,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/axgle/mahonia"
-)
-
-const (
-	// HostURL 主网址
-	HostURL = "jw.sec.lit.edu.cn"
-	// DefaultURL 首页
-	DefaultURL = "http://jw.sec.lit.edu.cn/default.aspx"
-	// LoginURL 登陆地址
-	LoginURL = "http://jw.sec.lit.edu.cn/_data/index_LOGIN.aspx"
-	// MenuURL 菜单地址
-	MenuURL = "http://jw.sec.lit.edu.cn/frame/menu.aspx"
-	// MAINFRMURL 主页
-	MAINFRMURL = "http://jw.sec.lit.edu.cn/MAINFRM.aspx"
-	// UserAgent UA
-	UserAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36"
-	// SchoolCode 院校代号
-	SchoolCode = "11070"
 )
 
 func md5s(str string) string {
@@ -38,21 +20,6 @@ func md5s(str string) string {
 	has := md5.Sum(data)
 	md5str := fmt.Sprintf("%x", has) //将[]byte转成16进制
 	return md5str
-}
-
-func gb2312Tutf8(s string) string {
-	src := mahonia.NewDecoder("gb18030")
-	res := src.ConvertString(s)
-	tag := mahonia.NewDecoder("utf-8")
-
-	_, cdata, err := tag.Translate([]byte(res), true)
-	if err != nil {
-		return ""
-	}
-
-	result := string(cdata)
-
-	return result
 }
 
 // chkpwd 将用户密码进行处理
@@ -139,7 +106,7 @@ func isLogged(cookies []*http.Cookie) (bool, error) {
 	for _, cookie := range cookies {
 		r.AddCookie(cookie)
 	}
-	r.Header.Add("Host", "jw.sec.lit.edu.cn")
+	r.Header.Add("Host", HostURL)
 	r.Header.Add("User-Agent", UserAgent)
 	r.Header.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 	r.Header.Add("Accept-Language", "zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2")
@@ -173,6 +140,8 @@ func SendLogin(username string, password string) ([]*http.Cookie, error) {
 
 	vs, cookies, err := getVSAndCookie()
 
+	client := &http.Client{}
+
 	data := url.Values{
 		"__VIEWSTATE":             {vs},
 		"Sel_Type":                {"SYS"}, // only for SYS
@@ -184,8 +153,6 @@ func SendLogin(username string, password string) ([]*http.Cookie, error) {
 		"cxfdsfdshjhjlk":          {},
 	}
 
-	client := &http.Client{}
-
 	r, err := http.NewRequest(http.MethodPost, LoginURL, strings.NewReader(data.Encode()))
 	if err != nil {
 		var t []*http.Cookie
@@ -195,7 +162,7 @@ func SendLogin(username string, password string) ([]*http.Cookie, error) {
 	r.Header.Add("Host", HostURL)
 	r.Header.Add("Proxy-Connection", "keep-alive")
 	r.Header.Add("Content-Length", strconv.Itoa(len(data.Encode())))
-	r.Header.Add("Origin", "http://jw.sec.lit.edu.cn")
+	r.Header.Add("Origin", "http://"+HostURL)
 	r.Header.Add("Upgrade-Insecure-Requests", "1")
 	r.Header.Add("DNT", "1")
 	r.Header.Add("Content-Type", "application/x-www-form-urlencoded")
