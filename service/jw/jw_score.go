@@ -9,12 +9,12 @@ import (
 )
 
 // QueryScoreByStuNum 通过学号查询学生成绩
-func QueryScoreByStuNum(cookies []*http.Cookie, stunum string, term string) string {
+func QueryScoreByStuNum(cookies []*http.Cookie, stunum string) string {
 	client := &http.Client{}
 
 	data := url.Values{
-		"sel_xnxq:": {term},
-		"sel_yx":    {"SYS"}, // only for SYS
+		"sel_xnxq:": {"20190"}, // 学年学期标签好像坏掉了
+		"sel_yx":    {"05"},    // only for SYS
 		"ChkXH":     {"on"},
 		"txtXH":     {stunum},
 		"mrxsj":     {},

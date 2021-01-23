@@ -39,5 +39,5 @@ func main() {
 	RefreshCookies()
 
 	// 检索 学号为B19071121 2020学年 第一学期 的成绩
-	fmt.Println(jw.QueryScoreByStuNum(JWCookies, "B19071121", "20200"))
+	fmt.Println(jw.QueryScoreByStuNum(JWCookies, "B19071122"))
 }
