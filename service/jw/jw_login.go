@@ -2,15 +2,18 @@ package jw
 
 import (
 	"crypto/md5"
+	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/PuerkitoBio/goquery"
+	"github.com/axgle/mahonia"
 )
 
 const (
@@ -35,6 +38,21 @@ func md5s(str string) string {
 	has := md5.Sum(data)
 	md5str := fmt.Sprintf("%x", has) //将[]byte转成16进制
 	return md5str
+}
+
+func gb2312Tutf8(s string) string {
+	src := mahonia.NewDecoder("gb18030")
+	res := src.ConvertString(s)
+	tag := mahonia.NewDecoder("utf-8")
+
+	_, cdata, err := tag.Translate([]byte(res), true)
+	if err != nil {
+		return ""
+	}
+
+	result := string(cdata)
+
+	return result
 }
 
 // chkpwd 将用户密码进行处理
@@ -66,24 +84,40 @@ func chkpwd(username string, password string) string {
 func getVSAndCookie() (string, []*http.Cookie, error) {
 	res, err := http.Get(LoginURL)
 	if err != nil {
-		log.Fatal(err)
+		var t []*http.Cookie
+		return "", t, err
 	}
 
 	defer res.Body.Close()
 
 	if res.StatusCode != 200 {
-		log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
+		log.Println("status code error: %d %s", res.StatusCode, res.Status)
+		var t []*http.Cookie
+		return "", t, errors.New("status code error")
 	}
 
 	// // 青果不是utf-8 所以要转换一下
 	// utf8Body, err := iconv.NewReader(res.Body, "gb2312", "utf-8")
 	// if err != nil {
-	// 	log.Fatal(err)
+	// 	log.Println(err)
 	// }
+	// iconv 依赖于 libiconv 对 windows 不友好
 
-	doc, err := goquery.NewDocumentFromReader(res.Body)
+	// 将数据流转换为 []byte
+	b, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		log.Fatal(err)
+		var t []*http.Cookie
+		return "", t, err
+	}
+
+	// 将 gb2312 转换为 utf-8
+	bodystr := gb2312Tutf8(string(b))
+
+	// println(string(bodystr))
+	doc, err := goquery.NewDocumentFromReader(strings.NewReader(bodystr))
+	if err != nil {
+		var t []*http.Cookie
+		return "", t, err
 	}
 
 	var VS string
@@ -95,7 +129,43 @@ func getVSAndCookie() (string, []*http.Cookie, error) {
 		}
 	})
 
-	return VS, res.Cookies(), err
+	return VS, res.Cookies(), nil
+}
+
+func isLoged(cookies []*http.Cookie) (bool, error) {
+	client := &http.Client{}
+
+	r, _ := http.NewRequest(http.MethodGet, MenuURL, nil)
+	for _, cookie := range cookies {
+		r.AddCookie(cookie)
+	}
+	r.Header.Add("Host", "jw.sec.lit.edu.cn")
+	r.Header.Add("User-Agent", UserAgent)
+	r.Header.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
+	r.Header.Add("Accept-Language", "zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2")
+	r.Header.Add("Accept-Encoding", "gzip, deflate")
+	r.Header.Add("Connection", "keep-alive")
+	r.Header.Add("Referer", MenuURL)
+	r.Header.Add("Upgrade-Insecure-Requests", "1")
+
+	resp, err := client.Do(r)
+	if err != nil {
+		return false, err
+	}
+
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return false, err
+	}
+
+	defer resp.Body.Close()
+
+	// 检测是否登陆成功
+	if strings.Contains(gb2312Tutf8(string(b)), "bakend2") == true {
+		return false, errors.New("can not to login")
+	}
+
+	return true, nil
 }
 
 // SendLogin 发送登陆表单
@@ -115,10 +185,11 @@ func SendLogin(username string, password string) ([]*http.Cookie, error) {
 	}
 
 	client := &http.Client{}
-	r, _ := http.NewRequest(http.MethodPost, LoginURL, strings.NewReader(data.Encode()))
 
-	for _, cookie := range cookies {
-		r.AddCookie(cookie)
+	r, err := http.NewRequest(http.MethodPost, LoginURL, strings.NewReader(data.Encode()))
+	if err != nil {
+		var t []*http.Cookie
+		return t, err
 	}
 
 	r.Header.Add("Host", HostURL)
@@ -134,42 +205,23 @@ func SendLogin(username string, password string) ([]*http.Cookie, error) {
 	r.Header.Add("Accept-Encoding", "gzip, deflate")
 	r.Header.Add("Accept-Language", "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7")
 
-	resp, err := client.Do(r)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println(resp.Cookies())
-
-	fmt.Println(resp.Request)
-
-	r, _ = http.NewRequest(http.MethodGet, MenuURL, nil)
 	for _, cookie := range cookies {
 		r.AddCookie(cookie)
 	}
-	r.Header.Add("Host", "jw.sec.lit.edu.cn")
-	r.Header.Add("User-Agent", UserAgent)
-	r.Header.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
-	r.Header.Add("Accept-Language", "zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2")
-	r.Header.Add("Accept-Encoding", "gzip, deflate")
-	r.Header.Add("Connection", "keep-alive")
-	r.Header.Add("Referer", MenuURL)
-	r.Header.Add("Upgrade-Insecure-Requests", "1")
 
-	resp, err = client.Do(r)
+	resp, err := client.Do(r)
+	if err != nil {
+		var t []*http.Cookie
+		return t, err
+	}
 
-	fmt.Println(resp.Cookies())
+	defer resp.Body.Close()
 
-	// // 青果不是utf-8 所以要转换一下
-	// utf8Body, err := iconv.NewReader(resp.Body, "gb2312", "utf-8")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	b, err := ioutil.ReadAll(resp.Body)
-	resp.Body.Close()
-
-	fmt.Println(string(b))
+	lflag, err := isLoged(cookies)
+	if err != nil || lflag == false {
+		var t []*http.Cookie
+		return t, err
+	}
 
 	return cookies, err
 }

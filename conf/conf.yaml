@@ -1,0 +1,7 @@
+host: ''
+port: 5024
+
+# 需要管理人员帐号 (Sel_Type: SYS)
+jw:
+  username: ''
+  password: ''
