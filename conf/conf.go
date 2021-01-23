@@ -1,6 +1,7 @@
 package conf
 
 import (
+	"fmt"
 	"os"
 
 	log "github.com/sirupsen/logrus"
@@ -18,6 +19,7 @@ type JWConfig struct {
 type Config struct {
 	Host string
 	Port int
+	MAIN string
 	JW   JWConfig
 }
 
@@ -45,4 +47,7 @@ func INIT() {
 	if err := viper.Unmarshal(ProConf); err != nil {
 		log.Fatalln(err)
 	}
+
+	// 拼接最终运行地址
+	ProConf.MAIN = fmt.Sprintf("%s:%d", ProConf.Host, ProConf.Port)
 }

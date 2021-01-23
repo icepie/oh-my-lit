@@ -129,7 +129,7 @@ func isLogged(cookies []*http.Cookie) (bool, error) {
 
 	// 检测是否登陆成功
 	if strings.Contains(gb2312Tutf8(string(b)), "bakend2") == true {
-		return false, errors.New("can not to login")
+		return false, errors.New("lit jw can not to login")
 	}
 
 	return true, nil

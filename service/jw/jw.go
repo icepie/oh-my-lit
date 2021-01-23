@@ -1,7 +1,11 @@
 package jw
 
 import (
+	"net/http"
+
 	"github.com/axgle/mahonia"
+	"github.com/icepie/lit-edu-go/conf"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -36,4 +40,25 @@ func gb2312Tutf8(s string) string {
 	result := string(cdata)
 
 	return result
+}
+
+// JWCookies 教务在线曲奇饼
+var JWCookies []*http.Cookie
+
+// RefreshCookies 刷新教务在线曲奇饼
+func RefreshCookies() {
+	var err error
+	JWCookies, err = SendLogin(conf.ProConf.JW.UserName, conf.ProConf.JW.PassWord)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+// IsWork 检查曲奇饼可用性
+func IsWork() (bool, error) {
+	lflag, err := isLogged(JWCookies)
+	if err != nil || lflag == false {
+		return false, err
+	}
+	return true, nil
 }
