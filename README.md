@@ -42,5 +42,5 @@ $ ./lit-edu-go
 
 ## 许可证
 
-[GPLv3](https://github.com/icepie/lit-edu-go/blob/main/LICENSE)
+[AGPLv3](https://github.com/icepie/lit-edu-go/blob/main/LICENSE)
 
