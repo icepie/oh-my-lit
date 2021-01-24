@@ -19,6 +19,7 @@ func NewRouter() *gin.Engine {
 		{
 			// 测试教务服务连接性
 			jw.GET("status", api.JWIsWork)
+			jw.POST("score", api.JWGetScore)
 		}
 
 	}

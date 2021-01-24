@@ -30,8 +30,8 @@ GET    /api/v1/jw/status
 
 ### 通过学号获取成绩
 
-```
-
+```js
+POST   /api/v1/jw/score
 ```
 
 ### 通过学号获取课表

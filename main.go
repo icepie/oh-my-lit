@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/icepie/lit-edu-go/conf"
 	"github.com/icepie/lit-edu-go/server"
 	"github.com/icepie/lit-edu-go/service/jw"
@@ -17,7 +15,7 @@ func main() {
 	jw.RefreshCookies()
 
 	// 检索 学号为B19071121 2020学年 第一学期 的成绩
-	fmt.Println(jw.QueryScoreByStuNum(jw.JWCookies, "B19071122"))
+	//fmt.Println(jw.QueryScoreByStuNum(jw.JWCookies, "B19071122"))
 
 	// 装载路由
 	r := server.NewRouter()

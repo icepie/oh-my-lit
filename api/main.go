@@ -5,25 +5,26 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/icepie/lit-edu-go/model/serializer"
+	"github.com/icepie/lit-edu-go/model"
 	"github.com/icepie/lit-edu-go/pkg/e"
 	"gopkg.in/go-playground/validator.v8"
 )
 
 // PingPong 测试连接接口
 func PingPong(c *gin.Context) {
-	c.JSON(200, serializer.Response{
+	c.JSON(200, model.Response{
 		Status: 200,
+		Data:   "",
 		Msg:    "pong",
 	})
 }
 
 // ErrorResponse 返回错误消息
-func ErrorResponse(err error) serializer.Response {
+func ErrorResponse(err error) model.Response {
 	if ve, ok := err.(validator.ValidationErrors); ok {
 		for _, err := range ve {
 			code := e.INVALID_PARAMS
-			return serializer.Response{
+			return model.Response{
 				Status: code,
 				Msg:    e.GetMsg(code),
 				Error:  fmt.Sprint(err),
@@ -32,7 +33,7 @@ func ErrorResponse(err error) serializer.Response {
 	}
 	if _, ok := err.(*json.UnmarshalTypeError); ok {
 		code := e.INVALID_PARAMS
-		return serializer.Response{
+		return model.Response{
 			Status: code,
 			Msg:    e.GetMsg(code),
 			Error:  fmt.Sprint(err),
@@ -40,7 +41,7 @@ func ErrorResponse(err error) serializer.Response {
 	}
 
 	code := e.INVALID_PARAMS
-	return serializer.Response{
+	return model.Response{
 		Status: code,
 		Msg:    e.GetMsg(code),
 		Error:  fmt.Sprint(err),

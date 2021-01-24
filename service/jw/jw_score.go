@@ -1,6 +1,7 @@
 package jw
 
 import (
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -9,14 +10,14 @@ import (
 )
 
 // QueryScoreByStuNum 通过学号查询学生成绩
-func QueryScoreByStuNum(cookies []*http.Cookie, stunum string) string {
+func QueryScoreByStuNum(cookies []*http.Cookie, stuid string) (string, error) {
 	client := &http.Client{}
 
 	data := url.Values{
 		"sel_xnxq:": {"20190"}, // 学年学期标签好像坏掉了
 		"sel_yx":    {"05"},    // only for SYS
 		"ChkXH":     {"on"},
-		"txtXH":     {stunum},
+		"txtXH":     {stuid},
 		"mrxsj":     {},
 		"ybysj":     {},
 		"mbysjt":    {},
@@ -25,8 +26,7 @@ func QueryScoreByStuNum(cookies []*http.Cookie, stunum string) string {
 
 	r, err := http.NewRequest(http.MethodPost, ScoreURL, strings.NewReader(data.Encode()))
 	if err != nil {
-
-		return ""
+		return "", err
 	}
 
 	r.Header.Add("Host", HostURL)
@@ -48,7 +48,7 @@ func QueryScoreByStuNum(cookies []*http.Cookie, stunum string) string {
 
 	resp, err := client.Do(r)
 	if err != nil {
-		return ""
+		return "", err
 	}
 
 	defer resp.Body.Close()
@@ -56,11 +56,21 @@ func QueryScoreByStuNum(cookies []*http.Cookie, stunum string) string {
 	// 将数据流转换为 []byte
 	b, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return ""
+		return "", err
 	}
 
 	// 将 gb2312 转换为 utf-8
 	bodystr := gb18030Tutf8(string(b))
 
-	return bodystr
+	// 检测是否查询成功
+	if strings.Contains(bodystr, stuid) == false {
+		return "", errors.New("score info can not be found with " + stuid)
+	}
+
+	// 检测登陆是否失效
+	if strings.Contains(bodystr, "bakend2") == true {
+		return "", errors.New("lit jw can not to login")
+	}
+
+	return bodystr, nil
 }
