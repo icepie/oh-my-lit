@@ -27,7 +27,7 @@ const (
 	SchoolCode = "11070"
 )
 
-func gb2312Tutf8(s string) string {
+func gb18030Tutf8(s string) string {
 	src := mahonia.NewDecoder("gb18030")
 	res := src.ConvertString(s)
 	tag := mahonia.NewDecoder("utf-8")

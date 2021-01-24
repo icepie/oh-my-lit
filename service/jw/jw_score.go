@@ -60,7 +60,7 @@ func QueryScoreByStuNum(cookies []*http.Cookie, stunum string) string {
 	}
 
 	// 将 gb2312 转换为 utf-8
-	bodystr := gb2312Tutf8(string(b))
+	bodystr := gb18030Tutf8(string(b))
 
 	return bodystr
 }

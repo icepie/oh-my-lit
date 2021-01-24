@@ -78,7 +78,7 @@ func getVSAndCookie() (string, []*http.Cookie, error) {
 	}
 
 	// 将 gb2312 转换为 utf-8
-	bodystr := gb2312Tutf8(string(b))
+	bodystr := gb18030Tutf8(string(b))
 
 	// println(string(bodystr))
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(bodystr))
@@ -128,7 +128,7 @@ func isLogged(cookies []*http.Cookie) (bool, error) {
 	defer resp.Body.Close()
 
 	// 检测是否登陆成功
-	if strings.Contains(gb2312Tutf8(string(b)), "bakend2") == true {
+	if strings.Contains(gb18030Tutf8(string(b)), "bakend2") == true {
 		return false, errors.New("lit jw can not to login")
 	}
 
