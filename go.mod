@@ -12,4 +12,5 @@ require (
 	github.com/spf13/viper v1.7.1
 	golang.org/x/text v0.3.3
 	gopkg.in/go-playground/validator.v8 v8.18.2
+	gopkg.in/yaml.v2 v2.2.8
 )

@@ -23,5 +23,5 @@ func main() {
 	r := server.NewRouter()
 
 	// 运行服务
-	r.Run(conf.ProConf.MAIN)
+	r.Run(conf.MAIN)
 }
