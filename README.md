@@ -2,7 +2,7 @@
  
 一个集成查询成绩课表等功能的服务后端, 其本质为洛阳理工学院青果教务在线的中间件
 
- ![Go Report Card](https://goreportcard.com/badge/github.com/icepie/lit-edu-go)
+![Go Report Card](https://goreportcard.com/badge/github.com/icepie/lit-edu-go)
 
 ## 安装
 
@@ -17,7 +17,7 @@ $ go get -u github.com/icepie/lit-edu-go
 ## 使用
 
 ```bash
-$ ./lit-edu-go
+$ lit-edu-go
 ```
 
 ## 接口
@@ -32,12 +32,15 @@ GET    /api/v1/jw/status
 
 ```js
 POST   /api/v1/jw/score
+Accept: application/json
+Content-type: application/json
+payload: {"stuid":"B19071121"}
 ```
 
 ### 通过学号获取课表
 
 ```
-
+TODO
 ```
 
 ## 许可证
