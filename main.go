@@ -12,10 +12,7 @@ func main() {
 	conf.INIT()
 
 	// 尝试登陆, 刷新曲奇饼
-	jw.RefreshCookies()
-
-	// 检索 学号为B19071121 2020学年 第一学期 的成绩
-	//fmt.Println(jw.QueryScoreByStuNum(jw.JWCookies, "B19071122"))
+	go jw.RefreshCookies()
 
 	// 装载路由
 	r := server.NewRouter()

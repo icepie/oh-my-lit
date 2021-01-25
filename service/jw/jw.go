@@ -2,6 +2,7 @@ package jw
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/axgle/mahonia"
 	"github.com/icepie/lit-edu-go/conf"
@@ -47,10 +48,14 @@ var JWCookies []*http.Cookie
 
 // RefreshCookies 刷新教务在线曲奇饼
 func RefreshCookies() {
-	var err error
-	JWCookies, err = SendLogin(conf.ProConf.JW.UserName, conf.ProConf.JW.PassWord)
-	if err != nil {
-		log.Println(err)
+	for {
+		var err error
+		JWCookies, err = SendLogin(conf.ProConf.JW.UserName, conf.ProConf.JW.PassWord)
+		if err != nil {
+			log.Println(err)
+		}
+		log.Println("JW is work fine")
+		time.Sleep(time.Second * time.Duration(conf.ProConf.JW.RefInt))
 	}
 }
 

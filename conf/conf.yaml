@@ -5,3 +5,4 @@ port: 8088
 jw:
   username: ""
   password: ""
+  refint: 1800 # cookies刷新间隔 (s)

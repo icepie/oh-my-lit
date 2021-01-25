@@ -16,6 +16,7 @@ import (
 type JWConfig struct {
 	UserName string
 	PassWord string
+	RefInt   int
 }
 
 // Config 基础配置
@@ -72,6 +73,7 @@ func INIT() {
 		log.Println(errors.New("Can not read the config file, will recreate it! "))
 		// 初始化配置
 		ProConf.Port = 8088
+		ProConf.JW.RefInt = 1800
 		if err = initConfig(cpath + "/conf.yaml"); err != nil { // 重新初始化配置文件
 			log.Fatalln(err)
 		}
