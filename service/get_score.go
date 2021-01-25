@@ -70,7 +70,8 @@ func (service *GetScoreService) GetScore() model.Response {
 	// XXX
 
 	// 解析学生信息
-	doc.Find("tbody").First().Each(func(i int, tbody *goquery.Selection) {
+	table := doc.Find("table").First()
+	table.Find("tbody").First().Each(func(i int, tbody *goquery.Selection) {
 		tbody.Find("tr").First().Each(func(i int, tr *goquery.Selection) {
 			tr.Find("td").First().Each(func(i int, td *goquery.Selection) {
 				stu.Faculty = exutf8.RuneSubString(td.Text(), 7, 20)
