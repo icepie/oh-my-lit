@@ -7,3 +7,9 @@ type Response struct {
 	Msg    string      `json:"msg"`
 	Error  string      `json:"error"`
 }
+
+// ScoreInfo 成绩信息序列化器
+type ScoreInfo struct {
+	SI Stu      `json:"stuinfo"`
+	TL TermList `json:"term_list"`
+}

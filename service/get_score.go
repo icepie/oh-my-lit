@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -19,8 +20,6 @@ type GetScoreService struct {
 
 // GetScore 根据 StuID 获取
 func (service *GetScoreService) GetScore() model.Response {
-	var stu model.Stu
-
 	body, err := jw.QueryScoreByStuNum(jw.JWCookies, service.StuID)
 	if err != nil {
 		log.Println(err)
@@ -44,71 +43,91 @@ func (service *GetScoreService) GetScore() model.Response {
 		}
 	}
 
-	// // Find the review items
-	// // Find each table
-	// doc.Find("table").Each(func(index int, tablehtml *goquery.Selection) {
-	// 	tablehtml.Find("tr").Each(func(indextr int, rowhtml *goquery.Selection) {
-	// 		rowhtml.Find("th").Each(func(indexth int, tableheading *goquery.Selection) {
-	// 			headings = append(headings, tableheading.Text())
-	// 		})
-	// 		rowhtml.Find("td").Each(func(indexth int, tablecell *goquery.Selection) {
-	// 			row = append(row, tablecell.Text())
-	// 		})
-	// 		rows = append(rows, row)
-	// 		row = nil
-	// 	})
-	// })
-
-	// 经济与管理学院
-	// 本科
-	// 四年
-	// 2019年09月
-	// B19071121
-	// 工商管理
-	// B190701
-	// 2023年03月
-	// XXX
-
+	// 新建学生信息结构变量
+	var stu model.Stu
 	// 解析学生信息
 	table := doc.Find("table").First()
+	// 都在第一个table里啦
 	table.Find("tbody").First().Each(func(i int, tbody *goquery.Selection) {
 		tbody.Find("tr").First().Each(func(i int, tr *goquery.Selection) {
-			tr.Find("td").First().Each(func(i int, td *goquery.Selection) {
-				stu.Faculty = exutf8.RuneSubString(td.Text(), 7, 20)
-			})
-			tr.Find("td").Eq(1).Each(func(i int, td *goquery.Selection) {
-				stu.Degree = exutf8.RuneSubString(td.Text(), 5, 10)
-			})
-			tr.Find("td").Eq(2).Each(func(i int, td *goquery.Selection) {
-				stu.EduSys = exutf8.RuneSubString(td.Text(), 3, 10)
-			})
-			tr.Find("td").Eq(3).Each(func(i int, td *goquery.Selection) {
-				stu.AdmTime = exutf8.RuneSubString(td.Text(), 5, 10)
-			})
-			tr.Find("td").Eq(4).Each(func(i int, td *goquery.Selection) {
-				stu.ID = exutf8.RuneSubString(td.Text(), 3, 10)
-			})
+			stu.Faculty = exutf8.RuneSubString(tr.Find("td").First().Text(), 7, 20)
+			stu.Degree = exutf8.RuneSubString(tr.Find("td").Eq(1).Text(), 5, 10)
+			stu.EduSys = exutf8.RuneSubString(tr.Find("td").Eq(2).Text(), 3, 10)
+			stu.AdmTime = exutf8.RuneSubString(tr.Find("td").Eq(3).Text(), 5, 10)
+			stu.ID = exutf8.RuneSubString(tr.Find("td").Eq(4).Text(), 3, 10)
 		})
 		tbody.Find("tr").Eq(1).Each(func(i int, tr *goquery.Selection) {
-			tr.Find("td").First().Each(func(i int, td *goquery.Selection) {
-				stu.Major = exutf8.RuneSubString(td.Text(), 8, 20)
-			})
-			tr.Find("td").Eq(1).Each(func(i int, td *goquery.Selection) {
-				stu.Class = exutf8.RuneSubString(td.Text(), 5, 10)
-			})
-			tr.Find("td").Eq(2).Each(func(i int, td *goquery.Selection) {
-				stu.GraTime = exutf8.RuneSubString(td.Text(), 5, 10)
-			})
-			tr.Find("td").Eq(3).Each(func(i int, td *goquery.Selection) {
-				stu.Name = exutf8.RuneSubString(td.Text(), 3, 10)
-			})
+			stu.Major = exutf8.RuneSubString(tr.Find("td").First().Text(), 8, 20)
+			stu.Class = exutf8.RuneSubString(tr.Find("td").Eq(1).Text(), 5, 10)
+			stu.GraTime = exutf8.RuneSubString(tr.Find("td").Eq(2).Text(), 5, 10)
+			stu.Name = exutf8.RuneSubString(tr.Find("td").Eq(3).Text(), 3, 10)
 		})
 	})
+
+	//var Scorel3 Term
+	// 去掉空表 (倒数第四个)
+	//doc.Find("table").Eq(-4).Remove().End()
+	// 成绩藏在第二个表
+	table1 := doc.Find("table").Eq(1)
+	// 新建一个学期成绩列表
+	var newtermList model.TermList
+	// 学期个数的计数器
+	var Tcount int
+	// 查找平均成绩个数, 得出学期的个数
+	doc.Find("script").Each(func(index int, tr *goquery.Selection) {
+		// 新建一个学期成绩结构
+		var newterm model.Term
+		// 处理获取到平均成绩: T2.innerHTML='(平均成绩：85.4)
+		newterm.AvgScore = exutf8.RuneSubString(tr.Text(), 20, 4)
+		// 再扔进列表里
+		newtermList = append(newtermList, newterm)
+		// 计数器会刷到最终次数
+		Tcount = index
+	})
+
+	// 逆序循环处理
+	for {
+		// 循环退出判断
+		if Tcount == -1 {
+			break
+		}
+		// 找到该表的id存在的位置
+		id := fmt.Sprintf("%s%d", "td#T", Tcount+1)
+		fmt.Println(id)
+		// 学期名整上 从doc取得, 因为table1要进行删除操作
+		newtermList[Tcount].Term = doc.Find(id).Prev().Text()
+
+		T := table1.Find(id)
+		// 找到成绩表所在地方
+		T.Prev().ParentsFiltered("tr[style]").NextAllFiltered("tr[style]").Each(func(index int, tr *goquery.Selection) {
+			// 新建个成绩结构
+			var newscore model.Score
+			// td里面包含具体值
+			td := tr.Find("td[width]")
+			// 以下对号入座
+			newscore.Course = td.First().Text()
+			newscore.Type = td.Eq(1).Text()
+			newscore.Count = td.Eq(2).Text()
+			newscore.Score = td.Eq(3).Text()
+			newscore.Credit = td.Eq(4).Text()
+			// 过滤掉取了空td的情况
+			if newscore.Credit != "" {
+				newtermList[Tcount].ScoreList = append(newtermList[Tcount].ScoreList, newscore)
+			}
+			// 加完就删, 逆序处理的核心
+			tr.Remove().End()
+		})
+		// 计数器变化
+		Tcount--
+	}
 
 	code := e.SUCCESS
 	return model.Response{
 		Status: code,
 		Msg:    e.GetMsg(code),
-		Data:   stu,
+		Data: model.ScoreInfo{
+			SI: stu,
+			TL: newtermList,
+		},
 	}
 }

@@ -71,6 +71,5 @@ func QueryScoreByStuNum(cookies []*http.Cookie, stuid string) (string, error) {
 	if strings.Contains(bodystr, "bakend2") == true {
 		return "", errors.New("lit jw can not to login")
 	}
-
 	return bodystr, nil
 }

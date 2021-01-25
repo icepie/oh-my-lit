@@ -10,6 +10,7 @@ require (
 	github.com/go-resty/resty/v2 v2.4.0
 	github.com/sirupsen/logrus v1.7.0
 	github.com/spf13/viper v1.7.1
+	github.com/swaggo/swag/example/celler v0.0.0-20201209092904-3d90fc0a5c6e // indirect
 	github.com/thinkeridea/go-extend v1.2.2
 	golang.org/x/text v0.3.3
 	gopkg.in/go-playground/validator.v8 v8.18.2
