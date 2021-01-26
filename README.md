@@ -34,7 +34,10 @@ GET    /api/v1/jw/status
 POST   /api/v1/jw/score
 Accept: application/json
 Content-type: application/json
-payload: {"stuid":"B19071121"}
+```
+
+```json
+{"stuid":"B19071121"}
 ```
 
 ### 通过学号获取课表
