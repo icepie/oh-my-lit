@@ -64,11 +64,6 @@ func (service *GetScoreService) GetScore() model.Response {
 		})
 	})
 
-	//var Scorel3 Term
-	// 去掉空表 (倒数第四个)
-	//doc.Find("table").Eq(-4).Remove().End()
-	// 成绩藏在第二个表
-	table1 := doc.Find("table").Eq(1)
 	// 新建一个学期成绩列表
 	var newtermList model.TermList
 	// 学期个数的计数器
@@ -97,7 +92,8 @@ func (service *GetScoreService) GetScore() model.Response {
 		// 学期名整上 从doc取得, 因为table1要进行删除操作
 		newtermList[Tcount].Term = doc.Find(id).Prev().Text()
 
-		T := table1.Find(id)
+		T := doc.Find(id)
+
 		// 找到成绩表所在地方
 		T.Prev().ParentsFiltered("tr[style]").NextAllFiltered("tr[style]").Each(func(index int, tr *goquery.Selection) {
 			// 新建个成绩结构
@@ -121,7 +117,7 @@ func (service *GetScoreService) GetScore() model.Response {
 		// 计数器变化
 		Tcount--
 	}
-	
+
 	// 新建成绩序列化数据
 	scoredata := model.ScoreInfo{
 		SI: stu,
@@ -135,6 +131,6 @@ func (service *GetScoreService) GetScore() model.Response {
 	return model.Response{
 		Status: code,
 		Msg:    e.GetMsg(code),
-		Data: scoredata,
+		Data:   scoredata,
 	}
 }
