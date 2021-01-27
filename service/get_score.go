@@ -93,7 +93,7 @@ func (service *GetScoreService) GetScore() model.Response {
 		}
 		// 找到该表的id存在的位置
 		id := fmt.Sprintf("%s%d", "td#T", Tcount+1)
-		fmt.Println(id)
+		//fmt.Println(id)
 		// 学期名整上 从doc取得, 因为table1要进行删除操作
 		newtermList[Tcount].Term = doc.Find(id).Prev().Text()
 
@@ -112,6 +112,7 @@ func (service *GetScoreService) GetScore() model.Response {
 			newscore.Credit = td.Eq(4).Text()
 			// 过滤掉取了空td的情况
 			if newscore.Credit != "" {
+				// 将成绩添加到成绩表
 				newtermList[Tcount].ScoreList = append(newtermList[Tcount].ScoreList, newscore)
 			}
 			// 加完就删, 逆序处理的核心
@@ -120,14 +121,20 @@ func (service *GetScoreService) GetScore() model.Response {
 		// 计数器变化
 		Tcount--
 	}
+	
+	// 新建成绩序列化数据
+	scoredata := model.ScoreInfo{
+		SI: stu,
+		TL: newtermList,
+	}
+
+	// 调试用
+	fmt.Println(scoredata)
 
 	code := e.SUCCESS
 	return model.Response{
 		Status: code,
 		Msg:    e.GetMsg(code),
-		Data: model.ScoreInfo{
-			SI: stu,
-			TL: newtermList,
-		},
+		Data: scoredata,
 	}
 }

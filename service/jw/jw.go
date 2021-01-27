@@ -50,7 +50,8 @@ var JWCookies []*http.Cookie
 func RefreshCookies() {
 	for {
 		var err error
-		JWCookies, err = SendLogin(conf.ProConf.JW.UserName, conf.ProConf.JW.PassWord)
+		// 管理人员帐号登陆 SYS
+		JWCookies, err = SendLogin(conf.ProConf.JW.UserName, conf.ProConf.JW.PassWord, "SYS")
 		if err != nil {
 			log.Println(err)
 		}

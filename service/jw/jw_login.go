@@ -136,7 +136,7 @@ func isLogged(cookies []*http.Cookie) (bool, error) {
 }
 
 // SendLogin 发送登陆表单
-func SendLogin(username string, password string) ([]*http.Cookie, error) {
+func SendLogin(username string, password string, usertype string) ([]*http.Cookie, error) {
 
 	vs, cookies, err := getVSAndCookie()
 
@@ -144,7 +144,7 @@ func SendLogin(username string, password string) ([]*http.Cookie, error) {
 
 	data := url.Values{
 		"__VIEWSTATE":             {vs},
-		"Sel_Type":                {"SYS"}, // only for SYS
+		"Sel_Type":                {usertype}, // SYS etc..
 		"txt_sdsdfdsfryuiighgdf":  {username},
 		"txt_dsfdgtjhjuixssdsdf":  {},
 		"txt_sftfgtrefjdndcfgerg": {},

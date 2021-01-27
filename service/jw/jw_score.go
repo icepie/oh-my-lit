@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-// QueryScoreByStuNum 通过学号查询学生成绩
+// QueryScoreByStuNum 通过学号查询学生成绩, 管理员专用
 func QueryScoreByStuNum(cookies []*http.Cookie, stuid string) (string, error) {
 	client := &http.Client{}
 
@@ -71,5 +71,8 @@ func QueryScoreByStuNum(cookies []*http.Cookie, stuid string) (string, error) {
 	if strings.Contains(bodystr, "bakend2") == true {
 		return "", errors.New("lit jw can not to login")
 	}
+
+	// fmt.Println(bodystr)
+
 	return bodystr, nil
 }
