@@ -35,14 +35,14 @@ var ProConf = new(Config)
 var MAIN string
 
 // initConfig 初始化配置
-func initConfig(cpath string) error {
+func initConfig(cfpath string) error {
 
 	b, err := yaml.Marshal(ProConf)
 	if err != nil {
 		return err
 	}
 
-	f, err := os.Create(cpath)
+	f, err := os.Create(cfpath)
 	if err != nil {
 		return err
 	}
@@ -70,10 +70,9 @@ func INIT() {
 		pathsep = "/"
 	}
 
-	cpath := path + pathsep + "conf"
-	cfpath := cpath + pathsep + "conf.yaml"
+	cfpath := path + pathsep + "conf.yaml"
 
-	viper.AddConfigPath(cpath)  // 设置读取的文件路径
+	viper.AddConfigPath(path)   // 设置读取的文件路径
 	viper.SetConfigName("conf") // 设置读取的文件名
 	viper.SetConfigType("yaml") // 设置文件的类型
 
@@ -84,7 +83,7 @@ func INIT() {
 		ProConf.Port = 8088
 		ProConf.JWAuth = false
 		ProConf.JW.RefInt = 1800
-		if err = initConfig(cpath + pathsep + "conf.yaml"); err != nil { // 重新初始化配置文件
+		if err = initConfig(cfpath); err != nil { // 重新初始化配置文件
 			log.Fatalln(err)
 		}
 		log.Println(errors.New("Please edit the " + cfpath + "， then restart lit-edu-go"))

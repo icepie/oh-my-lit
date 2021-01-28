@@ -12,7 +12,7 @@ import (
 
 const (
 	// Version of lit-edu-go
-	Version = "v0.1.7"
+	Version = "v0.1.8"
 )
 
 // PingPong 测试连接接口
