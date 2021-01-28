@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
@@ -62,8 +63,15 @@ func INIT() {
 		panic(err)
 	}
 
-	cpath := path + "/conf"
-	cfpath := cpath + "/conf.yaml"
+	var pathsep string
+	if runtime.GOOS == "windows" {
+		pathsep = "\\"
+	} else {
+		pathsep = "/"
+	}
+
+	cpath := path + pathsep + "conf"
+	cfpath := cpath + pathsep + "conf.yaml"
 
 	viper.AddConfigPath(cpath)  // 设置读取的文件路径
 	viper.SetConfigName("conf") // 设置读取的文件名
@@ -76,10 +84,10 @@ func INIT() {
 		ProConf.Port = 8088
 		ProConf.JWAuth = false
 		ProConf.JW.RefInt = 1800
-		if err = initConfig(cpath + "/conf.yaml"); err != nil { // 重新初始化配置文件
+		if err = initConfig(cpath + pathsep + "conf.yaml"); err != nil { // 重新初始化配置文件
 			log.Fatalln(err)
 		}
-		log.Println(errors.New("Please edit the \"" + cfpath + "\"， then restart lit-edu-go"))
+		log.Println(errors.New("Please edit the " + cfpath + "， then restart lit-edu-go"))
 		os.Exit(1)
 	}
 	// 将读取的配置信息保存至全局变量Conf
