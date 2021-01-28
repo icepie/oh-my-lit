@@ -27,7 +27,7 @@ $ go build # GO111MODULE=on
 
 ## 配置
 
-请自行查看并编辑配置文件 `conf/conf.yaml`
+请自行查看并编辑配置文件 `conf.yaml`
 
 ## 使用
 
