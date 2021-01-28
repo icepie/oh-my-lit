@@ -99,7 +99,8 @@ func getVSAndCookie() (string, []*http.Cookie, error) {
 	return VS, res.Cookies(), nil
 }
 
-func isLogged(cookies []*http.Cookie) (bool, error) {
+// IsLogged 判断曲奇饼登陆有效性
+func IsLogged(cookies []*http.Cookie) (bool, error) {
 	client := &http.Client{}
 
 	r, _ := http.NewRequest(http.MethodGet, MenuURL, nil)
@@ -184,7 +185,7 @@ func SendLogin(username string, password string, usertype string) ([]*http.Cooki
 
 	defer resp.Body.Close()
 
-	lflag, err := isLogged(cookies)
+	lflag, err := IsLogged(cookies)
 	if err != nil || lflag == false {
 		var t []*http.Cookie
 		return t, err

@@ -7,9 +7,23 @@
 
 ## 安装
 
+### get
+
 ```bash
 $ go get -u github.com/icepie/lit-edu-go
 ```
+
+### build
+
+```bash
+$ git clone  http://github.com/icepie/lit-edu-go
+$ cd lit-edu-go
+$ go build # GO111MODULE=on
+```
+
+### release
+
+前往 [release](https://github.com/icepie/lit-edu-go/releases) 页面, 下载与你适用的版本
 
 ## 配置
 
@@ -21,7 +35,7 @@ $ go get -u github.com/icepie/lit-edu-go
 $ lit-edu-go
 ```
 
-## 接口
+## 接口 (Restful API)
 
 ### 检查青果登录状态
 
@@ -33,12 +47,14 @@ GET    /api/v1/jw/status
 
 ```js
 POST   /api/v1/jw/score
-Accept: application/json
 Content-type: application/json
 ```
 
 ```json
-{"stuid":"B19071121"}
+{
+  "stuid": "B19071121",
+  "password": "PASSWORD" // jwauth: true
+}
 ```
 
 ### 通过学号获取课表

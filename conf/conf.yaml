@@ -1,7 +1,9 @@
+# 基本设置
 host: "0.0.0.0"
 port: 8088
+jwauth: false # 教务密码验证, 如需上线请开启
 
-# 需要管理人员帐号 (Sel_Type: SYS)
+# 管理人员帐号 (Sel_Type: SYS)
 jw:
   username: ""
   password: ""

@@ -15,7 +15,7 @@ func QueryScoreByStuNum(cookies []*http.Cookie, stuid string) (string, error) {
 
 	data := url.Values{
 		"sel_xnxq:": {"20190"}, // 学年学期标签好像坏掉了
-		"sel_yx":    {"05"},    // only for SYS
+		"sel_yx":    {"05"},    // STU, SYS, ADM
 		"ChkXH":     {"on"},
 		"txtXH":     {stuid},
 		"mrxsj":     {},

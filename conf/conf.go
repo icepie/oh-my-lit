@@ -21,9 +21,10 @@ type JWConfig struct {
 
 // Config 基础配置
 type Config struct {
-	Host string
-	Port int
-	JW   JWConfig
+	Host   string
+	Port   int
+	JWAuth bool
+	JW     JWConfig
 }
 
 // ProConf 新建实例
@@ -73,6 +74,7 @@ func INIT() {
 		log.Println(errors.New("Can not read the config file, will recreate it! "))
 		// 初始化配置
 		ProConf.Port = 8088
+		ProConf.JWAuth = false
 		ProConf.JW.RefInt = 1800
 		if err = initConfig(cpath + "/conf.yaml"); err != nil { // 重新初始化配置文件
 			log.Fatalln(err)
@@ -87,4 +89,5 @@ func INIT() {
 
 	// 拼接最终运行地址
 	MAIN = fmt.Sprintf("%s:%d", ProConf.Host, ProConf.Port)
+
 }

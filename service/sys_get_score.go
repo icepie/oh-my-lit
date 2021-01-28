@@ -6,6 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/icepie/lit-edu-go/conf"
 	"github.com/icepie/lit-edu-go/model"
 	"github.com/icepie/lit-edu-go/pkg/e"
 	"github.com/icepie/lit-edu-go/service/jw"
@@ -14,11 +15,36 @@ import (
 
 // GetScoreService 获取成绩服务结构
 type GetScoreService struct {
-	StuID string `json:"stuid" binding:"required"`
+	StuID    string `json:"stuid" binding:"required"`
+	PassWord string `json:"password"`
 }
 
 // GetScore 根据 StuID 获取
 func (service *GetScoreService) GetScore() model.Response {
+
+	// 开启教务密码验证的情况
+	if conf.ProConf.JWAuth {
+		if service.PassWord == "" {
+			code := e.ERROR
+			return model.Response{
+				Status: code,
+				Msg:    e.GetMsg(code),
+				Error:  "please enter the correct password",
+			}
+		}
+
+		_, err := jw.SendLogin(service.StuID, service.PassWord, "STU")
+		if err != nil {
+			log.Warningln(err)
+			code := e.ERROR
+			return model.Response{
+				Status: code,
+				Msg:    e.GetMsg(code),
+				Error:  err.Error(),
+			}
+		}
+	}
+
 	body, err := jw.QueryScoreByStuNum(jw.JWCookies, service.StuID)
 	if err != nil {
 		log.Warningln(err)

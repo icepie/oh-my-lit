@@ -11,7 +11,7 @@ import (
 
 const (
 	// HostURL 主网址
-	HostURL = "jw.sec.lit.edu.cn"
+	HostURL = "jw.sec.lit.edu.cn" // 120.194.42.205:9001
 	// DefaultURL 首页
 	DefaultURL = "http://jw.sec.lit.edu.cn/default.aspx"
 	// LoginURL 登陆地址
@@ -62,7 +62,7 @@ func RefreshCookies() {
 
 // IsWork 检查曲奇饼可用性
 func IsWork() (bool, error) {
-	lflag, err := isLogged(JWCookies)
+	lflag, err := IsLogged(JWCookies)
 	if err != nil || lflag == false {
 		return false, err
 	}
