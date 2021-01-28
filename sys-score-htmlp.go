@@ -85,10 +85,6 @@ func main() {
 		})
 	})
 
-	doc.Find("table[cellpadding=0]").Each(func(i int, tbody *goquery.Selection) {
-		fmt.Println(tbody.Text())
-	})
-
 	// Score 成绩结构
 	type Score struct {
 		Course string
@@ -107,11 +103,6 @@ func main() {
 
 	type TermList []Term
 
-	//var Scorel3 Term
-	// 去掉空表 (倒数第四个)
-	doc.Find("table").Eq(-4).Remove().End()
-	// 成绩藏在第二个表
-	//table1 := doc.Find("table").Eq(1)
 	// 新建一个学期成绩列表
 	var newtermList TermList
 	// 学期个数的计数器
@@ -126,30 +117,26 @@ func main() {
 		newtermList = append(newtermList, newterm)
 		// 计数器会刷到最终次数
 		Tcount = index
+
 	})
 
-	fmt.Println(newtermList)
+	// 设置学期计数器
+	var I int
+	doc.Find("tr[style]").Each(func(index int, tr *goquery.Selection) {
+		tr.Find("td[id]").Prev().Each(func(_ int, td *goquery.Selection) {
+			// 设置学期名称
+			newtermList[I].Term = td.Text()
+			// 设置界限, 不超过学期总数
+			if I <= Tcount {
+				I = I + 1
+			}
+		})
 
-	fmt.Println(Tcount)
-	// 逆序循环处理
-	for {
-		// 循环退出判断
-		if Tcount == -1 {
-			break
-		}
-		// 找到该表的id存在的位置
-		id := fmt.Sprintf("%s%d", "td#T", Tcount+1)
-		fmt.Println(id)
-		// 学期名整上 从doc取得, 因为table1要进行删除操作
-		newtermList[Tcount].Term = doc.Find(id).Prev().Text()
-
-		T := doc.Find(id)
-		// 找到成绩表所在地方
-		T.Prev().ParentsFiltered("tr[style]").NextAllFiltered("tr[style]").Each(func(index int, tr *goquery.Selection) {
+		tr.Each(func(index int, trr *goquery.Selection) {
 			// 新建个成绩结构
 			var newscore Score
 			// td里面包含具体值
-			td := tr.Find("td[width]")
+			td := trr.Find("td[width]")
 			// 以下对号入座
 			newscore.Course = td.First().Text()
 			newscore.Type = td.Eq(1).Text()
@@ -158,14 +145,14 @@ func main() {
 			newscore.Credit = td.Eq(4).Text()
 			// 过滤掉取了空td的情况
 			if newscore.Credit != "" {
-				newtermList[Tcount].ScoreList = append(newtermList[Tcount].ScoreList, newscore)
+				// 将成绩添加到成绩列表
+				newtermList[I-1].ScoreList = append(newtermList[I-1].ScoreList, newscore)
 			}
-			// 加完就删, 逆序处理的核心
+			// 加完就删, 避免重复
 			tr.Remove().End()
+
 		})
-		// 计数器变化
-		Tcount--
-	}
+	})
 
 	fmt.Println(newtermList)
 
