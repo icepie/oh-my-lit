@@ -54,8 +54,10 @@ func RefreshCookies() {
 		JWCookies, err = SendLogin(conf.ProConf.JW.UserName, conf.ProConf.JW.PassWord, "SYS")
 		if err != nil {
 			log.Warningln(err)
+		} else {
+			log.Println("JW is work fine")
 		}
-		log.Println("JW is work fine")
+		// 等待下次刷新
 		time.Sleep(time.Second * time.Duration(conf.ProConf.JW.RefInt))
 	}
 }

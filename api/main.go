@@ -10,6 +10,11 @@ import (
 	"gopkg.in/go-playground/validator.v8"
 )
 
+const (
+	// Version of lit-edu-go
+	Version = "v0.1.5"
+)
+
 // PingPong 测试连接接口
 func PingPong(c *gin.Context) {
 	c.JSON(200, model.Response{
