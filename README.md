@@ -53,7 +53,7 @@ Content-type: application/json
 ```json
 {
   "stuid": "B19071121",
-  "password": "PASSWORD" // jwauth: true
+  "password": "PASSWORD(jwauth: true)"
 }
 ```
 
