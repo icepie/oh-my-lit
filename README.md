@@ -5,6 +5,9 @@
 ![Go Report Card](https://goreportcard.com/badge/github.com/icepie/lit-edu-go)
 ![License](https://img.shields.io/github/license/icepie/lit-edu-go)
 
+[![QQ Group](https://img.shields.io/badge/QQ%20Group-768887710-red.svg)](https://jq.qq.com/?_wv=1027&k=lz0XyN86)
+[![TG Group](https://img.shields.io/badge/TG%20Group-lit_edu-blue.svg)](https://t.me/lit_edu)
+
 ## 安装
 
 ### get
