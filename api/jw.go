@@ -21,7 +21,7 @@ func JWIsWork(c *gin.Context) {
 
 }
 
-// JWGetScore 测试教务服务是否正常
+// JWGetScore 通过学号获取成绩
 func JWGetScore(c *gin.Context) {
 	var service service.GetScoreService
 	// 获取token

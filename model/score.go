@@ -2,11 +2,11 @@ package model
 
 // Score 成绩结构
 type Score struct {
-	Course string `json:"course"`
-	Type   string `json:"type"`
-	Count  string `json:"count"`
-	Score  string `json:"score"`
-	Credit string `json:"credit"`
+	Course string      `json:"course"`
+	Type   interface{} `json:"type"`
+	Count  interface{} `json:"count"`
+	Score  interface{} `json:"score"`
+	Credit interface{} `json:"credit"`
 }
 
 // Term 学期成绩结构

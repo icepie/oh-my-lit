@@ -52,11 +52,18 @@ func RefreshCookies() {
 		var err error
 		// 管理人员帐号登陆 SYS
 		log.Println("Refreshing jw cookies... ")
-		JWCookies, err = SendLogin(conf.ProConf.JW.UserName, conf.ProConf.JW.PassWord, "SYS")
-		if err != nil {
-			log.Warningln(err)
-		} else {
-			log.Println("jw is work fine")
+		// 最多重试刷新三次
+		for i := 0; i < 3; i++ {
+			JWCookies, err = SendLogin(conf.ProConf.JW.UserName, conf.ProConf.JW.PassWord, "SYS")
+
+			if err != nil {
+				log.Warningln(err)
+				log.Println("Retrying...")
+			} else {
+				log.Println("jw is work fine")
+				break
+			}
+
 		}
 		// 等待下次刷新
 		time.Sleep(time.Second * time.Duration(conf.ProConf.JW.RefInt))
