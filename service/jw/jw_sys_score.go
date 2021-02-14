@@ -14,14 +14,14 @@ func QueryScoreByStuNum(cookies []*http.Cookie, stuid string) (string, error) {
 	client := &http.Client{}
 
 	data := url.Values{
-		"sel_xnxq:": {"20190"}, // 学年学期标签好像坏掉了
-		"sel_yx":    {"05"},    // STU, SYS, ADM
-		"ChkXH":     {"on"},
-		"txtXH":     {stuid},
-		"mrxsj":     {},
-		"ybysj":     {},
-		"mbysjt":    {},
-		"radCx":     {"0"},
+		"sel_xnxq": {"20190"}, // 学年学期标签好像坏掉了
+		"sel_yx":   {"05"},    // STU, SYS, ADM
+		"ChkXH":    {"on"},
+		"txtXH":    {stuid},
+		"mrxsj":    {},
+		"ybysj":    {},
+		"mbysjt":   {},
+		"radCx":    {"0"},
 	}
 
 	r, err := http.NewRequest(http.MethodPost, ScoreURL, strings.NewReader(data.Encode()))

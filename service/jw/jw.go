@@ -22,6 +22,16 @@ const (
 	MAINFRMURL = "http://jw.sec.lit.edu.cn/MAINFRM.aspx"
 	// ScoreURL 成绩检索地址
 	ScoreURL = "http://jw.sec.lit.edu.cn/XSCJ/f_cjdab_rpt.aspx"
+	// ClassSelURL 课表查询首页
+	ClassSelURL = "http://jw.sec.lit.edu.cn/ZNPK/ClassSel.aspx"
+	// MajorListURL 获取专业对应值
+	// http://jw.sec.lit.edu.cn/XSXJ/Private/List_NJYXZY.aspx?yx=09&nj=2020
+	MajorListURL = "http://jw.sec.lit.edu.cn/XSXJ/Private/List_NJYXZY.aspx"
+	// ClassListURL 获取班级对应值
+	// http://jw.sec.lit.edu.cn/XSXJ/Private/List_ZYBJ.aspx?zy=0901&nj=2020
+	ClassListURL = "http://jw.sec.lit.edu.cn/XSXJ/Private/List_ZYBJ.aspx"
+	// ClassRptURL 课表查询地址
+	ClassRptURL = "http://jw.sec.lit.edu.cn/ZNPK/ClassSel_rpt.aspx"
 	// UserAgent UA
 	UserAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36"
 	// SchoolCode 院校代号
@@ -61,6 +71,11 @@ func RefreshCookies() {
 				log.Println("Retrying...")
 			} else {
 				log.Println("jw is work fine")
+				// 测试用
+				// QueryTermParam(JWCookies)
+				// QueryMajorParam(JWCookies)
+				// QueryClassParam(JWCookies)
+				// QueryClassTable(JWCookies)
 				break
 			}
 
