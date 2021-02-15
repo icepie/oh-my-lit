@@ -14,6 +14,12 @@ func main() {
 	// 尝试登陆, 刷新曲奇饼
 	go jw.RefreshCookies()
 
+	// 测试用
+	// QueryTermParam(JWCookies)
+	// QueryMajorParam(JWCookies)
+	// QueryClassParam(JWCookies)
+	// QueryClassTable(JWCookies)
+
 	// 装载路由
 	r := server.NewRouter()
 

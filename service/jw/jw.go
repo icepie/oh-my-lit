@@ -56,6 +56,14 @@ func gb18030Tutf8(s string) string {
 // JWCookies 教务在线曲奇饼
 var JWCookies []*http.Cookie
 
+// Test 测试用
+func Test() {
+	QueryTermParam(JWCookies)
+	QueryMajorParam(JWCookies)
+	QueryCourseParam(JWCookies)
+	QueryCourseTable(JWCookies)
+}
+
 // RefreshCookies 刷新教务在线曲奇饼
 func RefreshCookies() {
 	for {
@@ -67,15 +75,12 @@ func RefreshCookies() {
 			JWCookies, err = SendLogin(conf.ProConf.JW.UserName, conf.ProConf.JW.PassWord, "SYS")
 
 			if err != nil {
-				log.Warningln(err)
 				log.Println("Retrying...")
+				log.Warningln(err)
 			} else {
 				log.Println("jw is work fine")
-				// 测试用
-				// QueryTermParam(JWCookies)
-				// QueryMajorParam(JWCookies)
-				// QueryClassParam(JWCookies)
-				// QueryClassTable(JWCookies)
+				// 仅在测试中使用
+				// Test()
 				break
 			}
 
