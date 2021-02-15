@@ -37,7 +37,9 @@ $ go build # GO111MODULE=on
 $ lit-edu-go
 ```
 
-## 接口 (Restful API)
+## 接口
+
+> 如在配置中开启了 `jwauth` 则部分接口需要 `password` 参数
 
 ### 检查青果登录状态
 
@@ -45,21 +47,34 @@ $ lit-edu-go
 GET    /api/v1/jw/status
 ```
 
-### 通过学号获取成绩
+### 通过学号获取基本信息
+
 
 ```js
-POST   /api/v1/jw/score
-Content-type: application/json
+POST   /api/v1/jw/profile
 ```
 
 ```json
 {
   "stuid": "B19071121",
-  "password": "PASSWORD(jwauth: true)"
+  "password": "PASSWORD"
 }
 ```
 
-### 通过学号获取课表
+### 通过学号获取成绩
+
+```js
+POST   /api/v1/jw/score
+```
+
+```json
+{
+  "stuid": "B19071121",
+  "password": "PASSWORD"
+}
+```
+
+### 获取课表
 
 ```
 TODO

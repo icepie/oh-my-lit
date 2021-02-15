@@ -21,10 +21,20 @@ func JWIsWork(c *gin.Context) {
 
 }
 
+// JWGetBaseInfo 通过学号获取学生基本信息
+func JWGetBaseInfo(c *gin.Context) {
+	var service service.GetBaseInfoService
+	if err := c.ShouldBind(&service); err == nil {
+		res := service.GetBaseInfo()
+		c.JSON(200, res)
+	} else {
+		c.JSON(200, ErrorResponse(err))
+	}
+}
+
 // JWGetScore 通过学号获取成绩
 func JWGetScore(c *gin.Context) {
 	var service service.GetScoreService
-	// 获取token
 	if err := c.ShouldBind(&service); err == nil {
 		res := service.GetScore()
 		c.JSON(200, res)
