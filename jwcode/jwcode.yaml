@@ -1,0 +1,76 @@
+schoolyearlist:
+- code: 2020
+  year: "2020"
+  termlist:
+  - code: 20201
+    term: 2020-2021学年第二学期
+  - code: 20200
+    term: 2020-2021学年第一学期
+- code: 2019
+  year: "2019"
+  termlist:
+  - code: 20191
+    term: 2019-2020学年第二学期
+  - code: 20190
+    term: 2019-2020学年第一学期
+- code: 2018
+  year: "2018"
+  termlist:
+  - code: 20181
+    term: 2018-2019学年第二学期
+  - code: 20180
+    term: 2018-2019学年第一学期
+- code: 2017
+  year: "2017"
+  termlist:
+  - code: 20171
+    term: 2017-2018学年第二学期
+  - code: 20170
+    term: 2017-2018学年第一学期
+facultylist:
+- code: 0
+  faculty: ""
+  mojaorlist: []
+- code: 1
+  faculty: 材料科学与工程学院
+  mojaorlist: []
+- code: 2
+  faculty: 机械工程学院
+  mojaorlist: []
+- code: 4
+  faculty: 电气工程与自动化学院
+  mojaorlist: []
+- code: 5
+  faculty: 计算机与信息工程学院
+  mojaorlist: []
+- code: 6
+  faculty: 土木工程学院
+  mojaorlist: []
+- code: 7
+  faculty: 环境工程与化学学院
+  mojaorlist: []
+- code: 9
+  faculty: 经济与管理学院
+  mojaorlist: []
+- code: 10
+  faculty: 会计学院
+  mojaorlist: []
+- code: 11
+  faculty: 艺术设计学院
+  mojaorlist: []
+- code: 12
+  faculty: 外国语学院
+  mojaorlist: []
+- code: 13
+  faculty: 人文与社会科学学院
+  mojaorlist: []
+- code: 15
+  faculty: 教育科学与音乐学院
+  mojaorlist: []
+- code: 43
+  faculty: 天瑞/中迈干部学院
+  mojaorlist: []
+- code: 51
+  faculty: 机器人学院
+  mojaorlist: []
+updatetime: 2021-02-17T16:57:50.11303254+08:00
