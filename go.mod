@@ -9,7 +9,7 @@ require (
 	github.com/gin-gonic/gin v1.6.3
 	github.com/sirupsen/logrus v1.8.0
 	github.com/spf13/viper v1.7.1
-	github.com/thinkeridea/go-extend v1.3.1
+	github.com/thinkeridea/go-extend v1.3.2
 	github.com/ugorji/go v1.1.13 // indirect
 	golang.org/x/net v0.0.0-20201224014010-6772e930b67b // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
