@@ -1,6 +1,6 @@
 # lit-edu-go
  
-一个集成查询成绩课表等功能的服务后端, 其本质为洛阳理工学院青果教务在线的中间代理
+一个集成查询成绩课表等功能的服务后端, 其本质为洛阳理工学院青果教务在线的中间代理实现
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/icepie/lit-edu-go)](https://goreportcard.com/badge/github.com/icepie/lit-edu-go)
 [![License](https://img.shields.io/github/license/icepie/lit-edu-go)](https://github.com/icepie/lit-edu-go/blob/main/LICENSE)
