@@ -28,7 +28,7 @@ func PingPong(c *gin.Context) {
 func ErrorResponse(err error) model.Response {
 	if ve, ok := err.(validator.ValidationErrors); ok {
 		for _, err := range ve {
-			code := e.INVALID_PARAMS
+			code := e.InvalidParams
 			return model.Response{
 				Status: code,
 				Msg:    e.GetMsg(code),
@@ -37,7 +37,7 @@ func ErrorResponse(err error) model.Response {
 		}
 	}
 	if _, ok := err.(*json.UnmarshalTypeError); ok {
-		code := e.INVALID_PARAMS
+		code := e.InvalidParams
 		return model.Response{
 			Status: code,
 			Msg:    e.GetMsg(code),
@@ -45,7 +45,7 @@ func ErrorResponse(err error) model.Response {
 		}
 	}
 
-	code := e.INVALID_PARAMS
+	code := e.InvalidParams
 	return model.Response{
 		Status: code,
 		Msg:    e.GetMsg(code),

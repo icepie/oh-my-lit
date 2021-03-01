@@ -2,7 +2,6 @@ package jw
 
 import (
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -44,8 +43,6 @@ func GetBanner(cookies []*http.Cookie) (string, error) {
 	if strings.Contains(bodystr, "bakend2") == true {
 		return "", errors.New("lit jw can not to login")
 	}
-
-	fmt.Println(bodystr)
 
 	return bodystr, nil
 }

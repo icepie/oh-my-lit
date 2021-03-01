@@ -3,13 +3,12 @@ package service
 import (
 	"strings"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/PuerkitoBio/goquery"
 	"github.com/icepie/lit-edu-go/conf"
 	"github.com/icepie/lit-edu-go/model"
 	"github.com/icepie/lit-edu-go/pkg/e"
 	"github.com/icepie/lit-edu-go/service/jw"
+	log "github.com/sirupsen/logrus"
 	"github.com/thinkeridea/go-extend/exunicode/exutf8"
 )
 
@@ -25,7 +24,7 @@ func (service *GetScoreService) GetScore() model.Response {
 	// 开启教务密码验证的情况
 	if conf.ProConf.JWAuth {
 		if service.PassWord == "" {
-			code := e.ERROR
+			code := e.Error
 			return model.Response{
 				Status: code,
 				Msg:    e.GetMsg(code),
@@ -36,7 +35,7 @@ func (service *GetScoreService) GetScore() model.Response {
 		_, err := jw.SendLogin(service.StuID, service.PassWord, "STU")
 		if err != nil {
 			log.Warningln(err)
-			code := e.ERROR
+			code := e.Error
 			return model.Response{
 				Status: code,
 				Msg:    e.GetMsg(code),
@@ -48,7 +47,7 @@ func (service *GetScoreService) GetScore() model.Response {
 	body, err := jw.QueryScoreByStuNum(jw.JWCookies, service.StuID)
 	if err != nil {
 		log.Warningln(err)
-		code := e.ERROR
+		code := e.Error
 		return model.Response{
 			Status: code,
 			Msg:    e.GetMsg(code),
@@ -60,7 +59,7 @@ func (service *GetScoreService) GetScore() model.Response {
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(body))
 	if err != nil {
 		log.Warningln(err)
-		code := e.ERROR
+		code := e.Error
 		return model.Response{
 			Status: code,
 			Msg:    e.GetMsg(code),
@@ -90,13 +89,13 @@ func (service *GetScoreService) GetScore() model.Response {
 	})
 
 	// 新建一个学期成绩列表
-	var newtermList model.TermList
+	var newtermList model.ScoreTermList
 	// 学期个数的计数器
 	var Tcount int
 	// 查找平均成绩个数, 得出学期的个数
 	doc.Find("script").Each(func(index int, tr *goquery.Selection) {
 		// 新建一个学期成绩结构
-		var newterm model.Term
+		var newterm model.ScoreTerm
 		// 处理获取到平均成绩: T2.innerHTML='(平均成绩：85.4)
 		newterm.AvgScore = exutf8.RuneSubString(tr.Text(), 20, 4)
 		// 再扔进列表里
@@ -148,7 +147,7 @@ func (service *GetScoreService) GetScore() model.Response {
 	// 调试用
 	log.Println(scoredata)
 
-	code := e.SUCCESS
+	code := e.Success
 	return model.Response{
 		Status: code,
 		Msg:    e.GetMsg(code),

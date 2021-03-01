@@ -10,6 +10,6 @@ type Response struct {
 
 // ScoreInfo 成绩信息序列化器
 type ScoreInfo struct {
-	SI Stu      `json:"stuinfo"`
-	TL TermList `json:"term_list"`
+	SI Stu           `json:"stuinfo"`
+	TL ScoreTermList `json:"term_list"`
 }

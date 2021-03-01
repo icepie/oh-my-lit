@@ -25,7 +25,7 @@ func (service *GetBaseInfoService) GetBaseInfo() model.Response {
 	// 开启教务密码验证的情况
 	if conf.ProConf.JWAuth {
 		if service.PassWord == "" {
-			code := e.ERROR
+			code := e.Error
 			return model.Response{
 				Status: code,
 				Msg:    e.GetMsg(code),
@@ -36,7 +36,7 @@ func (service *GetBaseInfoService) GetBaseInfo() model.Response {
 		_, err := jw.SendLogin(service.StuID, service.PassWord, "STU")
 		if err != nil {
 			log.Warningln(err)
-			code := e.ERROR
+			code := e.Error
 			return model.Response{
 				Status: code,
 				Msg:    e.GetMsg(code),
@@ -48,7 +48,7 @@ func (service *GetBaseInfoService) GetBaseInfo() model.Response {
 	body, err := jw.QueryScoreByStuNum(jw.JWCookies, service.StuID)
 	if err != nil {
 		log.Warningln(err)
-		code := e.ERROR
+		code := e.Error
 		return model.Response{
 			Status: code,
 			Msg:    e.GetMsg(code),
@@ -60,7 +60,7 @@ func (service *GetBaseInfoService) GetBaseInfo() model.Response {
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(body))
 	if err != nil {
 		log.Warningln(err)
-		code := e.ERROR
+		code := e.Error
 		return model.Response{
 			Status: code,
 			Msg:    e.GetMsg(code),
@@ -92,7 +92,7 @@ func (service *GetBaseInfoService) GetBaseInfo() model.Response {
 	// 调试用
 	log.Println(stu)
 
-	code := e.SUCCESS
+	code := e.Success
 	return model.Response{
 		Status: code,
 		Msg:    e.GetMsg(code),

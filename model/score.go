@@ -9,12 +9,12 @@ type Score struct {
 	Credit interface{} `json:"credit"`
 }
 
-// Term 学期成绩结构
-type Term struct {
+// ScoreTerm 学期成绩结构
+type ScoreTerm struct {
 	Term      string  `json:"term"`
 	ScoreList []Score `json:"score_list"`
 	AvgScore  string  `json:"avgscore"`
 }
 
-// TermList 学期成绩列表结构
-type TermList []Term
+// ScoreTermList 学期成绩列表结构
+type ScoreTermList []ScoreTerm
