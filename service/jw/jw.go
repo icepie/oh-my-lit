@@ -18,6 +18,8 @@ const (
 	LoginURL = "http://jw.sec.lit.edu.cn/_data/index_LOGIN.aspx"
 	// MenuURL 菜单地址
 	MenuURL = "http://jw.sec.lit.edu.cn/frame/menu.aspx"
+	// BannerURL 菜单地址
+	BannerURL = "http://jw.sec.lit.edu.cn/SYS/Main_banner.aspx"
 	// MAINFRMURL 主页
 	MAINFRMURL = "http://jw.sec.lit.edu.cn/MAINFRM.aspx"
 	// ScoreURL 成绩检索地址
@@ -62,6 +64,7 @@ func Test() {
 	QueryMajorParam(JWCookies)
 	QueryCourseParam(JWCookies)
 	QueryCourseTable(JWCookies)
+	GetBanner(JWCookies)
 }
 
 // RefreshCookies 刷新教务在线曲奇饼
@@ -80,7 +83,7 @@ func RefreshCookies() {
 			} else {
 				log.Println("jw is work fine")
 				// 仅在测试中使用
-				// Test()
+				//Test()
 				break
 			}
 

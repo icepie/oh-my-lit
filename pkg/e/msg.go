@@ -2,9 +2,9 @@ package e
 
 // MsgFlags 状态码map
 var MsgFlags = map[int]string{
-	SUCCESS:        "ok",
-	ERROR:          "fail",
-	INVALID_PARAMS: "invalid params",
+	Success:       "ok",
+	Error:         "fail",
+	InvalidParams: "invalid params",
 }
 
 // GetMsg 获取状态码对应信息
@@ -14,5 +14,5 @@ func GetMsg(code int) string {
 		return msg
 	}
 
-	return MsgFlags[ERROR]
+	return MsgFlags[Error]
 }

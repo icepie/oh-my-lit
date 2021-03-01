@@ -1,7 +1,10 @@
 package e
 
 const (
-	SUCCESS        = 200
-	ERROR          = 500
-	INVALID_PARAMS = 400
+	// Success 成功状态
+	Success = 200
+	// Error 失败状态
+	Error = 500
+	// InvalidParams 参数错误
+	InvalidParams = 400
 )
