@@ -1,6 +1,5 @@
 .vscode/
 .env
 .idea
-go.sum
 lit-edu-go
 lit-edu-go.exe

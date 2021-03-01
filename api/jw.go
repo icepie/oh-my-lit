@@ -2,23 +2,18 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/icepie/lit-edu-go/model"
 	"github.com/icepie/lit-edu-go/service"
-	"github.com/icepie/lit-edu-go/service/jw"
 )
 
-// JWIsWork 测试教务服务是否正常
-func JWIsWork(c *gin.Context) {
-	if iswork, err := jw.IsWork(); iswork && err == nil {
-		c.JSON(200, model.Response{
-			Status: 200,
-			Data:   "",
-			Msg:    "lit jw is work fine!",
-		})
+// JWGetStatus 获取教务服务状态
+func JWGetStatus(c *gin.Context) {
+	var service service.GetStatusService
+	if err := c.ShouldBind(&service); err == nil {
+		res := service.GetStatus()
+		c.JSON(200, res)
 	} else {
 		c.JSON(200, ErrorResponse(err))
 	}
-
 }
 
 // JWGetBaseInfo 通过学号获取学生基本信息
