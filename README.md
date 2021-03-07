@@ -6,6 +6,7 @@
 [![License](https://img.shields.io/github/license/icepie/lit-edu-go)](https://github.com/icepie/lit-edu-go/blob/main/LICENSE)
 [![QQ Group](https://img.shields.io/badge/qq%20group-768887710-red.svg)](https://jq.qq.com/?_wv=1027&k=lz0XyN86)
 [![TG Group](https://img.shields.io/badge/tg%20group-lit_edu-blue.svg)](https://t.me/lit_edu)
+![Kingosoft Online Num](https://img.shields.io/badge/dynamic/json?color=brightgreen&label=Kingosoft%20Online%20Num&query=%24.data.online_number&url=https%3A%2F%2Flit.icepie.net%2Fapi%2Fv1%2Fjw%2Fstatus)
 
 ## 安装
 
