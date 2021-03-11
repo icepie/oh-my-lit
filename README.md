@@ -2,10 +2,12 @@
  
 一个集成查询成绩课表等功能的服务后端, 其本质为洛阳理工学院青果教务在线的中间代理实现
 
+![Kingosoft Online Num](https://img.shields.io/badge/dynamic/json?color=brightgreen&label=kingosoft%20online%20num&query=%24.data.online_number&url=https%3A%2F%2Flit.icepie.net%2Fapi%2Fv1%2Fjw%2Fstatus)
 [![Go Report Card](https://goreportcard.com/badge/github.com/icepie/lit-edu-go)](https://goreportcard.com/badge/github.com/icepie/lit-edu-go)
 [![License](https://img.shields.io/github/license/icepie/lit-edu-go)](https://github.com/icepie/lit-edu-go/blob/main/LICENSE)
 [![QQ Group](https://img.shields.io/badge/qq%20group-768887710-red.svg)](https://jq.qq.com/?_wv=1027&k=lz0XyN86)
 [![TG Group](https://img.shields.io/badge/tg%20group-lit_edu-blue.svg)](https://t.me/lit_edu)
+
 
 ## 安装
 
