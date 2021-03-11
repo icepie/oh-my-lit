@@ -54,22 +54,51 @@ func (service *GetStatusService) GetStatus() model.Response {
 	}
 
 	// 在线人数
-	onstrfull := doc.Find("span").First().Text()
+	onstrFull := doc.Find("span").First().Text()
 
 	// 去掉缩进和空格
-	onstrq := strings.Replace(strings.Replace(strings.Replace(onstrfull, "\\t", "", -1), "\n", "", -1), "\t", "", -1)
+	onstrq := strings.Replace(strings.Replace(strings.Replace(onstrFull, "\\t", "", -1), "\n", "", -1), "\t", "", -1)
 	// 去掉特殊的符号
 	onstrq = strings.Replace(onstrq, "\u00a0", "", -1)
 	// 截取一下
-	onstr := exutf8.RuneSubString(onstrq, 5, 10)
+	onlineNumstr := exutf8.RuneSubString(onstrq, 5, 10)
 	// 尝试转为整形
-	on, err := strconv.Atoi(onstr)
+	onlineNum, err := strconv.Atoi(onlineNumstr)
 
 	if err == nil {
-		status.OnlineNumber = on
+		status.OnlineNumber = onlineNum
 	} else {
-		status.OnlineNumber = onstr
+		// 错误处理 假如显示改了
+		status.OnlineNumber = onstrFull
 	}
+
+	jwtimeRaw := doc.Find("span").Eq(1).Text()
+
+	// 对教务时间进行处理
+	jwtimeData := strings.Fields(jwtimeRaw)
+
+	// 学期
+	status.JwTime.Term = jwtimeData[2]
+
+	// 周数处理
+	weekhd := exutf8.RuneSubString(jwtimeData[3], 1, 10)
+
+	weekhd = strings.Trim(weekhd, "第")
+
+	weekhd = strings.Trim(weekhd, "周")
+
+	// 尝试转为整形
+	weekNum, err := strconv.Atoi(weekhd)
+
+	// 周数
+	if err == nil {
+		status.JwTime.Week = weekNum
+	} else {
+		// 错误处理 假如在假期
+		status.OnlineNumber = 0
+	}
+
+	log.Println(jwtimeData)
 
 	code := e.Success
 	return model.Response{
