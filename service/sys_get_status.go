@@ -83,9 +83,7 @@ func (service *GetStatusService) GetStatus() model.Response {
 	// 周数处理
 	weekhd := exutf8.RuneSubString(jwtimeData[3], 1, 10)
 
-	weekhd = strings.Trim(weekhd, "第")
-
-	weekhd = strings.Trim(weekhd, "周")
+	weekhd = strings.Trim(strings.Trim(weekhd, "第"), "周")
 
 	// 尝试转为整形
 	weekNum, err := strconv.Atoi(weekhd)
@@ -98,7 +96,7 @@ func (service *GetStatusService) GetStatus() model.Response {
 		status.OnlineNumber = 0
 	}
 
-	log.Println(jwtimeData)
+	// log.Println(jwtimeData)
 
 	code := e.Success
 	return model.Response{
