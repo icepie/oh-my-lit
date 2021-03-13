@@ -21,7 +21,7 @@ func main() {
 	// QueryClassTable(JWCookies)
 
 	// 装载路由
-	r := server.NewRouter()
+	r := server.ApiRouter()
 
 	// 运行服务
 	r.Run(conf.MAIN)
