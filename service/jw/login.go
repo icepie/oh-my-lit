@@ -129,7 +129,7 @@ func IsLogged(cookies []*http.Cookie) (bool, error) {
 	defer resp.Body.Close()
 
 	// 检测是否登陆成功
-	if strings.Contains(gb18030Tutf8(string(b)), "bakend2") == true {
+	if strings.Contains(gb18030Tutf8(string(b)), "bakend2") {
 		return false, errors.New("lit jw can not to login")
 	}
 
@@ -140,6 +140,10 @@ func IsLogged(cookies []*http.Cookie) (bool, error) {
 func SendLogin(username string, password string, usertype string) ([]*http.Cookie, error) {
 
 	vs, cookies, err := getVSAndCookie()
+	if err != nil {
+		var t []*http.Cookie
+		return t, err
+	}
 
 	client := &http.Client{}
 
@@ -186,7 +190,7 @@ func SendLogin(username string, password string, usertype string) ([]*http.Cooki
 	defer resp.Body.Close()
 
 	lflag, err := IsLogged(cookies)
-	if err != nil || lflag == false {
+	if err != nil || !lflag {
 		var t []*http.Cookie
 		return t, err
 	}

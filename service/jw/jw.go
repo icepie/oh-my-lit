@@ -32,8 +32,10 @@ const (
 	// ClassListURL 获取班级对应值
 	// http://jw.sec.lit.edu.cn/XSXJ/Private/List_ZYBJ.aspx?zy=0901&nj=2020
 	ClassListURL = "http://jw.sec.lit.edu.cn/XSXJ/Private/List_ZYBJ.aspx"
-	// ClassRptURL 课表查询地址
+	// ClassRptURL 管理员课表查询地址
 	ClassRptURL = "http://jw.sec.lit.edu.cn/ZNPK/ClassSel_rpt.aspx"
+	//DayJCSel 隐藏查询地址
+	DayJCSelURL = "http://jw.sec.lit.edu.cn/ZNPK/KBFB_DayJCSel.aspx"
 	// UserAgent UA
 	UserAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36"
 	// SchoolCode 院校代号
@@ -60,11 +62,14 @@ var JWCookies []*http.Cookie
 
 // Test 测试用
 func Test() {
-	QueryTermParam(JWCookies)
-	QueryMajorParam(JWCookies)
-	QueryCourseParam(JWCookies)
-	QueryCourseTable(JWCookies)
-	GetBanner(JWCookies)
+	// QueryTermParam(JWCookies)
+	// QueryMajorParam(JWCookies)
+	// QueryCourseParam(JWCookies)
+	// QueryCourseTable(JWCookies)
+	// GetBanner(JWCookies)
+
+	GetDayJCSel(JWCookies)
+
 }
 
 // RefreshCookies 刷新教务在线曲奇饼
@@ -83,7 +88,7 @@ func RefreshCookies() {
 			} else {
 				log.Println("jw is work fine")
 				// 仅在测试中使用
-				//Test()
+				Test()
 				break
 			}
 
@@ -96,7 +101,7 @@ func RefreshCookies() {
 // IsWork 检查曲奇饼可用性
 func IsWork() (bool, error) {
 	lflag, err := IsLogged(JWCookies)
-	if err != nil || lflag == false {
+	if err != nil || !lflag {
 		return false, err
 	}
 	return true, nil

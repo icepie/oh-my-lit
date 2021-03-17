@@ -11,12 +11,6 @@
 
 ## 安装
 
-### get
-
-```bash
-$ go get -u github.com/icepie/lit-edu-go
-```
-
 ### build
 
 ```bash
@@ -41,15 +35,16 @@ $ lit-edu-go
 
 ## 接口
 
+### V1
 > 如在配置中开启了 `jwauth` 则部分接口需要 `password` 参数
 
-### 检查青果登录状态
+#### 检查青果登录状态
 
 ```js
 GET    /api/v1/jw/status
 ```
 
-### 通过学号获取基本信息
+#### 通过学号获取基本信息
 
 
 ```js
@@ -63,7 +58,7 @@ POST   /api/v1/jw/profile
 }
 ```
 
-### 通过学号获取成绩
+#### 通过学号获取成绩
 
 ```js
 POST   /api/v1/jw/score

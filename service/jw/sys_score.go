@@ -63,12 +63,12 @@ func QueryScoreByStuNum(cookies []*http.Cookie, stuid string) (string, error) {
 	bodystr := gb18030Tutf8(string(b))
 
 	// 检测是否查询成功
-	if strings.Contains(bodystr, stuid) == false {
+	if !strings.Contains(bodystr, stuid) {
 		return "", errors.New("score info can not be found with " + stuid)
 	}
 
 	// 检测登陆是否失效
-	if strings.Contains(bodystr, "bakend2") == true {
+	if strings.Contains(bodystr, "bakend2") {
 		return "", errors.New("lit jw can not to login")
 	}
 
