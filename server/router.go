@@ -35,7 +35,7 @@ func ApiRouter() *gin.Engine {
 	}
 
 	// v2 路由: 喜鹊儿接口 (unstable)
-	v2 := r.Group("api/v3")
+	v2 := r.Group("api/v2")
 	{
 		// 测试连接
 		v2.GET("ping", api.PingPong)
