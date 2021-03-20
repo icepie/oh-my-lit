@@ -2,7 +2,7 @@
  
 一个集成查询成绩课表等功能的服务后端, 其本质为洛阳理工学院青果教务在线的中间代理实现
 
-![School Term](https://img.shields.io/badge/dynamic/json?color=blue&label=school%20trem&query=%24.data.jw_time.term&url=https%3A%2F%2Flit.icepie.net%2Fapi%2Fv2%2Fjw%2Fstatus)
+![School Term](https://img.shields.io/badge/dynamic/json?color=blue&label=school%20term&query=%24.data.jw_time.term&url=https%3A%2F%2Flit.icepie.net%2Fapi%2Fv2%2Fjw%2Fstatus)
 ![School Week](https://img.shields.io/badge/dynamic/json?color=orange&label=school%20week&query=%24.data.jw_time.week&url=https%3A%2F%2Flit.icepie.net%2Fapi%2Fv2%2Fjw%2Fstatus)
 ![Kingosoft Online Num](https://img.shields.io/badge/dynamic/json?color=brightgreen&label=kingosoft%20online%20num&query=%24.data.online_number&url=https%3A%2F%2Flit.icepie.net%2Fapi%2Fv2%2Fjw%2Fstatus)
 
