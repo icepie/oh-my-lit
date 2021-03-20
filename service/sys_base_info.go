@@ -6,7 +6,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/icepie/lit-edu-go/conf"
 	"github.com/icepie/lit-edu-go/model"
 	"github.com/icepie/lit-edu-go/pkg/e"
 	"github.com/icepie/lit-edu-go/service/jw"
@@ -15,37 +14,36 @@ import (
 
 // GetBaseInfoService 获取学生基本信息服务结构
 type GetBaseInfoService struct {
-	StuID    string `json:"stuid" binding:"required"`
-	PassWord string `json:"password"`
+	User model.StuAccount
 }
 
 // GetBaseInfo 根据 StuID 获取学生基本信息
 func (service *GetBaseInfoService) GetBaseInfo() model.Response {
 
-	// 开启教务密码验证的情况
-	if conf.ProConf.JWAuth {
-		if service.PassWord == "" {
-			code := e.Error
-			return model.Response{
-				Status: code,
-				Msg:    e.GetMsg(code),
-				Error:  "please enter the correct password",
-			}
-		}
+	// // 开启教务密码验证的情况
+	// // if conf.ProConf.JWAuth {
+	// if service.User.PassWord == "" {
+	// 	code := e.Error
+	// 	return model.Response{
+	// 		Status: code,
+	// 		Msg:    e.GetMsg(code),
+	// 		Error:  "please enter the correct password",
+	// 	}
+	// }
 
-		_, err := jw.SendLogin(service.StuID, service.PassWord, "STU")
-		if err != nil {
-			log.Warningln(err)
-			code := e.Error
-			return model.Response{
-				Status: code,
-				Msg:    e.GetMsg(code),
-				Error:  err.Error(),
-			}
-		}
-	}
+	// _, err := jw.SendLogin(service.User.StuID, service.User.PassWord, "STU")
+	// if err != nil {
+	// 	log.Warningln(err)
+	// 	code := e.Error
+	// 	return model.Response{
+	// 		Status: code,
+	// 		Msg:    e.GetMsg(code),
+	// 		Error:  err.Error(),
+	// 	}
+	// }
+	// // }
 
-	body, err := jw.QueryScoreByStuNum(jw.JWCookies, service.StuID)
+	body, err := jw.QueryScoreByStuNum(jw.JWCookies, service.User.StuID)
 	if err != nil {
 		log.Warningln(err)
 		code := e.Error
@@ -90,7 +88,7 @@ func (service *GetBaseInfoService) GetBaseInfo() model.Response {
 	})
 
 	// 调试用
-	log.Println(stu)
+	log.Info(stu)
 
 	code := e.Success
 	return model.Response{

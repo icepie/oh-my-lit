@@ -36,6 +36,8 @@ const (
 	ClassRptURL = "http://jw.sec.lit.edu.cn/ZNPK/ClassSel_rpt.aspx"
 	//DayJCSel 隐藏查询地址
 	DayJCSelURL = "http://jw.sec.lit.edu.cn/ZNPK/KBFB_DayJCSel.aspx"
+	//STUZXJGURL 学生正选结果页面
+	STUZXJGURL = "http://jw.sec.lit.edu.cn//wsxk/stu_zxjg_rpt.aspx"
 	// UserAgent UA
 	UserAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36"
 	// SchoolCode 院校代号
@@ -55,6 +57,10 @@ func gb18030Tutf8(s string) string {
 	result := string(cdata)
 
 	return result
+}
+
+func G2U(s string) string {
+	return gb18030Tutf8(s)
 }
 
 // JWCookies 教务在线曲奇饼
@@ -88,7 +94,7 @@ func RefreshCookies() {
 			} else {
 				log.Println("jw is work fine")
 				// 仅在测试中使用
-				Test()
+				//Test()
 				break
 			}
 

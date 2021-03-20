@@ -1,7 +1,13 @@
 # 基本设置
 host: "0.0.0.0"
 port: 8088
-jwauth: false # 教务密码验证, 如需上线请开启
+
+# Token 设置
+jwt:
+  secret: "test"
+  key: "imicepiejustacat" # 16位 key
+  iv: "thenamehas6words" # 16位 iv 偏移量
+  expiretime: 720 # hours
 
 # 管理人员帐号 (Sel_Type: SYS)
 jw:

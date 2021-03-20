@@ -8,9 +8,6 @@ import (
 
 func main() {
 
-	// 初始化全局配置
-	conf.INIT()
-
 	// 尝试登陆, 刷新曲奇饼
 	go jw.RefreshCookies()
 
