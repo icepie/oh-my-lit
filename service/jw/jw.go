@@ -59,10 +59,6 @@ func gb18030Tutf8(s string) string {
 	return result
 }
 
-func G2U(s string) string {
-	return gb18030Tutf8(s)
-}
-
 // JWCookies 教务在线曲奇饼
 var JWCookies []*http.Cookie
 

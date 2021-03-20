@@ -28,18 +28,18 @@ type AIScheduleRes struct {
 
 type AISchedule struct {
 	CourseInfos []struct {
-		Day      int64  `json:"day"`
+		Day      int    `json:"day"`
 		Name     string `json:"name"`
 		Position string `json:"position"`
 		Sections []struct {
-			Section int64 `json:"section"`
+			Section int `json:"section"`
 		} `json:"sections"`
-		Teacher string  `json:"teacher"`
-		Weeks   []int64 `json:"weeks"`
+		Teacher string `json:"teacher"`
+		Weeks   []int  `json:"weeks"`
 	} `json:"courseInfos"`
 	SectionTimes []struct {
 		EndTime   string `json:"endTime"`
-		Section   int64  `json:"section"`
+		Section   int    `json:"section"`
 		StartTime string `json:"startTime"`
 	} `json:"sectionTimes"`
 }

@@ -20,29 +20,6 @@ type GetBaseInfoService struct {
 // GetBaseInfo 根据 StuID 获取学生基本信息
 func (service *GetBaseInfoService) GetBaseInfo() model.Response {
 
-	// // 开启教务密码验证的情况
-	// // if conf.ProConf.JWAuth {
-	// if service.User.PassWord == "" {
-	// 	code := e.Error
-	// 	return model.Response{
-	// 		Status: code,
-	// 		Msg:    e.GetMsg(code),
-	// 		Error:  "please enter the correct password",
-	// 	}
-	// }
-
-	// _, err := jw.SendLogin(service.User.StuID, service.User.PassWord, "STU")
-	// if err != nil {
-	// 	log.Warningln(err)
-	// 	code := e.Error
-	// 	return model.Response{
-	// 		Status: code,
-	// 		Msg:    e.GetMsg(code),
-	// 		Error:  err.Error(),
-	// 	}
-	// }
-	// // }
-
 	body, err := jw.QueryScoreByStuNum(jw.JWCookies, service.User.StuID)
 	if err != nil {
 		log.Warningln(err)
