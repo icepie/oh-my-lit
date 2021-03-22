@@ -8,7 +8,7 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/icepie/lit-edu-go)](https://goreportcard.com/badge/github.com/icepie/lit-edu-go)
 [![License](https://img.shields.io/github/license/icepie/lit-edu-go)](https://github.com/icepie/lit-edu-go/blob/main/LICENSE)
-[![QQ Group](https://img.shields.io/badge/qq%20group-768887710-red.svg)](https://jq.qq.com/?_wv=1027&k=lz0XyN86)
+[![QQ Group](https://img.shields.io/badge/qq%20group-647027400-red.svg)](https://jq.qq.com/?_wv=1027&k=lz0XyN86)
 [![TG Group](https://img.shields.io/badge/tg%20group-lit_edu-blue.svg)](https://t.me/lit_edu)
 
 
