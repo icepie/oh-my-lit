@@ -3,7 +3,7 @@ module github.com/icepie/lit-edu-go
 go 1.15
 
 require (
-	github.com/PuerkitoBio/goquery v1.6.1
+	github.com/PuerkitoBio/goquery v1.7.0
 	github.com/asmcos/requests v0.0.0-20210319030608-c839e8ae4946
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
