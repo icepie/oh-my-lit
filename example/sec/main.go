@@ -14,7 +14,7 @@ func main() {
 
 	log.Println("智慧门户测试")
 
-	secUser, err := sec.NewSecUser("B19071121", "xxxxx")
+	secUser, err := sec.NewSecUser("B19071121", "xxx")
 	if err != nil {
 		log.Println("实例化用户失败: ", err)
 	}

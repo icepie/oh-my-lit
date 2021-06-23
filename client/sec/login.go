@@ -5,13 +5,44 @@ import (
 	"fmt"
 	"html"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/icepie/oh-my-lit/client/util"
 )
+
+// IsLogged() 检测用户是否登陆
+func (u *SecUser) IsLogged() (isLogged bool) {
+
+	_, err := u.GetHomeParam()
+
+	//log.Println(t)
+
+	if err != nil {
+		isLogged = false
+	} else {
+		isLogged = true
+		return
+	}
+
+	return
+}
+
+// IsPortalLogged 是否门户登陆
+func (u *SecUser) IsPortalLogged() (isLogged bool) {
+	_, err := u.GetCurrentMember()
+
+	if err != nil {
+		isLogged = false
+	} else {
+		isLogged = true
+		return
+	}
+
+	return
+
+}
 
 // IsNeedCaptcha 判断是否需要验证码登陆
 func (u *SecUser) IsNeedCaptcha() (isNeed bool, err error) {
@@ -20,7 +51,7 @@ func (u *SecUser) IsNeedCaptcha() (isNeed bool, err error) {
 
 	req, err := http.NewRequest("GET", NeedCaptchaUrl+"?username="+u.Username+"&_="+fmt.Sprint(time.Now().Unix()), nil)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
 	for _, cooike := range u.Cookies {
@@ -227,9 +258,14 @@ func (u *SecUser) login(captcha string) (err error) {
 		loginErrStr, _ := util.GetSubstingBetweenStrings(body, `callback_err_login">`, `</div>`)
 
 		err = errors.New(loginErrStr)
+
+		return
 	}
 
-	u.IsLogged = true
+	// 确保账号登陆成功
+	if !u.IsLogged() {
+		u.login(captcha)
+	}
 
 	return
 }
@@ -239,7 +275,45 @@ func (u *SecUser) Login() (err error) {
 	return u.login("")
 }
 
-// Login 第一层验证码登陆
+// LoginWithCap 第一层验证码登陆
 func (u *SecUser) LoginWithCap(captcha string) (err error) {
 	return u.login(captcha)
+}
+
+// PortalLogin 第二层门户登陆
+func (u *SecUser) PortalLogin() (err error) {
+
+	client := &http.Client{}
+
+	req, err := http.NewRequest("GET", PortalLoginUrl+"?vpn-0", nil)
+	if err != nil {
+		return
+	}
+
+	for _, cooike := range u.Cookies {
+		req.AddCookie(cooike)
+	}
+
+	req.Header.Set("authority", AuthorityUrl)
+	req.Header.Set("sec-ch-ua", `" Not;A Brand";v="99", "Google Chrome";v="91", "Chromium";v="91"`)
+	req.Header.Set("sec-ch-ua-mobile", "?0")
+	req.Header.Set("upgrade-insecure-requests", "1")
+	req.Header.Set("dnt", "1")
+	req.Header.Set("user-agent", UA)
+	req.Header.Set("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
+	req.Header.Set("sec-fetch-site", "same-origin")
+	req.Header.Set("sec-fetch-mode", "navigate")
+	req.Header.Set("sec-fetch-user", "?1")
+	req.Header.Set("sec-fetch-dest", "document")
+	req.Header.Set("referer", PortalIndexUrl)
+	req.Header.Set("accept-language", "zh-CN,zh;q=0.9")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return
+	}
+
+	defer resp.Body.Close()
+
+	return
 }
