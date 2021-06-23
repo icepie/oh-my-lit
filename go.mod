@@ -1,4 +1,4 @@
-module github.com/icepie/lit-edu-go
+module lit-edu-go
 
 go 1.15
 
