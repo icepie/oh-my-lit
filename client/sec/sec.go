@@ -1,0 +1,305 @@
+package sec
+
+import (
+	"errors"
+	"fmt"
+	"html"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"strings"
+	"time"
+
+	"github.com/icepie/oh-my-lit/client/util"
+)
+
+// 一些常量的定义
+var (
+	AuthorityUrl = "sec.lit.edu.cn"
+	// SecUrl 智慧门户主页
+	SecUrl = "https://" + AuthorityUrl + "/"
+	// AuthPath 认证界面的特殊路径
+	AuthPath = "LjIwNi4xNzAuMjE4LjE2Mg==/LjIwNy4xNTQuMjE3Ljk2LjE2MS4xNTkuMTY0Ljk3LjE1MS4xOTkuMTczLjE0NC4xOTguMjEy"
+	// NeedCaptchaUrl 检查是否需要验证码登陆的接口
+	NeedCaptchaUrl = "https://sec.lit.edu.cn/webvpn/" + AuthPath + "/authserver/needCaptcha.html"
+	// CaptchaUrl 获取验证码
+	CaptchaUrl = "https://sec.lit.edu.cn/webvpn/" + AuthPath + "/authserver/captcha.html"
+	// UA
+	UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36"
+)
+
+// SecUser 智慧门户用户结构体
+type SecUser struct {
+	Username   string
+	Password   string
+	IsPcLogged bool   // 是否进行第二层登陆
+	IsLogged   bool   // 是否登陆
+	AuthUrl    string // 真实认证地址 (https://sec.lit.edu.cn/webvpn/LjIwNi4xNzAuMjE4LjE2Mg==/LjIwNy4xNTQuMjE3Ljk2LjE2MS4xNTkuMTY0Ljk3LjE1MS4xOTkuMTczLjE0NC4xOTguMjEy/authserver/login?service=https%3A%2F%2Fsec.lit.edu.cn%2Frump_frontend%2FloginFromCas%2F)
+	Cookies    []*http.Cookie
+}
+
+// NewSecUser 新建智慧门户用户
+func NewSecUser(username string, password string) (user SecUser, err error) {
+
+	user.Username = username
+	user.Password = password
+
+	// 先从主页拿到真实的登陆地址以及初始化cookies
+	client := &http.Client{}
+
+	req, err := http.NewRequest("GET", SecUrl, nil)
+	if err != nil {
+		return
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return
+	}
+
+	defer resp.Body.Close()
+
+	bodyText, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return
+	}
+
+	user.AuthUrl, err = util.GetSubstingBetweenStrings(string(bodyText), `<a href="`, `"`)
+	if err != nil {
+		return
+	}
+
+	user.Cookies = resp.Cookies()
+
+	return
+}
+
+// IsNeedCaptcha 判断是否需要验证码登陆
+func (u *SecUser) IsNeedCaptcha() (isNeed bool, err error) {
+
+	client := &http.Client{}
+
+	req, err := http.NewRequest("GET", NeedCaptchaUrl+"?username="+u.Username+"&_="+fmt.Sprint(time.Now().Unix()), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, cooike := range u.Cookies {
+		req.AddCookie(cooike)
+	}
+
+	req.Header.Set("authority", AuthorityUrl)
+	//req.Header.Set("sec-ch-ua", `" Not;A Brand";v="99", "Google Chrome";v="91", "Chromium";v="91"`)
+	req.Header.Set("dnt", "1")
+	req.Header.Set("x-requested-with", "XMLHttpRequest")
+	req.Header.Set("sec-ch-ua-mobile", "?0")
+	req.Header.Set("user-agent", UA)
+	req.Header.Set("sec-fetch-site", "same-origin")
+	req.Header.Set("sec-fetch-mode", "cors")
+	req.Header.Set("sec-fetch-dest", "empty")
+	//req.Header.Set("referer", "https://sec.lit.edu.cn/webvpn/LjIwNi4xNzAuMjE4LjE2Mg==/LjIwNy4xNTQuMjE3Ljk2LjE2MS4xNTkuMTY0Ljk3LjE1MS4xOTkuMTczLjE0NC4xOTguMjEy/authserver/login?vpn-0&amp;amp=&amp;amp;service=https%3A%2F%2Fsec.lit.edu.cn%2Frump_frontend%2FloginFromCas%2F&amp;amp;vpn-0=")
+	req.Header.Set("referer", u.AuthUrl)
+	req.Header.Set("accept-language", "zh-CN,zh;q=0.9")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return
+	}
+
+	defer resp.Body.Close()
+
+	bodyText, _ := ioutil.ReadAll(resp.Body)
+
+	body := string(bodyText)
+
+	// 最后判断是否需要验证码进行登陆
+	if strings.HasPrefix(body, "false") {
+		isNeed = false
+	} else if strings.HasPrefix(body, "true") {
+		isNeed = true
+	} else {
+		err = errors.New("can not get the info")
+	}
+
+	return
+
+}
+
+// GetCaptche 获取验证码 (JPEG)
+func (u *SecUser) GetCaptche() (pix []byte, err error) {
+
+	client := &http.Client{}
+
+	req, err := http.NewRequest("GET", CaptchaUrl, nil)
+	if err != nil {
+		return
+	}
+
+	for _, cooike := range u.Cookies {
+		req.AddCookie(cooike)
+	}
+
+	req.Header.Set("authority", AuthorityUrl)
+	//req.Header.Set("sec-ch-ua", " Not;A Brand";v="99", "Google Chrome";v="91", "Chromium";v="91"")
+	req.Header.Set("dnt", "1")
+	req.Header.Set("sec-ch-ua-mobile", "?0")
+	req.Header.Set("user-agent", UA)
+	req.Header.Set("accept", "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8")
+	req.Header.Set("sec-fetch-site", "same-origin")
+	req.Header.Set("sec-fetch-mode", "no-cors")
+	req.Header.Set("sec-fetch-dest", "image")
+	req.Header.Set("referer", u.AuthUrl)
+	req.Header.Set("accept-language", "zh-CN,zh;q=0.9")
+	//req2.Header.Set("cookie", "csrftoken=jz331d3MpxsWBEFHSW9Scy0v18U6VBzT7NC66xoAvitxV4NkqBpcvF81kytnTe2I; client_vpn_ticket=F8fNTTQFxE8jaUtu; sessionid=ffk4zsykvth2id94ob8g97h6j75bv0ic")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return
+	}
+
+	defer resp.Body.Close()
+
+	pix, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return
+	}
+
+	return
+
+}
+
+// login 通用登陆
+func (u *SecUser) login(captcha string) (err error) {
+
+	client := &http.Client{}
+
+	// 获取必要参数
+	req, err := http.NewRequest("GET", u.AuthUrl, nil)
+	if err != nil {
+		return
+	}
+
+	for _, cooike := range u.Cookies {
+		req.AddCookie(cooike)
+	}
+
+	// 验证码参数
+	var captchaParam string
+
+	if len(captcha) > 0 {
+		captchaParam = "&captchaResponse=" + captcha
+	}
+
+	req.Header.Set("authority", AuthorityUrl)
+	//req.Header.Set("sec-ch-ua", `" Not;A Brand";v="99", "Google Chrome";v="91", "Chromium";v="91"`)
+	req.Header.Set("dnt", "1")
+	req.Header.Set("x-requested-with", "XMLHttpRequest")
+	req.Header.Set("sec-ch-ua-mobile", "?0")
+	req.Header.Set("user-agent", UA)
+	req.Header.Set("sec-fetch-site", "same-origin")
+	req.Header.Set("sec-fetch-mode", "cors")
+	req.Header.Set("sec-fetch-dest", "empty")
+	//req.Header.Set("referer", "https://sec.lit.edu.cn/webvpn/LjIwNi4xNzAuMjE4LjE2Mg==/LjIwNy4xNTQuMjE3Ljk2LjE2MS4xNTkuMTY0Ljk3LjE1MS4xOTkuMTczLjE0NC4xOTguMjEy/authserver/login?vpn-0&amp;amp=&amp;amp;service=https%3A%2F%2Fsec.lit.edu.cn%2Frump_frontend%2FloginFromCas%2F&amp;amp;vpn-0=")
+	req.Header.Set("referer", u.AuthUrl)
+	req.Header.Set("accept-language", "zh-CN,zh;q=0.9")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return
+	}
+
+	defer resp.Body.Close()
+
+	bodyText, _ := ioutil.ReadAll(resp.Body)
+
+	body := string(bodyText)
+
+	// 获取所有可需参数
+	actionUrl, err := util.GetSubstingBetweenStrings(body, `id="casLoginForm" class="fm-v clearfix" action="`, `"`)
+	if err != nil {
+		return
+	}
+
+	lt, err := util.GetSubstingBetweenStrings(body, `name="lt" value="`, `"`)
+	if err != nil {
+		return
+	}
+
+	execution, err := util.GetSubstingBetweenStrings(body, `name="execution" value="`, `"`)
+	if err != nil {
+		return
+	}
+
+	eventId, err := util.GetSubstingBetweenStrings(body, `name="_eventId" value="`, `"`)
+	if err != nil {
+		return
+	}
+
+	rmShown, err := util.GetSubstingBetweenStrings(body, `name="rmShown" value="`, `"`)
+	if err != nil {
+		return
+	}
+
+	//log.Println(actionUrl, lt, execution, eventId, rmShown)
+
+	// 这个地址需要html解码
+	decodeurl := html.UnescapeString(actionUrl)
+
+	var data = strings.NewReader("username=" + u.Username + "&password=" + u.Password + captchaParam + "&lt=" + lt + "&execution=" + execution + "&_eventId=" + eventId + "&rmShown=" + rmShown)
+	req, err = http.NewRequest("POST", decodeurl, data)
+	if err != nil {
+		return
+	}
+
+	for _, cooike := range u.Cookies {
+		req.AddCookie(cooike)
+	}
+
+	req.Header.Set("authority", actionUrl)
+	req.Header.Set("cache-control", "max-age=0")
+	req.Header.Set("sec-ch-ua", `" Not;A Brand";v="99", "Google Chrome";v="91", "Chromium";v="91"`)
+	req.Header.Set("sec-ch-ua-mobile", "?0")
+	req.Header.Set("origin", SecUrl)
+	req.Header.Set("upgrade-insecure-requests", "1")
+	req.Header.Set("dnt", "1")
+	req.Header.Set("content-type", "application/x-www-form-urlencoded")
+	req.Header.Set("user-agent", UA)
+	req.Header.Set("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
+	req.Header.Set("sec-fetch-site", "same-origin")
+	req.Header.Set("sec-fetch-mode", "navigate")
+	req.Header.Set("sec-fetch-user", "?1")
+	req.Header.Set("sec-fetch-dest", "document")
+	req.Header.Set("referer", actionUrl)
+	req.Header.Set("accept-language", "zh-CN,zh;q=0.9")
+	//req8.Header.Set("cookie", "client_vpn_ticket=gD5GTY1SBLB2nC03; sessionid=4elum23ro15ejbaowb4coex0cpjnn37f")
+
+	resp8, err := client.Do(req)
+	if err != nil {
+		return
+	}
+
+	defer resp8.Body.Close()
+
+	bodyText, _ = ioutil.ReadAll(resp8.Body)
+
+	body = string(bodyText)
+
+	// 判断是否有错误
+	if strings.Contains(body, "callback_err_login") {
+		loginErrStr, _ := util.GetSubstingBetweenStrings(body, `callback_err_login">`, `</div>`)
+
+		err = errors.New(loginErrStr)
+	}
+
+	return
+}
+
+// Login 第一层普通登陆
+func (u *SecUser) Login() (err error) {
+	return u.login("")
+}
+
+// Login 第一层验证码登陆
+func (u *SecUser) LoginWithCap(captcha string) (err error) {
+	return u.login(captcha)
+}
