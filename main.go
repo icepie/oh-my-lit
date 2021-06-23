@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/gin-gonic/gin"
 	"github.com/icepie/oh-my-lit/client/sec"
 )
 
@@ -85,14 +86,54 @@ func main() {
 
 			log.Println(t1)
 
-			t2, err := secUser.GetStudent("111")
-			if err != nil {
-				log.Fatal("查询学生信息失败: ", err)
-			}
+			// t2, err := secUser.GetStudent("111")
+			// if err != nil {
+			// 	log.Fatal("查询学生信息失败: ", err)
+			// }
 
-			log.Println(t2)
+			// log.Println(t2)
 		}
 
 	}
+
+	r := gin.Default()
+	r.GET("/getstu", func(c *gin.Context) {
+
+		t1, err := secUser.GetStudent(c.Query("stuid"))
+		if err != nil {
+			c.JSON(300, "err")
+			return
+		}
+
+		c.JSON(200, t1)
+	})
+
+	r.GET("/relogin", func(c *gin.Context) {
+
+		if !secUser.IsLogged() {
+			err = secUser.Login()
+			if err != nil {
+				c.JSON(200, "err")
+				return
+			}
+
+			c.JSON(200, "relogin")
+		}
+
+		if !secUser.IsPortalLogged() {
+			err = secUser.PortalLogin()
+			if err != nil {
+				c.JSON(200, "err")
+				return
+			}
+			c.JSON(200, "relogin portal")
+		}
+
+		c.JSON(200, "ok")
+		c.JSON(200, "fine")
+
+	})
+
+	r.Run() // listen and serve on 0.0.0.0:8080
 
 }
