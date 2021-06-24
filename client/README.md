@@ -5,15 +5,15 @@
 ## Installation
 
 ```bash
-$ go get -u github.com/icepie/oh-my-lit
+$ go get -u github.com/icepie/oh-my-lit/client
 ```
 
 ## Todo
 
-[ x ] - sec
+- [x] sec
 
-[ ] - jw
+- [ ] jw
 
-[ ] - zhyd
+- [ ] zhyd
 
-[ ] - health
+- [ ] health
