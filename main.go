@@ -15,7 +15,7 @@ func main() {
 
 	log.Println("智慧门户测试")
 
-	secUser, err := sec.NewSecUser("B19071121", "xxxxx")
+	secUser, err := sec.NewSecUser("B19071121", "xxxx")
 	if err != nil {
 		log.Println("实例化用户失败: ", err)
 	}
@@ -86,12 +86,19 @@ func main() {
 
 			log.Println(t1)
 
-			// t2, err := secUser.GetStudent("111")
-			// if err != nil {
-			// 	log.Fatal("查询学生信息失败: ", err)
-			// }
+			t2, err := secUser.GetClassmates(secUser.Username)
+			if err != nil {
+				log.Fatal("查询同班同学列表失败: ", err)
+			}
 
-			// log.Println(t2)
+			log.Println(t2)
+
+			t3, err := secUser.GetClassmatesDetail(secUser.Username)
+			if err != nil {
+				log.Fatal("查询同班同学信息失败: ", err)
+			}
+
+			log.Println(t3)
 		}
 
 	}

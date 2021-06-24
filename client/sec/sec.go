@@ -16,22 +16,34 @@ var (
 	AuthPath = "LjIwNi4xNzAuMjE4LjE2Mg==/LjIwNy4xNTQuMjE3Ljk2LjE2MS4xNTkuMTY0Ljk3LjE1MS4xOTkuMTczLjE0NC4xOTguMjEy"
 	// PortalPath 门户界面的特殊路径
 	PortalPath = "LjIwNi4xNzAuMjE4LjE2Mi4xNjg=/LjIxMS4xNzUuMTQ4LjE1OC4xNTguMTcwLjk0LjE1Mi4xNTAuMjE2LjEwMi4xOTcuMjA5"
+	// AuthlUrlPerfix 认证页面前戳
+	AuthlUrlPerfix = SecUrl + "/webvpn/" + AuthPath
+	// PortalUrlPerfix 门户页面前戳
+	PortalUrlPerfix = SecUrl + "/webvpn/" + PortalPath
+	// NeedCaptchaUrl 检查是否需要验证码登陆的接口
+	NeedCaptchaUrl = AuthlUrlPerfix + "/authserver/needCaptcha.html"
+	// CaptchaUrl 获取验证码
+	CaptchaUrl = AuthlUrlPerfix + "/authserver/captcha.html"
 	// HomeIndexUrl 导航主页
 	HomeIndexUrl = SecUrl + "/frontend_static/frontend/login/index.html"
 	// GetHomeParamUrl 主页参数
 	GetHomeParamUrl = SecUrl + "/rump_frontend/getHomeParam/"
 	// PortalIndexUrl 门户首页
-	PortalIndexUrl = SecUrl + "/webvpn/" + PortalPath + "/pc/lit/index.html"
+	PortalIndexUrl = PortalUrlPerfix + "/pc/lit/index.html"
 	// PortalLoginUrl 门户登陆地址 (第二层)
-	PortalLoginUrl = SecUrl + "/webvpn/" + PortalPath + "/portal/login/pcLogin"
+	PortalLoginUrl = PortalUrlPerfix + "/portal/login/pcLogin"
 	// PortalUserUrl 门户个人信息主页
-	PortalUserUrl = SecUrl + "/webvpn/" + PortalPath + "/portal/pc/lit/user.html"
+	PortalUserUrl = PortalUrlPerfix + "/portal/pc/lit/user.html"
 	// GetCurrentMemberUrl 获取当前门户用户的接口
-	GetCurrentMemberUrl = SecUrl + "/webvpn/" + PortalPath + "/portal/myCenter/getMemberInfoForCurrentMember"
-	// NeedCaptchaUrl 检查是否需要验证码登陆的接口
-	NeedCaptchaUrl = SecUrl + "/webvpn/" + AuthPath + "/authserver/needCaptcha.html"
-	// CaptchaUrl 获取验证码
-	CaptchaUrl = SecUrl + "/webvpn/" + AuthPath + "/authserver/captcha.html"
+	GetCurrentMemberUrl = PortalUrlPerfix + "/portal/myCenter/getMemberInfoForCurrentMember"
+	// GetStuUrl 获取学生信息接口
+	GetStuUrl = PortalUrlPerfix + "/microapplication/api/index/getStudentByStudentId"
+	//  GetClassmatesDetail 获取学生同班同学信息接口
+	GetClassmatesDetailUrl = PortalUrlPerfix + "/microapplication/api/myclass/findMyclassmatesDetailCount"
+	// GetClassmatesUrl 获取学生同班同学列表接口
+	GetClassmatesUrl = PortalUrlPerfix + "/microapplication/api/myclass/findMyclassmates"
+	// // GetDepartmentPhoneList 获取部门电话列表
+	// GetDepartmentPhoneList = PortalUrlPerfix + "/microapplication/api/myclass/findMyclassmates"
 	// UA
 	UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36"
 )
