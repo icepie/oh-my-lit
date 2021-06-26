@@ -14,6 +14,6 @@ $ go get -u github.com/icepie/oh-my-lit/client
 
 - [ ] jw
 
-- [ ] zhyd
+- [x] zhyd
 
 - [ ] health
