@@ -12,7 +12,7 @@ import (
 
 func main() {
 
-	log.Println("智慧门户测试")
+	log.Println("智慧控电测试")
 
 	zhydUser, err := zhyd.NewZhydUser("B19071121", "")
 	if err != nil {
@@ -23,8 +23,6 @@ func main() {
 	if err != nil {
 		log.Println("获取用户信息失败: ", err)
 	}
-
-	log.Println(zhydUser.Cookies)
 
 	if b {
 		log.Println("需要验证码")
@@ -61,6 +59,11 @@ func main() {
 		log.Fatal("登陆失败: ", err)
 	}
 
-	zhydUser.GetDormElectricity()
+	de, err := zhydUser.GetDormElectricity()
+	if err != nil {
+		log.Fatal("获取失败: ", err)
+	}
+
+	log.Println(de)
 
 }

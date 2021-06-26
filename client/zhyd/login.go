@@ -84,7 +84,7 @@ func (u *ZhydUser) GetCaptche() (pix []byte, err error) {
 
 }
 
-// 登陆
+// 登陆凑合用
 func (u *ZhydUser) login(captcha string) (err error) {
 
 	client := &http.Client{
@@ -143,7 +143,7 @@ func (u *ZhydUser) login(captcha string) (err error) {
 		return
 	}
 
-	rmShown, err := util.GetSubstingBetweenStrings(body, ` name="rmShown" value="`, `"`)
+	rmShown, err := util.GetSubstingBetweenStrings(body, `name="rmShown" value="`, `"`)
 	if err != nil {
 		return
 	}
@@ -182,35 +182,33 @@ func (u *ZhydUser) login(captcha string) (err error) {
 
 	defer resp.Body.Close()
 
-	bodyText, err = ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return
-	}
+	// bodyText, err = ioutil.ReadAll(resp.Body)
+	// if err != nil {
+	// 	return
+	// }
 
-	body = string(bodyText)
+	// body = string(bodyText)
 
-	log.Println(body)
+	// log.Println(body)
 
-	location, err := resp.Location()
-	if err != nil {
-		return
-	}
+	// location, err := resp.Location()
+	// if err != nil {
+	// 	return
+	// }
 
-	log.Println(location)
+	// log.Println(location)
 
-	log.Println(u.Cookies)
+	// log.Println(u.Cookies)
 
-	if location.String() != "http://ids.lit.edu.cn/authserver/userAttributesEdit.do" {
-		err = errors.New("login error")
-		return
-	}
+	// if location.String() != "http://ids.lit.edu.cn/authserver/userAttributesEdit.do" {
+	// 	err = errors.New("login error")
+	// 	return
+	// }
 
 	// 添加这玩意
 	u.Cookies = append(u.Cookies, resp.Cookies()...)
 
-	log.Println(u.Cookies)
-
-	req, err = http.NewRequest("HEAD", "http://ids.lit.edu.cn/authserver/login?service=http%3A%2F%2Fzhyd.sec.lit.edu.cn%2Fzhyd%2F", nil)
+	req, err = http.NewRequest("HEAD", LoginUrl+"?service=http%3A%2F%2Fzhyd.sec.lit.edu.cn%2Fzhyd%2F", nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -229,25 +227,19 @@ func (u *ZhydUser) login(captcha string) (err error) {
 	//req.Header.Set("Cookie", "CASTGC=TGT-53763-47PP0wqe7fUOGkLMhIH7nRbGwBQAM5y2mongWXNHTE2cd0GRci-GUkR-ids1-1624116835902; JSESSIONID=00007TCrre9XQxFMhnNrA46zt1R:195e0nr50")
 	resp, err = client.Do(req)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
+
 	defer resp.Body.Close()
-	bodyText, err = ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("%s\n", bodyText)
 
-	log.Println(resp.Location())
-
-	location, err = resp.Location()
+	location, err := resp.Location()
 	if err != nil {
 		return
 	}
 
 	req, err = http.NewRequest("GET", location.String(), nil)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
 	for _, cooike := range u.Cookies {
@@ -264,11 +256,9 @@ func (u *ZhydUser) login(captcha string) (err error) {
 	//req.Header.Set("Cookie", "muyun_sign_cookie=4018a129eb7a0e77410c21ae96382e0b")
 	resp, err = client.Do(req)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 	defer resp.Body.Close()
-
-	log.Println(resp.Cookies())
 
 	// 添加这玩意
 	u.RealCookies = append(u.RealCookies, resp.Cookies()...)

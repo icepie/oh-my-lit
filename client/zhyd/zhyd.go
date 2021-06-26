@@ -1,9 +1,6 @@
 package zhyd
 
 import (
-	"fmt"
-	"io/ioutil"
-	"log"
 	"net/http"
 )
 
@@ -55,16 +52,8 @@ func NewZhydUser(username string, password string) (user ZhydUser, err error) {
 
 	defer resp.Body.Close()
 
-	bodyText, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("%s\n", bodyText)
-
 	user.Cookies = resp.Cookies()
 	user.RealCookies = resp.Cookies()
-
-	log.Println(resp.Location())
 
 	return
 
