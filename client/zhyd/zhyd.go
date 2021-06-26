@@ -1,6 +1,8 @@
 package zhyd
 
 import (
+	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 )
@@ -20,9 +22,10 @@ var (
 
 // ZhydUser 智能控电用户结构体
 type ZhydUser struct {
-	Username string
-	Password string
-	Cookies  []*http.Cookie
+	Username    string
+	Password    string
+	Cookies     []*http.Cookie
+	RealCookies []*http.Cookie
 }
 
 // NewZhydUser 新建智能控电用户
@@ -32,12 +35,18 @@ func NewZhydUser(username string, password string) (user ZhydUser, err error) {
 	user.Password = password
 
 	// 先从主页拿到真实的登陆地址以及初始化cookies
-	client := &http.Client{}
+	client := &http.Client{
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
 
-	req, err := http.NewRequest("GET", "http://zhyd.sec.lit.edu.cn/zhyd/", nil)
+	req, err := http.NewRequest("GET", "http://zhyd.sec.lit.edu.cn", nil)
 	if err != nil {
 		return
 	}
+
+	req.Header.Set("User-Agent", UA)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -46,14 +55,16 @@ func NewZhydUser(username string, password string) (user ZhydUser, err error) {
 
 	defer resp.Body.Close()
 
-	// bodyText, err := ioutil.ReadAll(resp.Body)
-	// if err != nil {
-	// 	return
-	// }
+	bodyText, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%s\n", bodyText)
 
 	user.Cookies = resp.Cookies()
+	user.RealCookies = resp.Cookies()
 
-	log.Println(resp.Cookies())
+	log.Println(resp.Location())
 
 	return
 
