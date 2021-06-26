@@ -57,30 +57,22 @@ func (u *ZhydUser) GetDormElectricity() (info DormElectricity, err error) {
 	balance, _ := util.GetSubstingBetweenStrings(body, `剩余金额<span class="mui-badge mui-badge-success">`, `</span></li>`)
 
 	if len(electricity) > 0 {
-		if info.Electricity, err = strconv.ParseFloat(electricity, 64); err == nil {
-			return
-		}
+		info.Electricity, _ = strconv.ParseFloat(electricity, 64)
 	}
 
 	if len(balance) > 0 {
-		if info.Balance, err = strconv.ParseFloat(balance, 64); err == nil {
-			return
-		}
+		info.Balance, err = strconv.ParseFloat(balance, 64)
 	}
 
 	electricitySubsidy, _ := util.GetSubstingBetweenStrings(body, `剩余补助<span class="mui-badge mui-badge-success">`, `</span></li>`)
 	balanceSubsidy, _ := util.GetSubstingBetweenStrings(body, `剩余补助金额<span class="mui-badge mui-badge-success">`, `</span></li>`)
 
 	if len(electricitySubsidy) > 0 {
-		if info.ElectricitySubsidy, err = strconv.ParseFloat(electricitySubsidy, 64); err == nil {
-			return
-		}
+		info.ElectricitySubsidy, _ = strconv.ParseFloat(electricitySubsidy, 64)
 	}
 
 	if len(balanceSubsidy) > 0 {
-		if info.BalanceSubsidy, err = strconv.ParseFloat(balanceSubsidy, 64); err == nil {
-			return
-		}
+		info.BalanceSubsidy, _ = strconv.ParseFloat(balanceSubsidy, 64)
 	}
 
 	return
