@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/gin-gonic/gin"
 	"github.com/icepie/oh-my-lit/client/sec"
 )
 
@@ -14,7 +15,7 @@ func main() {
 
 	log.Println("智慧门户测试")
 
-	secUser, err := sec.NewSecUser("B19071121", "xxx")
+	secUser, err := sec.NewSecUser("B19071121", "029753")
 	if err != nil {
 		log.Println("实例化用户失败: ", err)
 	}
@@ -85,14 +86,61 @@ func main() {
 
 			log.Println(t1)
 
-			t2, err := secUser.GetStudent("111")
+			t2, err := secUser.GetClassmates(secUser.Username)
 			if err != nil {
-				log.Fatal("查询学生信息失败: ", err)
+				log.Fatal("查询同班同学列表失败: ", err)
 			}
 
 			log.Println(t2)
+
+			t3, err := secUser.GetClassmatesDetail(secUser.Username)
+			if err != nil {
+				log.Fatal("查询同班同学信息失败: ", err)
+			}
+
+			log.Println(t3)
 		}
 
 	}
+
+	r := gin.Default()
+	r.GET("/getstu", func(c *gin.Context) {
+
+		t1, err := secUser.GetStudent(c.Query("stuid"))
+		if err != nil {
+			c.JSON(300, "err")
+			return
+		}
+
+		c.JSON(200, t1)
+	})
+
+	// r.GET("/relogin", func(c *gin.Context) {
+
+	// 	if !secUser.IsLogged() {
+	// 		err = secUser.Login()
+	// 		if err != nil {
+	// 			c.JSON(200, "err")
+	// 			return
+	// 		}
+
+	// 		c.JSON(200, "relogin")
+	// 	}
+
+	// 	if !secUser.IsPortalLogged() {
+	// 		err = secUser.PortalLogin()
+	// 		if err != nil {
+	// 			c.JSON(200, "err")
+	// 			return
+	// 		}
+	// 		c.JSON(200, "relogin portal")
+	// 	}
+
+	// 	c.JSON(200, "ok")
+	// 	c.JSON(200, "fine")
+
+	// })
+
+	// r.Run() // listen and serve on 0.0.0.0:8080
 
 }

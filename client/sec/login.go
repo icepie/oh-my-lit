@@ -216,6 +216,7 @@ func (u *SecUser) login(captcha string) (err error) {
 	decodeurl := html.UnescapeString(actionUrl)
 
 	var data = strings.NewReader("username=" + u.Username + "&password=" + u.Password + captchaParam + "&lt=" + lt + "&execution=" + execution + "&_eventId=" + eventId + "&rmShown=" + rmShown)
+
 	req, err = http.NewRequest("POST", decodeurl, data)
 	if err != nil {
 		return
@@ -314,6 +315,11 @@ func (u *SecUser) PortalLogin() (err error) {
 	}
 
 	defer resp.Body.Close()
+
+	// 确保账号登陆成功
+	if !u.IsPortalLogged() {
+		u.PortalLogin()
+	}
 
 	return
 }
