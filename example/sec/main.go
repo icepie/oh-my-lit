@@ -7,7 +7,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/gin-gonic/gin"
 	"github.com/icepie/oh-my-lit/client/sec"
 )
 
@@ -15,7 +14,7 @@ func main() {
 
 	log.Println("智慧门户测试")
 
-	secUser, err := sec.NewSecUser("B19071121", "029753")
+	secUser, err := sec.NewSecUser("B19071121", "xxx")
 	if err != nil {
 		log.Println("实例化用户失败: ", err)
 	}
@@ -103,17 +102,17 @@ func main() {
 
 	}
 
-	r := gin.Default()
-	r.GET("/getstu", func(c *gin.Context) {
+	// r := gin.Default()
+	// r.GET("/getstu", func(c *gin.Context) {
 
-		t1, err := secUser.GetStudent(c.Query("stuid"))
-		if err != nil {
-			c.JSON(300, "err")
-			return
-		}
+	// 	t1, err := secUser.GetStudent(c.Query("stuid"))
+	// 	if err != nil {
+	// 		c.JSON(300, "err")
+	// 		return
+	// 	}
 
-		c.JSON(200, t1)
-	})
+	// 	c.JSON(200, t1)
+	// })
 
 	// r.GET("/relogin", func(c *gin.Context) {
 

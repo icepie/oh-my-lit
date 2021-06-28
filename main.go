@@ -59,11 +59,24 @@ func main() {
 		log.Fatal("登陆失败: ", err)
 	}
 
-	de, err := zhydUser.GetDormElectricity()
-	if err != nil {
-		log.Fatal("获取失败: ", err)
-	}
+	isLogged, err := zhydUser.IsLogged()
+	if isLogged {
+		de, err := zhydUser.GetDormElectricity()
+		if err != nil {
+			log.Fatal("获取剩余用电失败: ", err)
+		}
 
-	log.Println(de)
+		log.Println(de)
+
+		ed, err := zhydUser.GetElectricityDetails()
+		if err != nil {
+			log.Fatal("获取历史用电失败: ", err)
+		}
+
+		log.Println(ed)
+
+	} else {
+		log.Println("似乎未登陆: ", err)
+	}
 
 }

@@ -4,13 +4,48 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/icepie/oh-my-lit/client/util"
 )
+
+func (u *ZhydUser) IsLogged() (isLogged bool, err error) {
+	client := &http.Client{}
+
+	req, err := http.NewRequest("GET", ZhydHostUrl, nil)
+	if err != nil {
+		return
+	}
+
+	for _, cooike := range u.RealCookies {
+		req.AddCookie(cooike)
+	}
+
+	req.Header.Set("Accept", "*/*")
+	req.Header.Set("Accept-Encoding", "gzip, deflate")
+	req.Header.Set("Connection", "keep-alive")
+	req.Header.Set("User-Agent", UA)
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return
+	}
+
+	defer resp.Body.Close()
+
+	bodyText, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return
+	}
+
+	if strings.Contains(string(bodyText), "智慧用电") {
+		isLogged = true
+	}
+
+	return
+}
 
 // IsNeedCaptcha 判断是否需要验证码登陆
 func (u *ZhydUser) IsNeedCaptcha() (isNeed bool, err error) {
@@ -210,7 +245,7 @@ func (u *ZhydUser) login(captcha string) (err error) {
 
 	req, err = http.NewRequest("HEAD", LoginUrl+"?service=http%3A%2F%2Fzhyd.sec.lit.edu.cn%2Fzhyd%2F", nil)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
 	for _, cooike := range u.Cookies {
@@ -282,10 +317,24 @@ func (u *ZhydUser) login(captcha string) (err error) {
 
 // Login 普通登陆
 func (u *ZhydUser) Login() (err error) {
-	return u.login("")
+	// 操蛋玩意,多登陆几次
+	for i := 0; i <= 2; i++ {
+		err = u.login("")
+		if err == nil {
+			return
+		}
+	}
+	return errors.New("login error")
 }
 
 // LoginWithCap 验证码登陆
 func (u *ZhydUser) LoginWithCap(captcha string) (err error) {
-	return u.login(captcha)
+	// 操蛋玩意,多登陆几次
+	for i := 0; i <= 2; i++ {
+		err = u.login(captcha)
+		if err == nil {
+			return
+		}
+	}
+	return errors.New("login error")
 }

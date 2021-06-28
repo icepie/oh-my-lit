@@ -11,8 +11,14 @@ var (
 	NeedCaptchaUrl = AuthHostUrl + "/authserver/needCaptcha.html"
 	// CaptchaUrl 获取验证码
 	CaptchaUrl = AuthHostUrl + "/authserver/captcha.html"
-	// ZhydIndex 登陆接口
+	// LoginUrl 登陆接口
 	LoginUrl = AuthHostUrl + "/authserver/login"
+	// ZhydHostUrl 智慧用电主页
+	ZhydHostUrl = "http://zhyd.sec.lit.edu.cn/zhyd"
+	// GetDormElectricityURl 获取宿舍电量主页
+	GetDormElectricityURl = ZhydHostUrl + "/sydl/index"
+	// GetElectricityDetailsUrl 获取用电明细
+	GetElectricityDetailsUrl = ZhydHostUrl + "/ydmx/index"
 	// UA
 	UA = "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 11_2_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36"
 )
