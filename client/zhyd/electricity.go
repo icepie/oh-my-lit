@@ -1,9 +1,11 @@
 package zhyd
 
 import (
+	"encoding/json"
 	"errors"
 	"io/ioutil"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -13,12 +15,8 @@ import (
 	"github.com/icepie/oh-my-lit/client/util"
 )
 
-const (
-	TimeLayout = "2006/1/2 15:04:05"
-)
-
 // GetDormElectricity 获取寝室用电情况
-func (u *ZhydUser) GetDormElectricity() (info DormElectricity, err error) {
+func (u *ZhydUser) GetDormElectricity() (rte DormElectricity, err error) {
 
 	client := &http.Client{}
 
@@ -37,7 +35,7 @@ func (u *ZhydUser) GetDormElectricity() (info DormElectricity, err error) {
 	req.Header.Set("Accept-Encoding", "gzip, deflate")
 	req.Header.Set("Connection", "keep-alive")
 	req.Header.Set("User-Agent", UA)
-	//req.Header.Set("Cookie", "JSESSIONID=41ED9939D8B0ED42A85A0C43AAB0D915; muyun_sign_cookie=d5f6728e5a9345832b7a4bc900dcc34a")
+
 	resp, err := client.Do(req)
 	if err != nil {
 		return
@@ -57,28 +55,28 @@ func (u *ZhydUser) GetDormElectricity() (info DormElectricity, err error) {
 		return
 	}
 
-	info.Building, _ = util.GetSubstingBetweenStrings(body, `绑定楼栋<span class="mui-badge mui-badge-primary">`, `</span></li>`)
-	info.Room, _ = util.GetSubstingBetweenStrings(body, `绑定房间<span class="mui-badge mui-badge-primary">`, `</span></li>`)
-	electricity, _ := util.GetSubstingBetweenStrings(body, `剩余电量<span class="mui-badge mui-badge-success">`, `</span></li>`)
-	balance, _ := util.GetSubstingBetweenStrings(body, `剩余金额<span class="mui-badge mui-badge-success">`, `</span></li>`)
+	rte.BuildName, _ = util.GetSubstringBetweenStringsByRE(body, `绑定楼栋<span class="mui-badge mui-badge-primary">`, `</span></li>`)
+	rte.Room, _ = util.GetSubstringBetweenStringsByRE(body, `绑定房间<span class="mui-badge mui-badge-primary">`, `</span></li>`)
+	electricity, _ := util.GetSubstringBetweenStringsByRE(body, `剩余电量<span class="mui-badge mui-badge-success">`, `</span></li>`)
+	balance, _ := util.GetSubstringBetweenStringsByRE(body, `剩余金额<span class="mui-badge mui-badge-success">`, `</span></li>`)
 
 	if len(electricity) > 0 {
-		info.Electricity, _ = strconv.ParseFloat(electricity, 64)
+		rte.Electricity, _ = strconv.ParseFloat(electricity, 64)
 	}
 
 	if len(balance) > 0 {
-		info.Balance, err = strconv.ParseFloat(balance, 64)
+		rte.Balance, err = strconv.ParseFloat(balance, 64)
 	}
 
-	electricitySubsidy, _ := util.GetSubstingBetweenStrings(body, `剩余补助<span class="mui-badge mui-badge-success">`, `</span></li>`)
-	balanceSubsidy, _ := util.GetSubstingBetweenStrings(body, `剩余补助金额<span class="mui-badge mui-badge-success">`, `</span></li>`)
+	electricitySubsidy, _ := util.GetSubstringBetweenStringsByRE(body, `剩余补助<span class="mui-badge mui-badge-success">`, `</span></li>`)
+	balanceSubsidy, _ := util.GetSubstringBetweenStringsByRE(body, `剩余补助金额<span class="mui-badge mui-badge-success">`, `</span></li>`)
 
 	if len(electricitySubsidy) > 0 {
-		info.ElectricitySubsidy, _ = strconv.ParseFloat(electricitySubsidy, 64)
+		rte.ElectricitySubsidy, _ = strconv.ParseFloat(electricitySubsidy, 64)
 	}
 
 	if len(balanceSubsidy) > 0 {
-		info.BalanceSubsidy, _ = strconv.ParseFloat(balanceSubsidy, 64)
+		rte.BalanceSubsidy, _ = strconv.ParseFloat(balanceSubsidy, 64)
 	}
 
 	return
@@ -106,7 +104,7 @@ func (u *ZhydUser) GetElectricityDetails() (rte ElectricityDetails, err error) {
 	req.Header.Set("Accept-Encoding", "gzip, deflate")
 	req.Header.Set("Connection", "keep-alive")
 	req.Header.Set("User-Agent", UA)
-	//req.Header.Set("Cookie", "JSESSIONID=41ED9939D8B0ED42A85A0C43AAB0D915; muyun_sign_cookie=d5f6728e5a9345832b7a4bc900dcc34a")
+
 	resp, err := client.Do(req)
 	if err != nil {
 		return
@@ -164,7 +162,7 @@ func (u *ZhydUser) GetElectricityDetails() (rte ElectricityDetails, err error) {
 
 		var d Detail
 
-		d.Time, err = time.Parse(TimeLayout, timeStr)
+		d.Time, err = time.ParseInLocation(TimeLayout, timeStr, Location)
 		if err != nil {
 			return
 		}
@@ -177,6 +175,57 @@ func (u *ZhydUser) GetElectricityDetails() (rte ElectricityDetails, err error) {
 		rte.Details = append(rte.Details, d)
 
 	})
+
+	return
+
+}
+
+// GetChargeRecords 获取消费记录
+func (u *ZhydUser) GetChargeRecords() (rte ChargeRecords, err error) {
+
+	client := &http.Client{}
+
+	req, err := http.NewRequest("GET", GetChargeRecordsUrl, nil)
+	if err != nil {
+		return
+	}
+
+	for _, cooike := range u.RealCookies {
+		req.AddCookie(cooike)
+	}
+
+	req.Header.Set("Accept", "*/*")
+	req.Header.Set("Accept-Encoding", "gzip, deflate")
+	req.Header.Set("Connection", "keep-alive")
+	req.Header.Set("User-Agent", UA)
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return
+	}
+
+	defer resp.Body.Close()
+
+	bodyText, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return
+	}
+
+	body := string(bodyText)
+
+	reg := regexp.MustCompile(`this.infoList = \[(.*)\]`)
+
+	result := reg.FindAllStringSubmatch(body, -1)
+
+	if len(result) == 0 {
+		err = errors.New("no result")
+		return
+	}
+
+	err = json.Unmarshal([]byte(result[0][1]), &rte)
+	if err != nil {
+		return
+	}
 
 	return
 

@@ -63,7 +63,7 @@ func main() {
 	if isLogged {
 		de, err := zhydUser.GetDormElectricity()
 		if err != nil {
-			log.Fatal("获取剩余用电失败: ", err)
+			log.Fatal("获取余电额度失败: ", err)
 		}
 
 		log.Println(de)
@@ -74,6 +74,13 @@ func main() {
 		}
 
 		log.Println(ed)
+
+		cr, err := zhydUser.GetChargeRecords()
+		if err != nil {
+			log.Fatal("获取充值记录失败: ", err)
+		}
+
+		log.Println(cr)
 
 	} else {
 		log.Println("似乎未登陆: ", err)

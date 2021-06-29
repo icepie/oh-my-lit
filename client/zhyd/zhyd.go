@@ -13,12 +13,16 @@ var (
 	CaptchaUrl = AuthHostUrl + "/authserver/captcha.html"
 	// LoginUrl 登陆接口
 	LoginUrl = AuthHostUrl + "/authserver/login"
+	// ZhydHost
+	ZhydHost = "http://zhyd.sec.lit.edu.cn"
 	// ZhydHostUrl 智慧用电主页
-	ZhydHostUrl = "http://zhyd.sec.lit.edu.cn/zhyd"
+	ZhydHostUrl = ZhydHost + "/zhyd"
 	// GetDormElectricityURl 获取宿舍电量主页
 	GetDormElectricityURl = ZhydHostUrl + "/sydl/index"
 	// GetElectricityDetailsUrl 获取用电明细
 	GetElectricityDetailsUrl = ZhydHostUrl + "/ydmx/index"
+	// GetConsumptionRecordsUrl 获取消费记录
+	GetChargeRecordsUrl = ZhydHostUrl + "/zzgd/index"
 	// UA
 	UA = "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 11_2_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36"
 )
@@ -44,7 +48,7 @@ func NewZhydUser(username string, password string) (user ZhydUser, err error) {
 		},
 	}
 
-	req, err := http.NewRequest("GET", "http://zhyd.sec.lit.edu.cn", nil)
+	req, err := http.NewRequest("GET", ZhydHost, nil)
 	if err != nil {
 		return
 	}

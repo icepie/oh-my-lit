@@ -5,8 +5,8 @@ import (
 	"regexp"
 )
 
-// get substring between strings
-func GetSubstingBetweenStrings(str string, prefix string, suffix string) (sub string, err error) {
+// get substring between strings by regexp
+func GetSubstringBetweenStringsByRE(str string, prefix string, suffix string) (sub string, err error) {
 
 	reg := regexp.MustCompile(prefix + "(.*?)" + suffix)
 
