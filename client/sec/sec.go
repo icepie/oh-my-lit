@@ -82,7 +82,7 @@ func NewSecUser(username string, password string) (user SecUser, err error) {
 		return
 	}
 
-	user.AuthUrl, err = util.GetSubstingBetweenStrings(string(bodyText), `<a href="`, `"`)
+	user.AuthUrl, err = util.GetSubstringBetweenStringsByRE(string(bodyText), `<a href="`, `"`)
 	if err != nil {
 		return
 	}

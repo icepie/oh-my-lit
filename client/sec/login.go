@@ -185,27 +185,27 @@ func (u *SecUser) login(captcha string) (err error) {
 	body := string(bodyText)
 
 	// 获取所有可需参数
-	actionUrl, err := util.GetSubstingBetweenStrings(body, `id="casLoginForm" class="fm-v clearfix" action="`, `"`)
+	actionUrl, err := util.GetSubstringBetweenStringsByRE(body, `id="casLoginForm" class="fm-v clearfix" action="`, `"`)
 	if err != nil {
 		return
 	}
 
-	lt, err := util.GetSubstingBetweenStrings(body, `name="lt" value="`, `"`)
+	lt, err := util.GetSubstringBetweenStringsByRE(body, `name="lt" value="`, `"`)
 	if err != nil {
 		return
 	}
 
-	execution, err := util.GetSubstingBetweenStrings(body, `name="execution" value="`, `"`)
+	execution, err := util.GetSubstringBetweenStringsByRE(body, `name="execution" value="`, `"`)
 	if err != nil {
 		return
 	}
 
-	eventId, err := util.GetSubstingBetweenStrings(body, `name="_eventId" value="`, `"`)
+	eventId, err := util.GetSubstringBetweenStringsByRE(body, `name="_eventId" value="`, `"`)
 	if err != nil {
 		return
 	}
 
-	rmShown, err := util.GetSubstingBetweenStrings(body, `name="rmShown" value="`, `"`)
+	rmShown, err := util.GetSubstringBetweenStringsByRE(body, `name="rmShown" value="`, `"`)
 	if err != nil {
 		return
 	}
@@ -256,7 +256,7 @@ func (u *SecUser) login(captcha string) (err error) {
 
 	// 判断是否有错误
 	if strings.Contains(body, "callback_err_login") {
-		loginErrStr, _ := util.GetSubstingBetweenStrings(body, `callback_err_login">`, `</div>`)
+		loginErrStr, _ := util.GetSubstringBetweenStringsByRE(body, `callback_err_login">`, `</div>`)
 
 		err = errors.New(loginErrStr)
 
