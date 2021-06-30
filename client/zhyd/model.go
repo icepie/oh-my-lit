@@ -7,10 +7,9 @@ import (
 const (
 	TimeLayout    = "2006/1/2 15:04:05"
 	TwoTimeLayout = `"2006\/1\/2 15:04:05"`
-	LocationCode  = "Asia/Shanghai"
 )
 
-var Location, _ = time.LoadLocation("Asia/Shanghai")
+var Location = time.FixedZone("GMT", 8*3600)
 
 // DormElectricity 宿舍用电余额结构
 type DormElectricity struct {
