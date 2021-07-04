@@ -144,6 +144,9 @@ func (u *ZhydUser) GetElectricityDetails() (rte []ElectricityDetails, err error)
 
 		var ed ElectricityDetails
 
+		name := s.Find("div.mui-card>ul.mui-table-view>li.mui-table-view-divider").First()
+		ed.Name = name.Text()
+
 		s.Find("div.mui-card>ul.mui-table-view>li>span.mui-badge").Each(func(i int, s *goquery.Selection) {
 			switch i {
 			case 0:
