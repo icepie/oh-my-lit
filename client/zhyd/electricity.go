@@ -11,12 +11,10 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-
-	"github.com/icepie/oh-my-lit/client/util"
 )
 
 // GetDormElectricity 获取寝室用电情况
-func (u *ZhydUser) GetDormElectricity() (rte DormElectricity, err error) {
+func (u *ZhydUser) GetDormElectricity() (rte []DormElectricity, err error) {
 
 	client := &http.Client{}
 
@@ -43,48 +41,57 @@ func (u *ZhydUser) GetDormElectricity() (rte DormElectricity, err error) {
 
 	defer resp.Body.Close()
 
-	bodyText, err := ioutil.ReadAll(resp.Body)
+	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
 		return
 	}
 
-	body := string(bodyText)
+	// 获取基本信息
+	doc.Find("div.mui-card>ul.mui-table-view").Each(func(i int, s *goquery.Selection) {
 
-	if !strings.Contains(body, "剩余用电") {
-		err = errors.New("fail to get info")
-		return
-	}
+		var de DormElectricity
 
-	rte.BuildName, _ = util.GetSubstringBetweenStringsByRE(body, `绑定楼栋<span class="mui-badge mui-badge-primary">`, `</span></li>`)
-	rte.Room, _ = util.GetSubstringBetweenStringsByRE(body, `绑定房间<span class="mui-badge mui-badge-primary">`, `</span></li>`)
-	electricity, _ := util.GetSubstringBetweenStringsByRE(body, `剩余电量<span class="mui-badge mui-badge-success">`, `</span></li>`)
-	balance, _ := util.GetSubstringBetweenStringsByRE(body, `剩余金额<span class="mui-badge mui-badge-success">`, `</span></li>`)
+		name := s.Find("li.mui-table-view-divider").First()
+		de.Name = name.Text()
 
-	if len(electricity) > 0 {
-		rte.Electricity, _ = strconv.ParseFloat(electricity, 64)
-	}
+		s.Find("span.mui-badge").Each(func(i int, s *goquery.Selection) {
+			switch i {
+			case 0:
+				de.BuildName = s.Text()
+			case 1:
+				de.Room = s.Text()
+			case 2:
+				electricity := s.Text()
+				if len(electricity) > 0 {
+					de.Electricity, _ = strconv.ParseFloat(electricity, 64)
+				}
+			case 3:
+				balance := s.Text()
+				if len(balance) > 0 {
+					de.Balance, _ = strconv.ParseFloat(balance, 64)
+				}
+			case 4:
+				electricitySubsidy := s.Text()
+				if len(electricitySubsidy) > 0 {
+					de.ElectricitySubsidy, _ = strconv.ParseFloat(electricitySubsidy, 64)
+				}
+			case 5:
+				balanceSubsidy := s.Text()
+				if len(balanceSubsidy) > 0 {
+					de.BalanceSubsidy, _ = strconv.ParseFloat(balanceSubsidy, 64)
+				}
+			}
 
-	if len(balance) > 0 {
-		rte.Balance, err = strconv.ParseFloat(balance, 64)
-	}
-
-	electricitySubsidy, _ := util.GetSubstringBetweenStringsByRE(body, `剩余补助<span class="mui-badge mui-badge-success">`, `</span></li>`)
-	balanceSubsidy, _ := util.GetSubstringBetweenStringsByRE(body, `剩余补助金额<span class="mui-badge mui-badge-success">`, `</span></li>`)
-
-	if len(electricitySubsidy) > 0 {
-		rte.ElectricitySubsidy, _ = strconv.ParseFloat(electricitySubsidy, 64)
-	}
-
-	if len(balanceSubsidy) > 0 {
-		rte.BalanceSubsidy, _ = strconv.ParseFloat(balanceSubsidy, 64)
-	}
+		})
+		rte = append(rte, de)
+	})
 
 	return
 
 }
 
 // GetElectricityDetails 获取寝室用电明细
-func (u *ZhydUser) GetElectricityDetails() (rte ElectricityDetails, err error) {
+func (u *ZhydUser) GetElectricityDetails() (rte []ElectricityDetails, err error) {
 
 	client := &http.Client{}
 
@@ -127,53 +134,58 @@ func (u *ZhydUser) GetElectricityDetails() (rte ElectricityDetails, err error) {
 		return
 	}
 
-	// rte.Building = doc.Find("span.mui-badge.mui-badge-primary").First().Text()
+	// log.Println(doc.Html())
 
-	// rte.Room = doc.Find("span.mui-badge.mui-badge-primary").Eq(1).Text()
+	// doc.Find("div.mui-card>ul.mui-table-view>").Each(func(i int, s *goquery.Selection) {
+	// 	log.Println(s.Html())
+	// })
 
-	// electricity := doc.Find("span.mui-badge.mui-badge-primary").Eq(2).Text()
+	doc.Find("div.mui-content>div").Each(func(i int, s *goquery.Selection) {
 
-	// 获取基本信息
-	doc.Find("span.mui-badge.mui-badge-primary").Each(func(i int, s *goquery.Selection) {
-		switch i {
-		case 0:
-			rte.Building = s.Text()
-		case 1:
-			rte.Room = s.Text()
-		case 2:
-			electricity := s.Text()
-			if len(electricity) > 0 {
-				rte.Electricity, _ = strconv.ParseFloat(electricity, 64)
+		var ed ElectricityDetails
+
+		s.Find("div.mui-card>ul.mui-table-view>li>span.mui-badge").Each(func(i int, s *goquery.Selection) {
+			switch i {
+			case 0:
+				ed.BuildName = s.Text()
+			case 1:
+				ed.Room = s.Text()
+			case 2:
+				electricity := s.Text()
+				if len(electricity) > 0 {
+					ed.Electricity, _ = strconv.ParseFloat(electricity, 64)
+				}
 			}
-			// default:
+		})
 
-		}
-	})
+		// 用电详情获取
+		s.Find("div.mui-scroll>li.mui-table-view-cell").Each(func(i int, s *goquery.Selection) {
 
-	// 用电详情获取
-	doc.Find("div.mui-scroll>li.mui-table-view-cell").Each(func(i int, s *goquery.Selection) {
+			// 去除空格
+			timeStr := strings.TrimSpace(s.Nodes[0].FirstChild.Data)
 
-		// 去除空格
-		timeStr := strings.TrimSpace(s.Nodes[0].FirstChild.Data)
+			// timeStr = strings.Trim(timeStr, "\n")
 
-		// timeStr = strings.Trim(timeStr, "\n")
+			// log.Println(timeStr)
 
-		// log.Println(timeStr)
+			var d Detail
 
-		var d Detail
+			d.Time, err = time.ParseInLocation(TimeLayout, timeStr, Location)
+			if err != nil {
+				return
+			}
 
-		d.Time, err = time.ParseInLocation(TimeLayout, timeStr, Location)
-		if err != nil {
-			return
-		}
+			v := s.Find("span.mui-badge.mui-badge-primary").First().Text()
+			if len(v) > 0 {
+				d.Value, _ = strconv.ParseFloat(v, 64)
+			}
 
-		v := s.Find("span.mui-badge.mui-badge-primary").First().Text()
-		if len(v) > 0 {
-			d.Value, _ = strconv.ParseFloat(v, 64)
-		}
+			ed.Details = append(ed.Details, d)
 
-		rte.Details = append(rte.Details, d)
+		})
 
+		// 添加到最后结果
+		rte = append(rte, ed)
 	})
 
 	return
@@ -181,7 +193,7 @@ func (u *ZhydUser) GetElectricityDetails() (rte ElectricityDetails, err error) {
 }
 
 // GetChargeRecords 获取消费记录
-func (u *ZhydUser) GetChargeRecords() (rte ChargeRecords, err error) {
+func (u *ZhydUser) GetChargeRecords() (rte []ChargeRecords, err error) {
 
 	client := &http.Client{}
 
@@ -222,7 +234,7 @@ func (u *ZhydUser) GetChargeRecords() (rte ChargeRecords, err error) {
 		return
 	}
 
-	err = json.Unmarshal([]byte(result[0][1]), &rte)
+	err = json.Unmarshal([]byte("["+result[0][1]+"]"), &rte)
 	if err != nil {
 		return
 	}

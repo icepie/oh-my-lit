@@ -13,6 +13,7 @@ var Location = time.FixedZone("GMT", 8*3600)
 
 // DormElectricity 宿舍用电余额结构
 type DormElectricity struct {
+	Name               string
 	BuildName          string
 	Room               string
 	Electricity        float64
@@ -23,7 +24,8 @@ type DormElectricity struct {
 
 // ElectricityDetails 宿舍用电详情结构
 type ElectricityDetails struct {
-	Building    string
+	Name        string
+	BuildName   string
 	Room        string
 	Electricity float64
 	Details     []Detail
