@@ -46,7 +46,7 @@ var (
 	GetOneCardBalanceUrl = PortalUrlPerfix + "/microapplication/api/index/getBalanceAndConsumeThisMonthAndLastMonth"
 	// GetOneCardChargeRecordsUrl 获取一卡通充值记录
 	GetOneCardChargeRecordsUrl = PortalUrlPerfix + "/microapplication/api/index/listGeneraCardRechargeRecordByGeneraCardRechargeRecordNumberPage"
-	// GetOneCardChargeRecordsUrl 获取一卡通充值记录
+	// GetOneCardChargeRecordsUrl 获取一卡通消费记录
 	GetOneCardConsumeRecordsUrl = PortalUrlPerfix + "/microapplication/api/index/ListGeneraCardConsumeRecordByGeneraCardConsumeRecordNumberPage"
 	// // GetDepartmentPhoneList 获取部门电话列表
 	// GetDepartmentPhoneList = PortalUrlPerfix + "/microapplication/api/myclass/findMyclassmates"
