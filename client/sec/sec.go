@@ -42,6 +42,12 @@ var (
 	GetClassmatesDetailUrl = PortalUrlPerfix + "/microapplication/api/myclass/findMyclassmatesDetailCount"
 	// GetClassmatesUrl 获取学生同班同学列表接口
 	GetClassmatesUrl = PortalUrlPerfix + "/microapplication/api/myclass/findMyclassmates"
+	// GetOneCardBalanceUrl 获取一卡通余额
+	GetOneCardBalanceUrl = PortalUrlPerfix + "/microapplication/api/index/getBalanceAndConsumeThisMonthAndLastMonth"
+	// GetOneCardChargeRecordsUrl 获取一卡通充值记录
+	GetOneCardChargeRecordsUrl = PortalUrlPerfix + "/microapplication/api/index/listGeneraCardRechargeRecordByGeneraCardRechargeRecordNumberPage"
+	// GetOneCardChargeRecordsUrl 获取一卡通充值记录
+	GetOneCardConsumeRecordsUrl = PortalUrlPerfix + "/microapplication/api/index/ListGeneraCardConsumeRecordByGeneraCardConsumeRecordNumberPage"
 	// // GetDepartmentPhoneList 获取部门电话列表
 	// GetDepartmentPhoneList = PortalUrlPerfix + "/microapplication/api/myclass/findMyclassmates"
 	// UA

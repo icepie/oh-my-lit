@@ -131,3 +131,52 @@ type GetClassmatesRte struct {
 	} `json:"obj"`
 	Success bool `json:"success"`
 }
+
+// GetOneCardBalanceRte 获取一卡通余额返回结构
+type GetOneCardBalanceRte struct {
+	Attributes interface{} `json:"attributes"`
+	Count      interface{} `json:"count"`
+	Msg        string      `json:"msg"`
+	Obj        struct {
+		Balance        string `json:"balance"`
+		LastMonthMoney string `json:"lastMonthMoney"`
+		ThisMonthMoney string `json:"thisMonthMoney"`
+	} `json:"obj"`
+	Success bool `json:"success"`
+}
+
+// GetOneCardChargeRecordsRte 获取一卡通充值记录返回结构
+type GetOneCardChargeRecordsRte struct {
+	Attributes interface{} `json:"attributes"`
+	Count      int64       `json:"count"`
+	Msg        string      `json:"msg"`
+	Obj        []struct {
+		GeneraCardRechargeRecordID                 int64       `json:"generaCardRechargeRecordId"`
+		GeneraCardRechargeRecordNumber             string      `json:"generaCardRechargeRecordNumber"`
+		GeneraCardRechargeRecordTransactionAdress  string      `json:"generaCardRechargeRecordTransactionAdress"`
+		GeneraCardRechargeRecordTransactionBalance string      `json:"generaCardRechargeRecordTransactionBalance"`
+		GeneraCardRechargeRecordTransactionMoney   string      `json:"generaCardRechargeRecordTransactionMoney"`
+		GeneraCardRechargeRecordTransactionTime    string      `json:"generaCardRechargeRecordTransactionTime"`
+		GeneraCardRechargeRecordTransactionType    string      `json:"generaCardRechargeRecordTransactionType"`
+		GeneraCardRechargeRecordWalletType         interface{} `json:"generaCardRechargeRecordWalletType"`
+	} `json:"obj"`
+	Success bool `json:"success"`
+}
+
+// GetOneCardConsumeRecordsRte 获取一卡通消费记录返回结构
+type GetOneCardConsumeRecordsRte struct {
+	Attributes interface{} `json:"attributes"`
+	Count      int64       `json:"count"`
+	Msg        string      `json:"msg"`
+	Obj        []struct {
+		GeneraCardConsumeRecordID                 int64       `json:"generaCardConsumeRecordId"`
+		GeneraCardConsumeRecordNumber             string      `json:"generaCardConsumeRecordNumber"`
+		GeneraCardConsumeRecordTransactionAdress  string      `json:"generaCardConsumeRecordTransactionAdress"`
+		GeneraCardConsumeRecordTransactionBalance string      `json:"generaCardConsumeRecordTransactionBalance"`
+		GeneraCardConsumeRecordTransactionMoney   string      `json:"generaCardConsumeRecordTransactionMoney"`
+		GeneraCardConsumeRecordTransactionTime    string      `json:"generaCardConsumeRecordTransactionTime"`
+		GeneraCardConsumeRecordTransactionType    string      `json:"generaCardConsumeRecordTransactionType"`
+		GeneraCardConsumeRecordWalletType         interface{} `json:"generaCardConsumeRecordWalletType"`
+	} `json:"obj"`
+	Success bool `json:"success"`
+}
