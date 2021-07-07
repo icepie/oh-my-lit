@@ -11,10 +11,13 @@ import (
 )
 
 func main() {
-
 	log.Println("智慧门户测试")
 
-	secUser, err := sec.NewSecUser("B19071121", "xxx")
+	if len(os.Args) != 2 {
+		return
+	}
+
+	secUser, err := sec.NewSecUser("B19071121", os.Args[1])
 	if err != nil {
 		log.Println("实例化用户失败: ", err)
 	}
@@ -98,48 +101,42 @@ func main() {
 			}
 
 			log.Println(t3)
+
+			t4, err := secUser.GetOneCardBalance(secUser.Username)
+			if err != nil {
+				log.Fatal("查询一卡通余额失败: ", err)
+			}
+
+			log.Println(t4)
+
+			t5, err := secUser.GetOneCardChargeRecords(secUser.Username, 1, 10)
+			if err != nil {
+				log.Fatal("查询一卡通充值记录失败: ", err)
+			}
+
+			log.Println(t5)
+
+			t6, err := secUser.GetOneCardConsumeRecords(secUser.Username, 1, 10)
+			if err != nil {
+				log.Fatal("查询一卡通充值记录失败: ", err)
+			}
+
+			log.Println(t6)
+
+			t7, err := secUser.GetExamArrangements(secUser.Username, 2020, 1)
+			if err != nil {
+				log.Fatal("查询考试安排失败: ", err)
+			}
+
+			log.Println(t7)
+
+			t8, err := secUser.GetWeekCourses(secUser.Username, "2021-05-07", 1)
+			if err != nil {
+				log.Fatal("查询周课表失败: ", err)
+			}
+
+			log.Println(t8)
 		}
 
 	}
-
-	// r := gin.Default()
-	// r.GET("/getstu", func(c *gin.Context) {
-
-	// 	t1, err := secUser.GetStudent(c.Query("stuid"))
-	// 	if err != nil {
-	// 		c.JSON(300, "err")
-	// 		return
-	// 	}
-
-	// 	c.JSON(200, t1)
-	// })
-
-	// r.GET("/relogin", func(c *gin.Context) {
-
-	// 	if !secUser.IsLogged() {
-	// 		err = secUser.Login()
-	// 		if err != nil {
-	// 			c.JSON(200, "err")
-	// 			return
-	// 		}
-
-	// 		c.JSON(200, "relogin")
-	// 	}
-
-	// 	if !secUser.IsPortalLogged() {
-	// 		err = secUser.PortalLogin()
-	// 		if err != nil {
-	// 			c.JSON(200, "err")
-	// 			return
-	// 		}
-	// 		c.JSON(200, "relogin portal")
-	// 	}
-
-	// 	c.JSON(200, "ok")
-	// 	c.JSON(200, "fine")
-
-	// })
-
-	// r.Run() // listen and serve on 0.0.0.0:8080
-
 }
