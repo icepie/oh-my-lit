@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"html"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -288,7 +287,10 @@ func (u *SecUser) LoginWithCap(captcha string) (err error) {
 // PortalLogin 第二层门户登陆
 func (u *SecUser) PortalLogin() (err error) {
 
-	log.Println(u.PortalUrlPerfix)
+	if len(u.PortalUrlPerfix) == 0 {
+		err = errors.New("please login first")
+		return
+	}
 
 	client := &http.Client{}
 
