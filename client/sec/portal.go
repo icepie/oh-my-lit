@@ -15,7 +15,7 @@ func (u *SecUser) GetCurrentMember() (rte CurrentMemberRte, err error) {
 
 	client := &http.Client{}
 
-	req, err := http.NewRequest("GET", GetCurrentMemberUrl+"?vpn-0", nil)
+	req, err := http.NewRequest("GET", u.PortalUrlPerfix+GetCurrentMemberPath+"?vpn-0", nil)
 	if err != nil {
 		return
 	}
@@ -34,7 +34,7 @@ func (u *SecUser) GetCurrentMember() (rte CurrentMemberRte, err error) {
 	req.Header.Set("sec-fetch-site", "same-origin")
 	req.Header.Set("sec-fetch-mode", "cors")
 	req.Header.Set("sec-fetch-dest", "empty")
-	req.Header.Set("referer", PortalUserUrl)
+	req.Header.Set("referer", u.PortalUrlPerfix+PortalUserPath)
 	req.Header.Set("accept-language", "zh-CN,zh;q=0.9")
 
 	resp, err := client.Do(req)
@@ -48,6 +48,8 @@ func (u *SecUser) GetCurrentMember() (rte CurrentMemberRte, err error) {
 	if err != nil {
 		return
 	}
+
+	// log.Println(string(bodyText))
 
 	err = json.Unmarshal(bodyText, &rte)
 	if err != nil {
@@ -73,7 +75,7 @@ func (u *SecUser) GetStudent(stuId string) (rte GetStudentRte, err error) {
 	client := &http.Client{}
 
 	var data = strings.NewReader("studentId=" + stuId)
-	req, err := http.NewRequest("POST", GetStuUrl+"?vpn-0", data)
+	req, err := http.NewRequest("POST", u.PortalUrlPerfix+GetStuPath+"?vpn-0", data)
 	if err != nil {
 		return
 	}
@@ -94,7 +96,7 @@ func (u *SecUser) GetStudent(stuId string) (rte GetStudentRte, err error) {
 	req.Header.Set("sec-fetch-site", "same-origin")
 	req.Header.Set("sec-fetch-mode", "cors")
 	req.Header.Set("sec-fetch-dest", "empty")
-	req.Header.Set("referer", PortalUserUrl)
+	req.Header.Set("referer", u.PortalUrlPerfix+PortalUserPath)
 	req.Header.Set("accept-language", "zh-CN,zh;q=0.9")
 
 	resp, err := client.Do(req)
@@ -132,7 +134,7 @@ func (u *SecUser) GetClassmatesDetail(stuId string) (rte GetClassmatesDetailRte,
 	client := &http.Client{}
 
 	var data = strings.NewReader("userName=" + stuId)
-	req, err := http.NewRequest("POST", GetClassmatesDetailUrl+"?vpn-0", data)
+	req, err := http.NewRequest("POST", u.PortalUrlPerfix+GetClassmatesDetailPath+"?vpn-0", data)
 	if err != nil {
 		return
 	}
@@ -153,7 +155,7 @@ func (u *SecUser) GetClassmatesDetail(stuId string) (rte GetClassmatesDetailRte,
 	req.Header.Set("sec-fetch-site", "same-origin")
 	req.Header.Set("sec-fetch-mode", "cors")
 	req.Header.Set("sec-fetch-dest", "empty")
-	req.Header.Set("referer", PortalUserUrl)
+	req.Header.Set("referer", u.PortalUrlPerfix+PortalUserPath)
 	req.Header.Set("accept-language", "zh-CN,zh;q=0.9")
 
 	resp, err := client.Do(req)
@@ -195,7 +197,7 @@ func (u *SecUser) GetClassmates(stuId string) (rte GetClassmatesRte, err error) 
 	pageSize := "99"
 
 	var data = strings.NewReader("userName=" + stuId + "&pageNum=" + pageNum + "&pageSize=" + pageSize)
-	req, err := http.NewRequest("POST", GetClassmatesUrl+"?vpn-0", data)
+	req, err := http.NewRequest("POST", u.PortalUrlPerfix+GetClassmatesPath+"?vpn-0", data)
 	if err != nil {
 		return
 	}
@@ -216,7 +218,7 @@ func (u *SecUser) GetClassmates(stuId string) (rte GetClassmatesRte, err error) 
 	req.Header.Set("sec-fetch-site", "same-origin")
 	req.Header.Set("sec-fetch-mode", "cors")
 	req.Header.Set("sec-fetch-dest", "empty")
-	req.Header.Set("referer", PortalUserUrl)
+	req.Header.Set("referer", u.PortalUrlPerfix+PortalUserPath)
 	req.Header.Set("accept-language", "zh-CN,zh;q=0.9")
 
 	resp, err := client.Do(req)
@@ -254,7 +256,7 @@ func (u *SecUser) GetOneCardBalance(stuId string) (rte GetOneCardBalanceRte, err
 	client := &http.Client{}
 
 	var data = strings.NewReader("username=" + stuId)
-	req, err := http.NewRequest("POST", GetOneCardBalanceUrl+"?vpn-0", data)
+	req, err := http.NewRequest("POST", u.PortalUrlPerfix+GetOneCardBalancePath+"?vpn-0", data)
 	if err != nil {
 		return
 	}
@@ -275,7 +277,7 @@ func (u *SecUser) GetOneCardBalance(stuId string) (rte GetOneCardBalanceRte, err
 	req.Header.Set("sec-fetch-site", "same-origin")
 	req.Header.Set("sec-fetch-mode", "cors")
 	req.Header.Set("sec-fetch-dest", "empty")
-	req.Header.Set("referer", PortalUserUrl)
+	req.Header.Set("referer", u.PortalUrlPerfix+PortalUserPath)
 	req.Header.Set("accept-language", "zh-CN,zh;q=0.9")
 
 	resp, err := client.Do(req)
@@ -308,7 +310,7 @@ func (u *SecUser) GetOneCardChargeRecords(stuId string, pageNum uint, pageSize u
 	client := &http.Client{}
 
 	var data = strings.NewReader("generaCardRechargeRecordNumber=" + stuId + "&pageNum=" + fmt.Sprint(pageNum) + "&pageSize=" + fmt.Sprint(pageSize))
-	req, err := http.NewRequest("POST", GetOneCardChargeRecordsUrl+"?vpn-0", data)
+	req, err := http.NewRequest("POST", u.PortalUrlPerfix+GetOneCardChargeRecordsPath+"?vpn-0", data)
 	if err != nil {
 		return
 	}
@@ -329,7 +331,7 @@ func (u *SecUser) GetOneCardChargeRecords(stuId string, pageNum uint, pageSize u
 	req.Header.Set("sec-fetch-site", "same-origin")
 	req.Header.Set("sec-fetch-mode", "cors")
 	req.Header.Set("sec-fetch-dest", "empty")
-	req.Header.Set("referer", PortalUserUrl)
+	req.Header.Set("referer", u.PortalUrlPerfix+PortalUserPath)
 	req.Header.Set("accept-language", "zh-CN,zh;q=0.9")
 
 	resp, err := client.Do(req)
@@ -362,7 +364,7 @@ func (u *SecUser) GetOneCardConsumeRecords(stuId string, pageNum uint, pageSize 
 	client := &http.Client{}
 
 	var data = strings.NewReader("generaCardConsumeRecordNumber=" + stuId + "&pageNum=" + fmt.Sprint(pageNum) + "&pageSize=" + fmt.Sprint(pageSize))
-	req, err := http.NewRequest("POST", GetOneCardConsumeRecordsUrl+"?vpn-0", data)
+	req, err := http.NewRequest("POST", u.PortalUrlPerfix+GetOneCardConsumeRecordsPath+"?vpn-0", data)
 	if err != nil {
 		return
 	}
@@ -383,7 +385,7 @@ func (u *SecUser) GetOneCardConsumeRecords(stuId string, pageNum uint, pageSize 
 	req.Header.Set("sec-fetch-site", "same-origin")
 	req.Header.Set("sec-fetch-mode", "cors")
 	req.Header.Set("sec-fetch-dest", "empty")
-	req.Header.Set("referer", PortalUserUrl)
+	req.Header.Set("referer", u.PortalUrlPerfix+PortalUserPath)
 	req.Header.Set("accept-language", "zh-CN,zh;q=0.9")
 
 	resp, err := client.Do(req)
@@ -416,7 +418,7 @@ func (u *SecUser) GetExamArrangements(stuId string, schoolYear uint, term uint) 
 	client := &http.Client{}
 
 	var data = strings.NewReader("examinationStudentId=" + stuId + "&examinationSchoolYear=" + fmt.Sprint(schoolYear) + "&examinationTerm=" + fmt.Sprint(term))
-	req, err := http.NewRequest("POST", GetExamArrangementsUrl+"?vpn-0", data)
+	req, err := http.NewRequest("POST", u.PortalUrlPerfix+GetExamArrangementsPath+"?vpn-0", data)
 	if err != nil {
 		return
 	}
@@ -437,7 +439,7 @@ func (u *SecUser) GetExamArrangements(stuId string, schoolYear uint, term uint) 
 	req.Header.Set("sec-fetch-site", "same-origin")
 	req.Header.Set("sec-fetch-mode", "cors")
 	req.Header.Set("sec-fetch-dest", "empty")
-	req.Header.Set("referer", PortalUserUrl)
+	req.Header.Set("referer", u.PortalUrlPerfix+PortalUserPath)
 	req.Header.Set("accept-language", "zh-CN,zh;q=0.9")
 
 	resp, err := client.Do(req)
@@ -470,7 +472,7 @@ func (u *SecUser) GetWeekCourses(stuId string, currentTime string, role uint) (r
 	client := &http.Client{}
 
 	var data = strings.NewReader("userName=" + stuId + "&currentTime=" + currentTime + "&role=" + fmt.Sprint(role))
-	req, err := http.NewRequest("POST", GetWeekCoursesUrl+"?vpn-0", data)
+	req, err := http.NewRequest("POST", u.PortalUrlPerfix+GetWeekCoursesPath+"?vpn-0", data)
 	if err != nil {
 		return
 	}
@@ -491,7 +493,7 @@ func (u *SecUser) GetWeekCourses(stuId string, currentTime string, role uint) (r
 	req.Header.Set("sec-fetch-site", "same-origin")
 	req.Header.Set("sec-fetch-mode", "cors")
 	req.Header.Set("sec-fetch-dest", "empty")
-	req.Header.Set("referer", PortalUserUrl)
+	req.Header.Set("referer", u.PortalUrlPerfix+PortalUserPath)
 	req.Header.Set("accept-language", "zh-CN,zh;q=0.9")
 
 	resp, err := client.Do(req)

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 // GetHomeParam 获取主页参数, 用于检测第一层登陆的成功性
@@ -60,4 +61,52 @@ func (u *SecUser) GetHomeParam() (rte HomeParam, err error) {
 
 	return
 
+}
+
+// GetHomeParam 获取主页参数, 用于检测第一层登陆的成功性
+func (u *SecUser) getPortalPath() {
+
+	client := &http.Client{
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
+
+	req, err := http.NewRequest("GET", LibraryUrl, nil)
+	if err != nil {
+		return
+	}
+
+	for _, cooike := range u.Cookies {
+		req.AddCookie(cooike)
+	}
+
+	req.Header.Set("authority", AuthorityUrl)
+	req.Header.Set("pragma", "no-cache")
+	req.Header.Set("accept", "application/json, text/plain, */*")
+	req.Header.Set("cache-control", "no-cache")
+	req.Header.Set("dnt", "1")
+	req.Header.Set("sec-ch-ua-mobile", "?0")
+	req.Header.Set("user-agent", UA)
+	req.Header.Set("sec-ch-ua", `" Not;A Brand";v="99", "Google Chrome";v="91", "Chromium";v="91"`)
+	req.Header.Set("sec-fetch-site", "same-origin")
+	req.Header.Set("sec-fetch-mode", "cors")
+	req.Header.Set("sec-fetch-dest", "empty")
+	req.Header.Set("referer", "https://sec.lit.edu.cn/frontend_static/frontend/login/index.html")
+	req.Header.Set("accept-language", "zh-CN,zh;q=0.9")
+
+	resp, err := client.Do(req)
+
+	if err != nil {
+		return
+	}
+
+	defer resp.Body.Close()
+
+	location, err := resp.Location()
+	if err != nil {
+		return
+	}
+
+	u.PortalUrlPerfix = strings.TrimRight(location.String(), "/")
 }

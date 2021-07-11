@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -49,7 +50,7 @@ func (u *SecUser) IsNeedCaptcha() (isNeed bool, err error) {
 
 	client := &http.Client{}
 
-	req, err := http.NewRequest("GET", NeedCaptchaUrl+"?username="+u.Username+"&_="+fmt.Sprint(time.Now().Unix()), nil)
+	req, err := http.NewRequest("GET", u.AuthlUrlPerfix+NeedCaptchaPath+"?username="+u.Username+"&_="+fmt.Sprint(time.Now().Unix()), nil)
 	if err != nil {
 		return
 	}
@@ -100,7 +101,7 @@ func (u *SecUser) GetCaptche() (pix []byte, err error) {
 
 	client := &http.Client{}
 
-	req, err := http.NewRequest("GET", CaptchaUrl, nil)
+	req, err := http.NewRequest("GET", u.AuthlUrlPerfix+CaptchaPath, nil)
 	if err != nil {
 		return
 	}
@@ -268,6 +269,9 @@ func (u *SecUser) login(captcha string) (err error) {
 		u.login(captcha)
 	}
 
+	// 获取门户path
+	u.getPortalPath()
+
 	return
 }
 
@@ -284,9 +288,11 @@ func (u *SecUser) LoginWithCap(captcha string) (err error) {
 // PortalLogin 第二层门户登陆
 func (u *SecUser) PortalLogin() (err error) {
 
+	log.Println(u.PortalUrlPerfix)
+
 	client := &http.Client{}
 
-	req, err := http.NewRequest("GET", PortalLoginUrl+"?vpn-0", nil)
+	req, err := http.NewRequest("GET", u.PortalUrlPerfix+PortalLoginPath+"?vpn-0", nil)
 	if err != nil {
 		return
 	}
@@ -306,7 +312,7 @@ func (u *SecUser) PortalLogin() (err error) {
 	req.Header.Set("sec-fetch-mode", "navigate")
 	req.Header.Set("sec-fetch-user", "?1")
 	req.Header.Set("sec-fetch-dest", "document")
-	req.Header.Set("referer", PortalIndexUrl)
+	req.Header.Set("referer", u.PortalUrlPerfix+PortalIndexPath)
 	req.Header.Set("accept-language", "zh-CN,zh;q=0.9")
 
 	resp, err := client.Do(req)
@@ -316,9 +322,22 @@ func (u *SecUser) PortalLogin() (err error) {
 
 	defer resp.Body.Close()
 
+	// location, err := resp.Location()
+	// if err != nil {
+	// 	return
+	// }
+
+	// log.Println(location)
+
+	// bodyText, _ := ioutil.ReadAll(resp.Body)
+
+	// body := string(bodyText)
+
+	// log.Println(body)
+
 	// 确保账号登陆成功
 	if !u.IsPortalLogged() {
-		u.PortalLogin()
+		err = errors.New("fail to login")
 	}
 
 	return

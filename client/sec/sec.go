@@ -11,49 +11,50 @@ import (
 var (
 	AuthorityUrl = "sec.lit.edu.cn"
 	// SecUrl 智慧门户主页
-	SecUrl = "https://" + AuthorityUrl
+	SecUrl     = "https://" + AuthorityUrl
+	LibraryUrl = SecUrl + "/rump_frontend/connect/?target=Library&id=9"
 	// AuthPath 认证界面的特殊路径
-	AuthPath = "LjIwNi4xNzAuMjE4LjE2Mg==/LjIwNy4xNTQuMjE3Ljk2LjE2MS4xNTkuMTY0Ljk3LjE1MS4xOTkuMTczLjE0NC4xOTguMjEy"
+	//AuthPath = "LjIwNi4xNzAuMjE4LjE2Mg==/LjIwNy4xNTQuMjE3Ljk2LjE2MS4xNTkuMTY0Ljk3LjE1MS4xOTkuMTczLjE0NC4xOTguMjEy"
 	// PortalPath 门户界面的特殊路径
-	PortalPath = "LjIwNi4xNzAuMjE4LjE2Mi4xNjg=/LjIxMS4xNzUuMTQ4LjE1OC4xNTguMTcwLjk0LjE1Mi4xNTAuMjE2LjEwMi4xOTcuMjA5"
+	//PortalPath = "LjIwNi4xNzAuMjE4LjE2Mg==/LjIxMS4xNzUuMTQ4LjE1OC4xNTguMTcwLjk0LjE1Mi4xNTAuMjE2LjEwMi4xOTcuMjA5"
 	// AuthlUrlPerfix 认证页面前戳
-	AuthlUrlPerfix = SecUrl + "/webvpn/" + AuthPath
+	// AuthlUrlPerfix = SecUrl + "/webvpn/" + AuthPath
 	// PortalUrlPerfix 门户页面前戳
-	PortalUrlPerfix = SecUrl + "/webvpn/" + PortalPath
-	// NeedCaptchaUrl 检查是否需要验证码登陆的接口
-	NeedCaptchaUrl = AuthlUrlPerfix + "/authserver/needCaptcha.html"
-	// CaptchaUrl 获取验证码
-	CaptchaUrl = AuthlUrlPerfix + "/authserver/captcha.html"
+	//PortalUrlPerfix = SecUrl + "/webvpn/" + PortalPath
+	// NeedCaptchaPath 检查是否需要验证码登陆的接口
+	NeedCaptchaPath = "/authserver/needCaptcha.html"
+	// CaptchaPath 获取验证码
+	CaptchaPath = "/authserver/captcha.html"
 	// HomeIndexUrl 导航主页
 	HomeIndexUrl = SecUrl + "/frontend_static/frontend/login/index.html"
 	// GetHomeParamUrl 主页参数
 	GetHomeParamUrl = SecUrl + "/rump_frontend/getHomeParam/"
-	// PortalIndexUrl 门户首页
-	PortalIndexUrl = PortalUrlPerfix + "/pc/lit/index.html"
-	// PortalLoginUrl 门户登陆地址 (第二层)
-	PortalLoginUrl = PortalUrlPerfix + "/portal/login/pcLogin"
-	// PortalUserUrl 门户个人信息主页
-	PortalUserUrl = PortalUrlPerfix + "/portal/pc/lit/user.html"
-	// GetCurrentMemberUrl 获取当前门户用户的接口
-	GetCurrentMemberUrl = PortalUrlPerfix + "/portal/myCenter/getMemberInfoForCurrentMember"
-	// GetStuUrl 获取学生信息接口
-	GetStuUrl = PortalUrlPerfix + "/microapplication/api/index/getStudentByStudentId"
+	// PortalIndexPath 门户首页
+	PortalIndexPath = "/pc/lit/index.html"
+	// PortalLoginPath 门户登陆地址 (第二层)
+	PortalLoginPath = "/portal/login/pcLogin"
+	// PortalUserPath 门户个人信息主页
+	PortalUserPath = "/portal/pc/lit/user.html"
+	// GetCurrentMemberPath 获取当前门户用户的接口
+	GetCurrentMemberPath = "/portal/myCenter/getMemberInfoForCurrentMember"
+	// GetStuPath 获取学生信息接口
+	GetStuPath = "/microapplication/api/index/getStudentByStudentId"
 	//  GetClassmatesDetail 获取学生同班同学信息接口
-	GetClassmatesDetailUrl = PortalUrlPerfix + "/microapplication/api/myclass/findMyclassmatesDetailCount"
-	// GetClassmatesUrl 获取学生同班同学列表接口
-	GetClassmatesUrl = PortalUrlPerfix + "/microapplication/api/myclass/findMyclassmates"
-	// GetOneCardBalanceUrl 获取一卡通余额接口
-	GetOneCardBalanceUrl = PortalUrlPerfix + "/microapplication/api/index/getBalanceAndConsumeThisMonthAndLastMonth"
-	// GetOneCardChargeRecordsUrl 获取一卡通充值记录接口
-	GetOneCardChargeRecordsUrl = PortalUrlPerfix + "/microapplication/api/index/listGeneraCardRechargeRecordByGeneraCardRechargeRecordNumberPage"
+	GetClassmatesDetailPath = "/microapplication/api/myclass/findMyclassmatesDetailCount"
+	// GetClassmatesPath 获取学生同班同学列表接口
+	GetClassmatesPath = "/microapplication/api/myclass/findMyclassmates"
+	// GetOneCardBalancePath 获取一卡通余额接口
+	GetOneCardBalancePath = "/microapplication/api/index/getBalanceAndConsumeThisMonthAndLastMonth"
+	// GetOneCardChargeRecordsPath 获取一卡通充值记录接口
+	GetOneCardChargeRecordsPath = "/microapplication/api/index/listGeneraCardRechargeRecordByGeneraCardRechargeRecordNumberPage"
 	// GetOneCardChargeRecordsUrl 获取一卡通消费记录接口
-	GetOneCardConsumeRecordsUrl = PortalUrlPerfix + "/microapplication/api/index/ListGeneraCardConsumeRecordByGeneraCardConsumeRecordNumberPage"
-	// GetExamArrangementsUrl 获取考试安排接口
-	GetExamArrangementsUrl = PortalUrlPerfix + "/microapplication/api/examArrangementController/findAllExamArrangements"
+	GetOneCardConsumeRecordsPath = "/microapplication/api/index/ListGeneraCardConsumeRecordByGeneraCardConsumeRecordNumberPage"
+	// GetExamArrangementsPath 获取考试安排接口
+	GetExamArrangementsPath = "/microapplication/api/examArrangementController/findAllExamArrangements"
 	// GetweekCourses 获取周课表接口
-	GetWeekCoursesUrl = PortalUrlPerfix + "/microapplication/api/course/getCourse"
+	GetWeekCoursesPath = "/microapplication/api/course/getCourse"
 	// // GetDepartmentPhoneList 获取部门电话列表
-	// GetDepartmentPhoneList = PortalUrlPerfix + "/microapplication/api/myclass/findMyclassmates"
+	// GetDepartmentPhoneList = "/microapplication/api/myclass/findMyclassmates"
 	// UA
 	UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36"
 )
@@ -63,7 +64,10 @@ type SecUser struct {
 	Username string
 	Password string
 	AuthUrl  string // 真实认证地址 (SecUrl" + "/webvpn/LjIwNi4xNzAuMjE4LjE2Mg==/LjIwNy4xNTQuMjE3Ljk2LjE2MS4xNTkuMTY0Ljk3LjE1MS4xOTkuMTczLjE0NC4xOTguMjEy/authserver/login?service=https%3A%2F%2Fsec.lit.edu.cn%2Frump_frontend%2FloginFromCas%2F)
-	Cookies  []*http.Cookie
+	//	AuthPath        string
+	AuthlUrlPerfix  string
+	PortalUrlPerfix string
+	Cookies         []*http.Cookie
 }
 
 // NewSecUser 新建智慧门户用户
@@ -96,6 +100,13 @@ func NewSecUser(username string, password string) (user SecUser, err error) {
 	if err != nil {
 		return
 	}
+
+	authPath, err := util.GetSubstringBetweenStringsByRE(user.AuthUrl, SecUrl, "/authserver/login")
+	if err != nil {
+		return
+	}
+
+	user.AuthlUrlPerfix = SecUrl + authPath
 
 	user.Cookies = resp.Cookies()
 
