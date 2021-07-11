@@ -76,6 +76,10 @@ func NewSecUser(username string, password string) (user SecUser, err error) {
 	user.Username = username
 	user.Password = password
 
+	return
+}
+
+func (u *SecUser) prepare() {
 	// 先从主页拿到真实的登陆地址以及初始化cookies
 	client := &http.Client{}
 
@@ -96,19 +100,17 @@ func NewSecUser(username string, password string) (user SecUser, err error) {
 		return
 	}
 
-	user.AuthUrl, err = util.GetSubstringBetweenStringsByRE(string(bodyText), `<a href="`, `"`)
+	u.AuthUrl, err = util.GetSubstringBetweenStringsByRE(string(bodyText), `<a href="`, `"`)
 	if err != nil {
 		return
 	}
 
-	authPath, err := util.GetSubstringBetweenStringsByRE(user.AuthUrl, SecUrl, "/authserver/login")
+	authPath, err := util.GetSubstringBetweenStringsByRE(u.AuthUrl, SecUrl, "/authserver/login")
 	if err != nil {
 		return
 	}
 
-	user.AuthlUrlPerfix = SecUrl + authPath
+	u.AuthlUrlPerfix = SecUrl + authPath
 
-	user.Cookies = resp.Cookies()
-
-	return
+	u.Cookies = resp.Cookies()
 }

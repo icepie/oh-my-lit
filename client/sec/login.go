@@ -141,6 +141,9 @@ func (u *SecUser) GetCaptche() (pix []byte, err error) {
 // login 通用登陆
 func (u *SecUser) login(captcha string) (err error) {
 
+	// 刷新 webvpn path
+	u.prepare()
+
 	client := &http.Client{}
 
 	// 获取必要参数
