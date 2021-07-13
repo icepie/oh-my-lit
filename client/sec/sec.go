@@ -76,6 +76,9 @@ func NewSecUser(username string, password string) (user SecUser, err error) {
 	user.Username = username
 	user.Password = password
 
+	// 刷新 webvpn path
+	user.prepare()
+
 	return
 }
 
