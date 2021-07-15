@@ -122,6 +122,9 @@ func (u *ZhydUser) GetCaptche() (pix []byte, err error) {
 // 登陆凑合用
 func (u *ZhydUser) login(captcha string) (err error) {
 
+	// 重置
+	u.RealCookies = u.Cookies
+
 	client := &http.Client{
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			return http.ErrUseLastResponse
@@ -259,7 +262,7 @@ func (u *ZhydUser) login(captcha string) (err error) {
 	req.Header.Set("User-Agent", UA)
 	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
 	req.Header.Set("Accept-Language", "zh-CN,zh;q=0.9")
-	//req.Header.Set("Cookie", "CASTGC=TGT-53763-47PP0wqe7fUOGkLMhIH7nRbGwBQAM5y2mongWXNHTE2cd0GRci-GUkR-ids1-1624116835902; JSESSIONID=00007TCrre9XQxFMhnNrA46zt1R:195e0nr50")
+
 	resp, err = client.Do(req)
 	if err != nil {
 		return

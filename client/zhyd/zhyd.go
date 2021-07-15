@@ -63,7 +63,7 @@ func NewZhydUser(username string, password string) (user ZhydUser, err error) {
 	defer resp.Body.Close()
 
 	user.Cookies = resp.Cookies()
-	user.RealCookies = resp.Cookies()
+	// user.RealCookies = resp.Cookies()
 
 	return
 
