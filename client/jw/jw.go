@@ -21,6 +21,8 @@ var (
 	MenuPath = "/frame/menu.aspx"
 	// SYSBannerPath 管理员菜单地址
 	SYSBannerPath = "/SYS/Main_banner.aspx"
+	// LoginBySecPath 智慧门户快速登陆
+	LoginBySecPath = "/cas_njjz.aspx"
 	// MAINFRMPath 主页
 	MAINFRMPath = "/MAINFRM.aspx"
 	// UserAgent UA

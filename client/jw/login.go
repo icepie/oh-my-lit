@@ -3,7 +3,6 @@ package jw
 import (
 	"errors"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -14,37 +13,40 @@ import (
 	"github.com/icepie/oh-my-lit/client/util"
 )
 
-// JwUser reset MianURL
+// JwUser Login
 func (u *JwUser) Login() (err error) {
+
+	if u.IsBoundSec {
+		// 暂时未实现登陆任意帐号
+		err = errors.New("please use LoginBySec()")
+		return
+		//LoginUrl += "?vpn-0"
+	}
 
 	client := &http.Client{}
 
 	LoginUrl := u.Url.String() + LoginPath
 
-	if u.IsBoundSec {
-		LoginUrl += "?vpn-0"
-	}
-
 	req, _ := http.NewRequest(http.MethodGet, LoginUrl, nil)
 
+	// 整上
 	for _, cookie := range u.Cookies {
 		req.AddCookie(cookie)
 	}
 
-	log.Println(LoginUrl)
+	// command, _ := http2curl.GetCurlCommand(req)
+	// fmt.Println(command)
 
 	resp1, err := client.Do(req)
 	if err != nil {
 		return
 	}
 
+	defer resp1.Body.Close()
+
 	if len(u.Cookies) == 0 {
 		u.Cookies = resp1.Cookies()
 	}
-
-	log.Println(LoginUrl)
-
-	defer resp1.Body.Close()
 
 	// // 取得 Cookies
 	// u.Cookies = resp1.Cookies()
@@ -55,12 +57,10 @@ func (u *JwUser) Login() (err error) {
 	// 	return
 	// }
 
-	log.Println(LoginUrl)
-
 	// 将 gb2312 转换为 utf-8
 	bodystr := util.GB18030ToUTF8(string(b))
 
-	log.Println(string(bodystr))
+	// log.Println(string(bodystr))
 
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(bodystr))
 	if err != nil {
@@ -74,7 +74,12 @@ func (u *JwUser) Login() (err error) {
 		return
 	}
 
-	log.Println(vs)
+	// 不重定向
+	// client = &http.Client{
+	// 	CheckRedirect: func(req *http.Request, via []*http.Request) error {
+	// 		return http.ErrUseLastResponse
+	// 	},
+	// }
 
 	data := url.Values{
 		"__VIEWSTATE":             {vs},
@@ -105,29 +110,34 @@ func (u *JwUser) Login() (err error) {
 		r.Header.Set("sec-fetch-mode", "navigate")
 		r.Header.Set("sec-fetch-user", "?1")
 		r.Header.Set("sec-fetch-dest", "document")
-		r.Header.Set("referer", "https://sec.lit.edu.cn/webvpn/LjIwNi4xNzAuMjE4LjE2Mg==/LjIwNy4xNTQuMjE3Ljk2LjE2MS4xNTkuMTY0Ljk3LjE1MS4xOTkuMTczLjE0NC4xOTguMjEy/authserver/login?vpn-0&service=https%3A%2F%2Fsec.lit.edu.cn%2Frump_frontend%2FloginFromCas%2F")
+		r.Header.Set("referer", LoginUrl)
 		r.Header.Set("accept-language", "zh-CN,zh;q=0.9")
 
 	} else {
 
-		r.Header.Add("Host", u.Url.Host)
-		r.Header.Add("Proxy-Connection", "keep-alive")
-		r.Header.Add("Content-Length", strconv.Itoa(len(data.Encode())))
-		r.Header.Add("Origin", u.Url.String())
-		r.Header.Add("Upgrade-Insecure-Requests", "1")
-		r.Header.Add("DNT", "1")
-		r.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-		r.Header.Add("User-Agent", UserAgent)
-		r.Header.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
-		r.Header.Add("Referer", LoginUrl)
-		r.Header.Add("Accept-Encoding", "gzip, deflate")
-		r.Header.Add("Accept-Language", "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7")
+		r.Header.Set("Host", u.Url.Host)
+		r.Header.Set("Proxy-Connection", "keep-alive")
+		r.Header.Set("Content-Length", strconv.Itoa(len(data.Encode())))
+		r.Header.Set("Origin", u.Url.String())
+		r.Header.Set("Upgrade-Insecure-Requests", "1")
+		r.Header.Set("DNT", "1")
+		r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+		r.Header.Set("User-Agent", UserAgent)
+		r.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
+		r.Header.Set("Referer", LoginUrl)
+		r.Header.Set("Accept-Encoding", "gzip, deflate")
+		r.Header.Set("Accept-Language", "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7")
 
 	}
 
 	for _, cookie := range u.Cookies {
 		r.AddCookie(cookie)
 	}
+
+	// command, _ = http2curl.GetCurlCommand(r)
+	// fmt.Println(command)
+
+	// log.Fatal()
 
 	resp, err := client.Do(r)
 	if err != nil {
@@ -136,7 +146,51 @@ func (u *JwUser) Login() (err error) {
 
 	defer resp.Body.Close()
 
-	log.Println(util.GB18030ToUTF8(string(b)))
+	// log.Println(util.GB18030ToUTF8(string(b)))
+
+	isLogged := u.IsLogged()
+
+	if !isLogged {
+		err = errors.New("jw fail to login")
+	}
+
+	return
+
+}
+
+func (u *JwUser) LoginBySec() (err error) {
+
+	if !u.IsBoundSec {
+		// 暂时未实现登陆任意帐号
+		err = errors.New("only for sec user")
+		return
+		//LoginUrl += "?vpn-0"
+	}
+
+	LoginBySecUrl := u.Url.String() + LoginBySecPath + "?vpn-0"
+
+	// if u.IsBoundSec {
+	// 	MAINFRMURL += "?vpn-0"
+	// }
+
+	client := &http.Client{}
+
+	req, _ := http.NewRequest(http.MethodGet, LoginBySecUrl, nil)
+
+	// 整上
+	for _, cookie := range u.Cookies {
+		req.AddCookie(cookie)
+	}
+
+	// command, _ := http2curl.GetCurlCommand(req)
+	// fmt.Println(command)
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return
+	}
+
+	defer resp.Body.Close()
 
 	isLogged := u.IsLogged()
 
@@ -151,17 +205,17 @@ func (u *JwUser) Login() (err error) {
 // 是否登陆
 func (u *JwUser) IsLogged() (isLogged bool) {
 
-	MenuURL := u.Url.String() + MenuPath
+	isLogged = false
+
+	MAINFRMURL := u.Url.String() + MenuPath
 
 	if u.IsBoundSec {
-		MenuURL += "?vpn-0"
+		MAINFRMURL += "?vpn-0"
 	}
 
 	client := &http.Client{}
 
-	isLogged = false
-
-	r, _ := http.NewRequest(http.MethodGet, MenuURL, nil)
+	r, _ := http.NewRequest(http.MethodGet, MAINFRMURL, nil)
 
 	for _, cookie := range u.Cookies {
 		r.AddCookie(cookie)
@@ -180,17 +234,10 @@ func (u *JwUser) IsLogged() (isLogged bool) {
 		r.Header.Set("sec-fetch-mode", "navigate")
 		r.Header.Set("sec-fetch-user", "?1")
 		r.Header.Set("sec-fetch-dest", "document")
-		r.Header.Set("referer", "https://sec.lit.edu.cn/webvpn/LjIwNi4xNzAuMjE4LjE2Mg==/LjIwNy4xNTQuMjE3Ljk2LjE2MS4xNTkuMTY0Ljk3LjE1MS4xOTkuMTczLjE0NC4xOTguMjEy/authserver/login?vpn-0&service=https%3A%2F%2Fsec.lit.edu.cn%2Frump_frontend%2FloginFromCas%2F")
+		r.Header.Set("referer", MAINFRMURL)
 		r.Header.Set("accept-language", "zh-CN,zh;q=0.9")
 	} else {
-		r.Header.Add("Host", u.Url.Host)
-		r.Header.Add("User-Agent", UserAgent)
-		r.Header.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
-		r.Header.Add("Accept-Language", "zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2")
-		r.Header.Add("Accept-Encoding", "gzip, deflate")
-		r.Header.Add("Connection", "keep-alive")
-		r.Header.Add("Referer", MenuURL)
-		r.Header.Add("Upgrade-Insecure-Requests", "1")
+		r.Header.Set("User-Agent", UserAgent)
 	}
 
 	resp, err := client.Do(r)
@@ -207,12 +254,17 @@ func (u *JwUser) IsLogged() (isLogged bool) {
 
 	body := util.GB18030ToUTF8(string(b))
 
-	log.Println(util.GB18030ToUTF8(string(b)))
+	// log.Println(util.GB18030ToUTF8(string(b)))
 
-	log.Println(r.Cookies())
+	// log.Println(r.Cookies())
+
+	// log.Println(MAINFRMURL)
+
+	// command, _ := http2curl.GetCurlCommand(r)
+	// fmt.Println(command)
 
 	// 检测是否登陆成功
-	if strings.Contains(body, "洛阳理工学院教务网站") {
+	if strings.Contains(body, "洛阳理工学院教务") {
 		isLogged = true
 	}
 
