@@ -130,6 +130,10 @@ func (u *SecUser) PerSetCooikes() (err error) {
 		return
 	}
 
+	if len(authPath) == 0 {
+		u.PerSetCooikes()
+	}
+
 	u.AuthlUrlPerfix = SecUrl + authPath
 
 	return
