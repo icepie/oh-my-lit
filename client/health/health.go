@@ -58,18 +58,30 @@ type HealthUser struct {
 }
 
 // NewHealthUser 新建健康平台用户
-func NewHealthUser(Username string, Password string) (u HealthUser, err error) {
+func NewHealthUser() *HealthUser {
+
+	var u HealthUser
+
 	u.Client = resty.New()
-	u.Username = Username
-	u.Password = Password
+	// u.Username = Username
+	// u.Password = Password
 
 	// u.Client.SetDebug(true)
 	u.Client.SetHeaders(MainHeaders)
 
-	// // 预先设置cookies
-	// u.PerSetCooikes()
+	return &u
+}
 
-	return
+// SetPassword 设置用户名
+func (u *HealthUser) SetUsename(username string) *HealthUser {
+	u.Username = username
+	return u
+}
+
+// SetPassword 设置密码
+func (u *HealthUser) SetPassword(password string) *HealthUser {
+	u.Password = password
+	return u
 }
 
 // PerSetCooikes 访问一下反代页面

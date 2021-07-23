@@ -9,14 +9,15 @@ import (
 
 func main() {
 
-	user, err := health.NewHealthUser("B19071121", "Lym001029", os.Args[1])
-	if err != nil {
-		log.Fatalln("实例化用户失败:", err)
-	}
+	// 实例化用户 (链式调用)
+	user := health.NewHealthUser().
+		SetUsename("B19071121").
+		SetPassword(os.Args[1])
 
-	user.Client.SetProxy("http://proxy.xxxxxxx.cn:12333")
+	// 设置http客户端参数 (链式调用)
+	user.Client.SetProxy("http://proxy.xxxxxxx.cn:12333") //  .SetDebug(true)
 
-	err = user.Login()
+	err := user.Login()
 	if err != nil {
 		log.Fatalln("登陆失败:", err)
 	}

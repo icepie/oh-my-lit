@@ -9,6 +9,16 @@ import (
 // Login 登录健康平台
 func (u *HealthUser) Login() (err error) {
 
+	if len(u.Username) == 0 {
+		err = errors.New("empty username")
+		return
+	}
+
+	if len(u.Password) == 0 {
+		err = errors.New("empty password")
+		return
+	}
+
 	// 预先设置cookies
 	u.PerSetCooikes()
 
