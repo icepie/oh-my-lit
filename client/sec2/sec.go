@@ -1,6 +1,9 @@
 package sec2
 
 import (
+	"errors"
+	"strings"
+
 	"github.com/go-resty/resty/v2"
 	"github.com/icepie/oh-my-lit/client/util"
 )
@@ -87,14 +90,13 @@ type SecUser struct {
 	Client          *resty.Client
 }
 
-// NewSecUser 新建智慧门户用户
+// NewSecUser 新建智慧门户用户
 func NewSecUser() *SecUser {
 
 	var u SecUser
 
 	u.Client = resty.New()
 	u.Client.SetHeaders(MainHeaders)
-	u.Client.SetDebug(true)
 
 	// 刷新 webvpn path
 	u.PerSetCooikes()
@@ -120,7 +122,7 @@ func (u *SecUser) PerSetCooikes() (err error) {
 	resp, _ := u.Client.R().
 		Get(SecUrl)
 
-	u.AuthUrl, err = util.GetSubstringBetweenStringsByRE(string(resp.Body()), `<a href="`, `"`)
+	u.AuthUrl, err = util.GetSubstringBetweenStringsByRE(resp.String(), `<a href="`, `"`)
 	if err != nil {
 		return
 	}
@@ -135,6 +137,33 @@ func (u *SecUser) PerSetCooikes() (err error) {
 	}
 
 	u.AuthlUrlPerfix = SecUrl + authPath
+
+	return
+}
+
+// PerSetPortalPath 获取门户网页 Path
+func (u *SecUser) PerSetPortalPath() (err error) {
+
+	// 禁止重定向
+	tmpClient := u.Client.SetRedirectPolicy(resty.NoRedirectPolicy())
+
+	resp, _ := tmpClient.R().
+		SetHeader("accept", "application/json, text/plain, */*").
+		SetHeader("referer", SecUrl+"/frontend_static/frontend/login/index.html").
+		Get(LibraryUrl)
+
+	// log.Println(resp.RawResponse.Location())
+
+	location, err := resp.RawResponse.Location()
+	if err != nil {
+		return
+	}
+
+	u.PortalUrlPerfix = strings.TrimRight(location.String(), "/")
+
+	if len(u.PortalUrlPerfix) == 0 {
+		err = errors.New("get portal path error")
+	}
 
 	return
 }

@@ -4,16 +4,26 @@ import (
 	"errors"
 	"fmt"
 	"html"
+	"log"
 	"strings"
 	"time"
 
+	"github.com/go-resty/resty/v2"
 	"github.com/icepie/oh-my-lit/client/util"
 )
 
-// IsLogged() 检测用户是否登陆
+// IsLogged() 用户是否已登陆
 func (u *SecUser) IsLogged() (isLogged bool) {
 
 	_, err := u.GetHomeParam()
+
+	return err == nil
+}
+
+// IsPortalLogged 用户是否已登陆门户
+func (u *SecUser) IsPortalLogged() (isLogged bool) {
+
+	_, err := u.GetCurrentMember()
 
 	return err == nil
 }
@@ -170,8 +180,8 @@ func (u *SecUser) login(captcha string) (err error) {
 		u.login(captcha)
 	}
 
-	// // 获取门户path
-	// u.getPortalPath()
+	// 获取门户path
+	err = u.PerSetPortalPath()
 
 	return
 }
@@ -184,4 +194,30 @@ func (u *SecUser) Login() (err error) {
 // LoginWithCap 第一层验证码登陆
 func (u *SecUser) LoginWithCap(captcha string) (err error) {
 	return u.login(captcha)
+}
+
+// PortalLogin 第二层门户登陆
+func (u *SecUser) PortalLogin() (err error) {
+
+	if len(u.PortalUrlPerfix) == 0 {
+		err = errors.New("please login first")
+		return
+	}
+
+	// 增加重定向次数
+	tmpClient := u.Client.SetRedirectPolicy(resty.FlexibleRedirectPolicy(15))
+
+	resp, _ := tmpClient.R().
+		SetHeader("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9").
+		SetHeader("referer", u.PortalUrlPerfix+PortalIndexPath).
+		Get(u.PortalUrlPerfix + PortalLoginPath + "?vpn-0")
+
+	log.Println(resp.StatusCode())
+
+	// 确保账号登陆成功
+	if !u.IsPortalLogged() {
+		err = errors.New("fail to  login")
+	}
+
+	return
 }
