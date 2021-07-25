@@ -86,3 +86,47 @@ type GetStudentRte struct {
 	} `json:"obj"`
 	Success bool `json:"success"`
 }
+
+// GetClassmatesDetailRte  获取同班同学信息响应结构
+type GetClassmatesDetailRte struct {
+	Attributes struct {
+		CountMan                   uint64 `json:"countMan"`
+		CountWoman                 uint64 `json:"countWoman"`
+		InstructorClassClassNumber string `json:"instructorClassClassNumber"`
+		StudentSex                 string `json:"studentSex"`
+	} `json:"attributes"`
+	Count   interface{} `json:"count"`
+	Msg     string      `json:"msg"`
+	Obj     interface{} `json:"obj"`
+	Success bool        `json:"success"`
+}
+
+// GetClassmatesRte 获取同班同学列表响应结构
+type GetClassmatesRte struct {
+	Attributes interface{} `json:"attributes"`
+	Count      int64       `json:"count"`
+	Msg        string      `json:"msg"`
+	Obj        []struct {
+		StudentAdmissionTime    string      `json:"studentAdmissionTime"`
+		StudentAdress           interface{} `json:"studentAdress"`
+		StudentBirthday         string      `json:"studentBirthday"`
+		StudentCategory         string      `json:"studentCategory"`
+		StudentClassCode        string      `json:"studentClassCode"`
+		StudentClassName        string      `json:"studentClassName"`
+		StudentEductionalSystme string      `json:"studentEductionalSystme"`
+		StudentFacultiesCode    string      `json:"studentFacultiesCode"`
+		StudentFacultiesName    string      `json:"studentFacultiesName"`
+		StudentGrade            string      `json:"studentGrade"`
+		StudentID               string      `json:"studentId"`
+		StudentIDNumber         string      `json:"studentIdNumber"`
+		StudentMajor            string      `json:"studentMajor"`
+		StudentMajorName        string      `json:"studentMajorName"`
+		StudentName             string      `json:"studentName"`
+		StudentNation           interface{} `json:"studentNation"`
+		StudentPhone            string      `json:"studentPhone"`
+		StudentPoliticalStatus  interface{} `json:"studentPoliticalStatus"`
+		StudentRegisterState    string      `json:"studentRegisterState"`
+		StudentSex              string      `json:"studentSex"`
+	} `json:"obj"`
+	Success bool `json:"success"`
+}

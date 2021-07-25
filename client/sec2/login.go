@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html"
 	"log"
+	"net/http"
 	"strings"
 	"time"
 
@@ -169,9 +170,7 @@ func (u *SecUser) login(captcha string) (err error) {
 	// 判断是否有错误
 	if strings.Contains(body, "callback_err_login") {
 		loginErrStr, _ := util.GetSubstringBetweenStringsByRE(body, `callback_err_login">`, `</div>`)
-
 		err = errors.New(loginErrStr)
-
 		return
 	}
 
@@ -207,12 +206,17 @@ func (u *SecUser) PortalLogin() (err error) {
 	// 增加重定向次数
 	tmpClient := u.Client.SetRedirectPolicy(resty.FlexibleRedirectPolicy(15))
 
-	resp, _ := tmpClient.R().
+	resp, reqErr := tmpClient.R().
 		SetHeader("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9").
 		SetHeader("referer", u.PortalUrlPerfix+PortalIndexPath).
 		Get(u.PortalUrlPerfix + PortalLoginPath + "?vpn-0")
 
-	log.Println(resp.StatusCode())
+	if resp.StatusCode() != http.StatusOK {
+		err = reqErr
+		return
+	}
+
+	log.Println()
 
 	// 确保账号登陆成功
 	if !u.IsPortalLogged() {
