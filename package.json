@@ -7,10 +7,10 @@
   "author": "icepie",
   "license": "MIT",
   "devDependencies": {
-    "vuepress": "^2.0.0-beta.22"
+    "vuepress": "^1.8.2"
   },
-    "scripts": {
-      "docs:dev": "vuepress dev docs",
-      "docs:build": "vuepress build docs"
-    }
+  "scripts": {
+    "docs:dev": "vuepress dev docs",
+    "docs:build": "vuepress build docs"
+  }
 }
