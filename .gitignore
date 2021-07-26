@@ -1,5 +1,12 @@
 .vscode/
 .env
 .idea
-oh-my-lit
-oh-my-lit.exe
+
+# log
+*.log
+
+# for docs
+node_modules
+.temp
+.cache
+

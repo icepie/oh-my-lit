@@ -1,0 +1,16 @@
+{
+  "name": "oh-my-lit",
+  "version": "1.0.0",
+  "description": "docs for oh-my-lit",
+  "main": "index.js",
+  "repository": "oh-my-lit.icepie.net",
+  "author": "icepie",
+  "license": "MIT",
+  "devDependencies": {
+    "vuepress": "^2.0.0-beta.22"
+  },
+    "scripts": {
+      "docs:dev": "vuepress dev docs",
+      "docs:build": "vuepress build docs"
+    }
+}
