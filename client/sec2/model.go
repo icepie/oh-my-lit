@@ -358,3 +358,33 @@ type GetAllInvigilateRte struct {
 	} `json:"obj"`
 	Success bool `json:"success"`
 }
+
+// GetAssetsRte 获取资产返回结构
+type GetAssetsRte struct {
+	Attributes interface{} `json:"attributes"`
+	Count      int64       `json:"count"`
+	Msg        string      `json:"msg"`
+	Obj        []struct {
+		AssetsAmount                  string      `json:"assetsAmount"`
+		AssetsBookkeeper              string      `json:"assetsBookkeeper"`
+		AssetsCode                    interface{} `json:"assetsCode"`
+		AssetsDepositName             string      `json:"assetsDepositName"`
+		AssetsFinancialNationality    string      `json:"assetsFinancialNationality"`
+		AssetsFinancialVoucher        string      `json:"assetsFinancialVoucher"`
+		AssetsFinancialWarrantyPeriod string      `json:"assetsFinancialWarrantyPeriod"`
+		AssetsFundsSubject            string      `json:"assetsFundsSubject"`
+		AssetsHandlers                string      `json:"assetsHandlers"`
+		AssetsManufactor              string      `json:"assetsManufactor"`
+		AssetsModel                   string      `json:"assetsModel"`
+		AssetsMoney                   string      `json:"assetsMoney"`
+		AssetsName                    string      `json:"assetsName"`
+		AssetsPurchaseDate            string      `json:"assetsPurchaseDate"`
+		AssetsSpecification           string      `json:"assetsSpecification"`
+		AssetsStaffID                 int64       `json:"assetsStaffId"`
+		AssetsStaffName               string      `json:"assetsStaffName"`
+		AssetsStaffNumber             string      `json:"assetsStaffNumber"`
+		AssetsType                    string      `json:"assetsType"`
+		AssetsUnitName                string      `json:"assetsUnitName"`
+	} `json:"obj"`
+	Success bool `json:"success"`
+}

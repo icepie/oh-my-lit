@@ -391,3 +391,33 @@ func (u *SecUser) GetAllInvigilateByStaffID(StaffID string, schoolYear int, scho
 func (u *SecUser) GetAllInvigilate(schoolYear int, schoolTerm int) (rte GetAllInvigilateRte, err error) {
 	return u.GetAllInvigilateByStaffID(u.Username, schoolYear, schoolTerm)
 }
+
+// GetAssetsByStaffID 通过职工号获取资产
+func (u *SecUser) GetAssetsByStaffID(staffID string, pageNum int, pageSize int) (rte GetAssetsRte, err error) {
+
+	resp, _ := u.Client.R().
+		SetHeader("referer", u.PortalUrlPerfix+PortalUserPath).
+		SetFormData(map[string]string{
+			"assetsStaffNumber": staffID,
+			"pageNum":           strconv.Itoa(pageNum),
+			"pageSize":          strconv.Itoa(pageSize),
+		}).
+		Post(u.PortalUrlPerfix + GetAssetsPath + "?vpn-0")
+
+	err = json.Unmarshal(resp.Body(), &rte)
+	if err != nil {
+		return
+	}
+
+	// 接口错误解析
+	if !rte.Success {
+		err = errors.New(rte.Msg)
+	}
+
+	return
+}
+
+// GetAssetsByStaff 获取资产
+func (u *SecUser) GetAssets(pageNum int, pageSize int) (rte GetAssetsRte, err error) {
+	return u.GetAssetsByStaffID(u.Username, pageNum, pageSize)
+}
