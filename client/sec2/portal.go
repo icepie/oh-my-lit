@@ -357,3 +357,37 @@ func (u *SecUser) GetClassStudents(classCode string, pageNum int, pageSize int) 
 
 	return
 }
+
+// GetAllInvigilateByStaffID 通过职工号获取监考安排
+//	schoolYear := "2021" //  学年
+//	schoolTerm := "1" // {第一学期:0,第二学期:1}
+func (u *SecUser) GetAllInvigilateByStaffID(StaffID string, schoolYear int, schoolTerm int) (rte GetAllInvigilateRte, err error) {
+
+	resp, _ := u.Client.R().
+		SetHeader("referer", u.PortalUrlPerfix+PortalUserPath).
+		SetFormData(map[string]string{
+			"invigilateStaffNumber": StaffID,
+			"invigilateSchoolYear":  strconv.Itoa(schoolYear),
+			"invigilateTerm":        strconv.Itoa(schoolTerm),
+		}).
+		Post(u.PortalUrlPerfix + GetAllInvigilatePath + "?vpn-0")
+
+	err = json.Unmarshal(resp.Body(), &rte)
+	if err != nil {
+		return
+	}
+
+	// 接口错误解析
+	if !rte.Success {
+		err = errors.New(rte.Msg)
+	}
+
+	return
+}
+
+// GetAllInvigilate 获取监考安排
+//	schoolYear := "2021" //  学年
+//	schoolTerm := "1" // {第一学期:0,第二学期:1}
+func (u *SecUser) GetAllInvigilate(schoolYear int, schoolTerm int) (rte GetAllInvigilateRte, err error) {
+	return u.GetAllInvigilateByStaffID(u.Username, schoolYear, schoolTerm)
+}

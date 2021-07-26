@@ -335,3 +335,26 @@ type GetClassStudentsRte struct {
 	} `json:"obj"`
 	Success bool `json:"success"`
 }
+
+// GetAllInvigilateRte 获取监考安排返回结构
+type GetAllInvigilateRte struct {
+	Attributes interface{} `json:"attributes"`
+	Count      interface{} `json:"count"`
+	Msg        string      `json:"msg"`
+	Obj        []struct {
+		InvigilateAdressCode       interface{} `json:"invigilateAdressCode"`
+		InvigilateAdressName       string      `json:"invigilateAdressName"`
+		InvigilateCourseCode       string      `json:"invigilateCourseCode"`
+		InvigilateCourseName       string      `json:"invigilateCourseName"`
+		InvigilateEndTime          string      `json:"invigilateEndTime"`
+		InvigilateExaminationBatch string      `json:"invigilateExaminationBatch"`
+		InvigilateExaminationCount string      `json:"invigilateExaminationCount"`
+		InvigilateID               int64       `json:"invigilateId"`
+		InvigilateSchoolYear       string      `json:"invigilateSchoolYear"`
+		InvigilateStaffNumber      string      `json:"invigilateStaffNumber"`
+		InvigilateStartTime        string      `json:"invigilateStartTime"`
+		InvigilateTerm             string      `json:"invigilateTerm"`
+		InvigilateTime             string      `json:"invigilateTime"`
+	} `json:"obj"`
+	Success bool `json:"success"`
+}

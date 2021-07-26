@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"html"
-	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -215,8 +214,6 @@ func (u *SecUser) PortalLogin() (err error) {
 		err = reqErr
 		return
 	}
-
-	log.Println()
 
 	// 确保账号登陆成功
 	if !u.IsPortalLogged() {

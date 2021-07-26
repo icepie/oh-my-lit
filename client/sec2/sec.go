@@ -66,6 +66,8 @@ var (
 	GetStaffPath = "/microapplication/api/index/getStaffByStaffNumber"
 	// GetClassStudents 获取班级学生接口
 	GetClassStudentsPath = "/microapplication/api/myclass/findTeachclassStudents"
+	// GetAllInvigilate 获取监考信息接口
+	GetAllInvigilatePath = "/microapplication/api/examArrangementController/findAllInvigilate?vpn-0"
 	// UA
 	UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36"
 	// MainHeaders
