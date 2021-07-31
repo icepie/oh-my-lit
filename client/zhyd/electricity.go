@@ -1,10 +1,9 @@
 package zhyd
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
-	"io/ioutil"
-	"net/http"
 	"regexp"
 	"strconv"
 	"strings"
@@ -16,32 +15,10 @@ import (
 // GetDormElectricity 获取寝室用电情况
 func (u *ZhydUser) GetDormElectricity() (rte []DormElectricity, err error) {
 
-	client := &http.Client{}
+	resp, _ := u.Client.R().
+		Get(GetDormElectricityURl)
 
-	req, err := http.NewRequest("GET", GetDormElectricityURl, nil)
-	if err != nil {
-		return
-	}
-
-	for _, cooike := range u.RealCookies {
-		req.AddCookie(cooike)
-	}
-
-	// log.Println(req.Cookies())
-
-	req.Header.Set("Accept", "*/*")
-	req.Header.Set("Accept-Encoding", "gzip, deflate")
-	req.Header.Set("Connection", "keep-alive")
-	req.Header.Set("User-Agent", UA)
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return
-	}
-
-	defer resp.Body.Close()
-
-	doc, err := goquery.NewDocumentFromReader(resp.Body)
+	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(resp.Body()))
 	if err != nil {
 		return
 	}
@@ -93,52 +70,13 @@ func (u *ZhydUser) GetDormElectricity() (rte []DormElectricity, err error) {
 // GetElectricityDetails 获取寝室用电明细
 func (u *ZhydUser) GetElectricityDetails() (rte []ElectricityDetails, err error) {
 
-	client := &http.Client{}
+	resp, _ := u.Client.R().
+		Get(GetElectricityDetailsUrl)
 
-	req, err := http.NewRequest("GET", GetElectricityDetailsUrl, nil)
+	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(resp.Body()))
 	if err != nil {
 		return
 	}
-
-	for _, cooike := range u.RealCookies {
-		req.AddCookie(cooike)
-	}
-
-	// log.Println(req.Cookies())
-	// }
-
-	req.Header.Set("Accept", "*/*")
-	req.Header.Set("Accept-Encoding", "gzip, deflate")
-	req.Header.Set("Connection", "keep-alive")
-	req.Header.Set("User-Agent", UA)
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return
-	}
-
-	defer resp.Body.Close()
-
-	// bodyText, err := ioutil.ReadAll(resp.Body)
-	// if err != nil {
-	// 	return
-	// }
-
-	// body := string(bodyText)
-
-	// log.Println(body)
-
-	// Load the HTML document
-	doc, err := goquery.NewDocumentFromReader(resp.Body)
-	if err != nil {
-		return
-	}
-
-	// log.Println(doc.Html())
-
-	// doc.Find("div.mui-card>ul.mui-table-view>").Each(func(i int, s *goquery.Selection) {
-	// 	log.Println(s.Html())
-	// })
 
 	doc.Find("div.mui-content>div").Each(func(i int, s *goquery.Selection) {
 
@@ -198,39 +136,12 @@ func (u *ZhydUser) GetElectricityDetails() (rte []ElectricityDetails, err error)
 // GetChargeRecords 获取消费记录
 func (u *ZhydUser) GetChargeRecords() (rte []ChargeRecords, err error) {
 
-	client := &http.Client{}
-
-	req, err := http.NewRequest("GET", GetChargeRecordsUrl, nil)
-	if err != nil {
-		return
-	}
-
-	for _, cooike := range u.RealCookies {
-		req.AddCookie(cooike)
-	}
-
-	req.Header.Set("Accept", "*/*")
-	req.Header.Set("Accept-Encoding", "gzip, deflate")
-	req.Header.Set("Connection", "keep-alive")
-	req.Header.Set("User-Agent", UA)
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return
-	}
-
-	defer resp.Body.Close()
-
-	bodyText, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return
-	}
-
-	body := string(bodyText)
+	resp, _ := u.Client.R().
+		Get(GetChargeRecordsUrl)
 
 	reg := regexp.MustCompile(`this.infoList = \[(.*)\]`)
 
-	result := reg.FindAllStringSubmatch(body, -1)
+	result := reg.FindAllStringSubmatch(resp.String(), -1)
 
 	if len(result) == 0 {
 		err = errors.New("no result")

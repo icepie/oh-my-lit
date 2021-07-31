@@ -4,83 +4,47 @@ import (
 	"errors"
 	"fmt"
 	"html"
-	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
 
+	"github.com/go-resty/resty/v2"
 	"github.com/icepie/oh-my-lit/client/util"
 )
 
-// IsLogged() 检测用户是否登陆
+// IsLogged() 用户是否已登陆
 func (u *SecUser) IsLogged() (isLogged bool) {
 
 	_, err := u.GetHomeParam()
 
-	//log.Println(t)
-
-	if err != nil {
-		isLogged = false
-	} else {
-		isLogged = true
-		return
-	}
-
-	return
+	return err == nil
 }
 
-// IsPortalLogged 是否门户登陆
+// IsPortalLogged 用户是否已登陆门户
 func (u *SecUser) IsPortalLogged() (isLogged bool) {
+
 	_, err := u.GetCurrentMember()
 
-	if err != nil {
-		isLogged = false
-	} else {
-		isLogged = true
-		return
-	}
-
-	return
-
+	return err == nil
 }
 
 // IsNeedCaptcha 判断是否需要验证码登陆
 func (u *SecUser) IsNeedCaptcha() (isNeed bool, err error) {
 
-	client := &http.Client{}
+	resp, reqErr := u.Client.R().
+		SetQueryParams(map[string]string{
+			"username": u.Username,
+			"_":        fmt.Sprint(time.Now().Unix()),
+		}).
+		SetHeader("referer", u.AuthUrl).
+		Get(u.AuthlUrlPerfix + NeedCaptchaPath)
 
-	req, err := http.NewRequest("GET", u.AuthlUrlPerfix+NeedCaptchaPath+"?username="+u.Username+"&_="+fmt.Sprint(time.Now().Unix()), nil)
-	if err != nil {
+	if resp.StatusCode() != 200 {
+		err = reqErr
 		return
 	}
 
-	for _, cooike := range u.Cookies {
-		req.AddCookie(cooike)
-	}
-
-	req.Header.Set("authority", AuthorityUrl)
-	//req.Header.Set("sec-ch-ua", `" Not;A Brand";v="99", "Google Chrome";v="91", "Chromium";v="91"`)
-	req.Header.Set("dnt", "1")
-	req.Header.Set("x-requested-with", "XMLHttpRequest")
-	req.Header.Set("sec-ch-ua-mobile", "?0")
-	req.Header.Set("user-agent", UA)
-	req.Header.Set("sec-fetch-site", "same-origin")
-	req.Header.Set("sec-fetch-mode", "cors")
-	req.Header.Set("sec-fetch-dest", "empty")
-	//req.Header.Set("referer", "https://sec.lit.edu.cn/webvpn/LjIwNi4xNzAuMjE4LjE2Mg==/LjIwNy4xNTQuMjE3Ljk2LjE2MS4xNTkuMTY0Ljk3LjE1MS4xOTkuMTczLjE0NC4xOTguMjEy/authserver/login?vpn-0&amp;amp=&amp;amp;service=https%3A%2F%2Fsec.lit.edu.cn%2Frump_frontend%2FloginFromCas%2F&amp;amp;vpn-0=")
-	req.Header.Set("referer", u.AuthUrl)
-	req.Header.Set("accept-language", "zh-CN,zh;q=0.9")
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return
-	}
-
-	defer resp.Body.Close()
-
-	bodyText, _ := ioutil.ReadAll(resp.Body)
-
-	body := string(bodyText)
+	body := resp.String()
 
 	// 最后判断是否需要验证码进行登陆
 	if strings.HasPrefix(body, "false") {
@@ -98,41 +62,20 @@ func (u *SecUser) IsNeedCaptcha() (isNeed bool, err error) {
 // GetCaptche 获取验证码 (JPEG)
 func (u *SecUser) GetCaptche() (pix []byte, err error) {
 
-	client := &http.Client{}
+	resp, err := u.Client.R().
+		SetQueryParams(map[string]string{
+			"username": u.Username,
+			"_":        fmt.Sprint(time.Now().Unix()),
+		}).
+		SetHeader("referer", u.AuthUrl).
+		SetHeader("accept", "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8").
+		Get(u.AuthlUrlPerfix + CaptchaPath)
 
-	req, err := http.NewRequest("GET", u.AuthlUrlPerfix+CaptchaPath, nil)
 	if err != nil {
 		return
 	}
 
-	for _, cooike := range u.Cookies {
-		req.AddCookie(cooike)
-	}
-
-	req.Header.Set("authority", AuthorityUrl)
-	//req.Header.Set("sec-ch-ua", " Not;A Brand";v="99", "Google Chrome";v="91", "Chromium";v="91"")
-	req.Header.Set("dnt", "1")
-	req.Header.Set("sec-ch-ua-mobile", "?0")
-	req.Header.Set("user-agent", UA)
-	req.Header.Set("accept", "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8")
-	req.Header.Set("sec-fetch-site", "same-origin")
-	req.Header.Set("sec-fetch-mode", "no-cors")
-	req.Header.Set("sec-fetch-dest", "image")
-	req.Header.Set("referer", u.AuthUrl)
-	req.Header.Set("accept-language", "zh-CN,zh;q=0.9")
-	//req2.Header.Set("cookie", "csrftoken=jz331d3MpxsWBEFHSW9Scy0v18U6VBzT7NC66xoAvitxV4NkqBpcvF81kytnTe2I; client_vpn_ticket=F8fNTTQFxE8jaUtu; sessionid=ffk4zsykvth2id94ob8g97h6j75bv0ic")
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return
-	}
-
-	defer resp.Body.Close()
-
-	pix, err = ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return
-	}
+	pix = resp.Body()
 
 	return
 
@@ -141,51 +84,29 @@ func (u *SecUser) GetCaptche() (pix []byte, err error) {
 // login 通用登陆
 func (u *SecUser) login(captcha string) (err error) {
 
+	if len(u.Username) == 0 {
+		err = errors.New("empty username")
+		return
+	}
+
+	if len(u.Password) == 0 {
+		err = errors.New("empty password")
+		return
+	}
+
 	// 刷新 webvpn path
-	u.prepare()
-
-	client := &http.Client{}
-
-	// 获取必要参数
-	req, err := http.NewRequest("GET", u.AuthUrl, nil)
+	err = u.PerSetCooikes()
 	if err != nil {
 		return
 	}
 
-	for _, cooike := range u.Cookies {
-		req.AddCookie(cooike)
-	}
+	// client := &http.Client{}
 
-	// 验证码参数
-	var captchaParam string
+	resp, _ := u.Client.R().
+		SetHeader("referer", u.AuthUrl).
+		Get(u.AuthUrl)
 
-	if len(captcha) > 0 {
-		captchaParam = "&captchaResponse=" + captcha
-	}
-
-	req.Header.Set("authority", AuthorityUrl)
-	//req.Header.Set("sec-ch-ua", `" Not;A Brand";v="99", "Google Chrome";v="91", "Chromium";v="91"`)
-	req.Header.Set("dnt", "1")
-	req.Header.Set("x-requested-with", "XMLHttpRequest")
-	req.Header.Set("sec-ch-ua-mobile", "?0")
-	req.Header.Set("user-agent", UA)
-	req.Header.Set("sec-fetch-site", "same-origin")
-	req.Header.Set("sec-fetch-mode", "cors")
-	req.Header.Set("sec-fetch-dest", "empty")
-	//req.Header.Set("referer", "https://sec.lit.edu.cn/webvpn/LjIwNi4xNzAuMjE4LjE2Mg==/LjIwNy4xNTQuMjE3Ljk2LjE2MS4xNTkuMTY0Ljk3LjE1MS4xOTkuMTczLjE0NC4xOTguMjEy/authserver/login?vpn-0&amp;amp=&amp;amp;service=https%3A%2F%2Fsec.lit.edu.cn%2Frump_frontend%2FloginFromCas%2F&amp;amp;vpn-0=")
-	req.Header.Set("referer", u.AuthUrl)
-	req.Header.Set("accept-language", "zh-CN,zh;q=0.9")
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return
-	}
-
-	defer resp.Body.Close()
-
-	bodyText, _ := ioutil.ReadAll(resp.Body)
-
-	body := string(bodyText)
+	body := resp.String()
 
 	// 获取所有可需参数
 	actionUrl, err := util.GetSubstringBetweenStringsByRE(body, `id="casLoginForm" class="fm-v clearfix" action="`, `"`)
@@ -218,51 +139,37 @@ func (u *SecUser) login(captcha string) (err error) {
 	// 这个地址需要html解码
 	decodeurl := html.UnescapeString(actionUrl)
 
-	var data = strings.NewReader("username=" + u.Username + "&password=" + u.Password + captchaParam + "&lt=" + lt + "&execution=" + execution + "&_eventId=" + eventId + "&rmShown=" + rmShown)
+	// var data = strings.NewReader("username=" + u.Username + "&password=" + u.Password + captchaParam + "&lt=" + lt + "&execution=" + execution + "&_eventId=" + eventId + "&rmShown=" + rmShown)
 
-	req, err = http.NewRequest("POST", decodeurl, data)
+	req := u.Client.R().
+		SetHeader("referer", u.AuthUrl).
+		SetHeader("authority", actionUrl).
+		SetFormData(map[string]string{
+			"username":  u.Username,
+			"password":  u.Password,
+			"lt":        lt,
+			"execution": execution,
+			"_eventId":  eventId,
+			"rmShown":   rmShown,
+		})
+
+	if len(captcha) > 0 {
+		req.SetFormData(map[string]string{
+			"captchaResponse": captcha,
+		})
+	}
+
+	resp, _ = req.Post(decodeurl)
 	if err != nil {
 		return
 	}
 
-	for _, cooike := range u.Cookies {
-		req.AddCookie(cooike)
-	}
-
-	req.Header.Set("authority", actionUrl)
-	req.Header.Set("cache-control", "max-age=0")
-	req.Header.Set("sec-ch-ua", `" Not;A Brand";v="99", "Google Chrome";v="91", "Chromium";v="91"`)
-	req.Header.Set("sec-ch-ua-mobile", "?0")
-	req.Header.Set("origin", SecUrl)
-	req.Header.Set("upgrade-insecure-requests", "1")
-	req.Header.Set("dnt", "1")
-	req.Header.Set("content-type", "application/x-www-form-urlencoded")
-	req.Header.Set("user-agent", UA)
-	req.Header.Set("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
-	req.Header.Set("sec-fetch-site", "same-origin")
-	req.Header.Set("sec-fetch-mode", "navigate")
-	req.Header.Set("sec-fetch-user", "?1")
-	req.Header.Set("sec-fetch-dest", "document")
-	req.Header.Set("referer", actionUrl)
-	req.Header.Set("accept-language", "zh-CN,zh;q=0.9")
-
-	resp, err = client.Do(req)
-	if err != nil {
-		return
-	}
-
-	defer resp.Body.Close()
-
-	bodyText, _ = ioutil.ReadAll(resp.Body)
-
-	body = string(bodyText)
+	body = resp.String()
 
 	// 判断是否有错误
 	if strings.Contains(body, "callback_err_login") {
 		loginErrStr, _ := util.GetSubstringBetweenStringsByRE(body, `callback_err_login">`, `</div>`)
-
 		err = errors.New(loginErrStr)
-
 		return
 	}
 
@@ -272,7 +179,7 @@ func (u *SecUser) login(captcha string) (err error) {
 	}
 
 	// 获取门户path
-	u.getPortalPath()
+	err = u.PerSetPortalPath()
 
 	return
 }
@@ -295,54 +202,22 @@ func (u *SecUser) PortalLogin() (err error) {
 		return
 	}
 
-	client := &http.Client{}
+	// 增加重定向次数
+	tmpClient := u.Client.SetRedirectPolicy(resty.FlexibleRedirectPolicy(15))
 
-	req, err := http.NewRequest("GET", u.PortalUrlPerfix+PortalLoginPath+"?vpn-0", nil)
-	if err != nil {
+	resp, reqErr := tmpClient.R().
+		SetHeader("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9").
+		SetHeader("referer", u.PortalUrlPerfix+PortalIndexPath).
+		Get(u.PortalUrlPerfix + PortalLoginPath + "?vpn-0")
+
+	if resp.StatusCode() != http.StatusOK {
+		err = reqErr
 		return
 	}
-
-	for _, cooike := range u.Cookies {
-		req.AddCookie(cooike)
-	}
-
-	req.Header.Set("authority", AuthorityUrl)
-	req.Header.Set("sec-ch-ua", `" Not;A Brand";v="99", "Google Chrome";v="91", "Chromium";v="91"`)
-	req.Header.Set("sec-ch-ua-mobile", "?0")
-	req.Header.Set("upgrade-insecure-requests", "1")
-	req.Header.Set("dnt", "1")
-	req.Header.Set("user-agent", UA)
-	req.Header.Set("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
-	req.Header.Set("sec-fetch-site", "same-origin")
-	req.Header.Set("sec-fetch-mode", "navigate")
-	req.Header.Set("sec-fetch-user", "?1")
-	req.Header.Set("sec-fetch-dest", "document")
-	req.Header.Set("referer", u.PortalUrlPerfix+PortalIndexPath)
-	req.Header.Set("accept-language", "zh-CN,zh;q=0.9")
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return
-	}
-
-	defer resp.Body.Close()
-
-	// location, err := resp.Location()
-	// if err != nil {
-	// 	return
-	// }
-
-	// log.Println(location)
-
-	// bodyText, _ := ioutil.ReadAll(resp.Body)
-
-	// body := string(bodyText)
-
-	// log.Println(body)
 
 	// 确保账号登陆成功
 	if !u.IsPortalLogged() {
-		err = errors.New("fail to login")
+		err = errors.New("fail to  login")
 	}
 
 	return

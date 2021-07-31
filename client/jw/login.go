@@ -2,67 +2,46 @@ package jw
 
 import (
 	"errors"
-	"io/ioutil"
-	"net/http"
-	"net/url"
-	"strconv"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/icepie/oh-my-lit/client/sec"
 	"github.com/icepie/oh-my-lit/client/util"
 )
 
 // JwUser Login
 func (u *JwUser) Login() (err error) {
 
-	if u.IsBoundSec {
-		// 暂时未实现登陆任意帐号
-		err = errors.New("please use LoginBySec()")
-		return
-		//LoginUrl += "?vpn-0"
-	}
-
-	client := &http.Client{}
-
-	LoginUrl := u.Url.String() + LoginPath
-
-	req, _ := http.NewRequest(http.MethodGet, LoginUrl, nil)
-
-	// 整上
-	for _, cookie := range u.Cookies {
-		req.AddCookie(cookie)
-	}
-
-	// command, _ := http2curl.GetCurlCommand(req)
-	// fmt.Println(command)
-
-	resp1, err := client.Do(req)
-	if err != nil {
+	if len(u.Username) == 0 {
+		err = errors.New("empty username")
 		return
 	}
 
-	defer resp1.Body.Close()
-
-	if len(u.Cookies) == 0 {
-		u.Cookies = resp1.Cookies()
+	if len(u.Password) == 0 {
+		err = errors.New("empty password")
+		return
 	}
 
-	// // 取得 Cookies
-	// u.Cookies = resp1.Cookies()
+	if len(u.SelType) == 0 {
+		err = errors.New("empty selType")
+		return
+	}
 
-	// 将数据流转换为 []byte
-	b, _ := ioutil.ReadAll(resp1.Body)
-	// if err != nil {
+	// if u.IsBoundSec {
+	// 	// 暂时未实现登陆任意帐号
+	// 	err = errors.New("please use LoginBySec()")
 	// 	return
 	// }
 
+	LoginUrl := u.Url.String() + LoginPath
+
+	resp, _ := u.Client.R().
+		SetHeader("referer", LoginUrl).
+		Get(LoginUrl)
+
 	// 将 gb2312 转换为 utf-8
-	bodystr := util.GB18030ToUTF8(string(b))
+	body := util.GB18030ToUTF8(resp.String())
 
-	// log.Println(string(bodystr))
-
-	doc, err := goquery.NewDocumentFromReader(strings.NewReader(bodystr))
+	doc, err := goquery.NewDocumentFromReader(strings.NewReader(body))
 	if err != nil {
 		return
 	}
@@ -74,81 +53,24 @@ func (u *JwUser) Login() (err error) {
 		return
 	}
 
-	// 不重定向
-	// client = &http.Client{
-	// 	CheckRedirect: func(req *http.Request, via []*http.Request) error {
-	// 		return http.ErrUseLastResponse
-	// 	},
-	// }
-
-	data := url.Values{
-		"__VIEWSTATE":             {vs},
-		"Sel_Type":                {u.SelType}, // SYS etc..
-		"txt_sdsdfdsfryuiighgdf":  {u.Username},
-		"txt_dsfdgtjhjuixssdsdf":  {},
-		"txt_sftfgtrefjdndcfgerg": {},
-		"typeName":                {},
-		"sdfdfdhgwerewt":          {chkpwd(u.Username, u.Password)},
-		"cxfdsfdshjhjlk":          {},
-	}
-
-	r, err := http.NewRequest(http.MethodPost, LoginUrl, strings.NewReader(data.Encode()))
-	if err != nil {
-		return
-	}
-
-	if u.IsBoundSec {
-		r.Header.Set("authority", u.Url.Host)
-		r.Header.Set("cache-control", "max-age=0")
-		r.Header.Set("sec-ch-ua", `" Not;A Brand";v="99", "Google Chrome";v="91", "Chromium";v="91"`)
-		r.Header.Set("sec-ch-ua-mobile", "?0")
-		r.Header.Set("dnt", "1")
-		r.Header.Set("upgrade-insecure-requests", "1")
-		r.Header.Set("user-agent", sec.UA)
-		r.Header.Set("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
-		r.Header.Set("sec-fetch-site", "same-origin")
-		r.Header.Set("sec-fetch-mode", "navigate")
-		r.Header.Set("sec-fetch-user", "?1")
-		r.Header.Set("sec-fetch-dest", "document")
-		r.Header.Set("referer", LoginUrl)
-		r.Header.Set("accept-language", "zh-CN,zh;q=0.9")
-
-	} else {
-
-		r.Header.Set("Host", u.Url.Host)
-		r.Header.Set("Proxy-Connection", "keep-alive")
-		r.Header.Set("Content-Length", strconv.Itoa(len(data.Encode())))
-		r.Header.Set("Origin", u.Url.String())
-		r.Header.Set("Upgrade-Insecure-Requests", "1")
-		r.Header.Set("DNT", "1")
-		r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-		r.Header.Set("User-Agent", UserAgent)
-		r.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
-		r.Header.Set("Referer", LoginUrl)
-		r.Header.Set("Accept-Encoding", "gzip, deflate")
-		r.Header.Set("Accept-Language", "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7")
-
-	}
-
-	for _, cookie := range u.Cookies {
-		r.AddCookie(cookie)
-	}
-
-	// command, _ = http2curl.GetCurlCommand(r)
-	// fmt.Println(command)
-
-	// log.Fatal()
-
-	resp, err := client.Do(r)
-	if err != nil {
-		return
-	}
-
-	defer resp.Body.Close()
-
-	// log.Println(util.GB18030ToUTF8(string(b)))
+	// the last step
+	u.Client.R().
+		SetFormData(map[string]string{
+			"__VIEWSTATE":             vs,
+			"Sel_Type":                u.SelType, // SYS etc..
+			"txt_sdsdfdsfryuiighgdf":  u.Username,
+			"txt_dsfdgtjhjuixssdsdf":  "",
+			"txt_sftfgtrefjdndcfgerg": "",
+			"typeName":                "",
+			"sdfdfdhgwerewt":          chkpwd(u.Username, u.Password),
+			"cxfdsfdshjhjlk":          "",
+		}).
+		SetHeader("referer", LoginUrl).
+		Post(LoginUrl)
 
 	isLogged := u.IsLogged()
+
+	// log.Println(resp.String())
 
 	if !isLogged {
 		err = errors.New("jw fail to login")
@@ -158,39 +80,69 @@ func (u *JwUser) Login() (err error) {
 
 }
 
+// LoginBySec 通过智慧门户帐号快速登陆
 func (u *JwUser) LoginBySec() (err error) {
 
 	if !u.IsBoundSec {
 		// 暂时未实现登陆任意帐号
 		err = errors.New("only for sec user")
 		return
-		//LoginUrl += "?vpn-0"
+	}
+
+	if len(u.SelType) == 0 {
+		err = errors.New("empty selType")
+		return
 	}
 
 	LoginBySecUrl := u.Url.String() + LoginBySecPath + "?vpn-0"
 
-	// if u.IsBoundSec {
-	// 	MAINFRMURL += "?vpn-0"
-	// }
+	resp, _ := u.Client.R().
+		SetHeader("referer", LoginBySecUrl).
+		Get(LoginBySecUrl)
 
-	client := &http.Client{}
+	body := util.GB18030ToUTF8(resp.String())
 
-	req, _ := http.NewRequest(http.MethodGet, LoginBySecUrl, nil)
-
-	// 整上
-	for _, cookie := range u.Cookies {
-		req.AddCookie(cookie)
+	isMultiRole := false
+	if strings.Contains(body, "请选择相应角色") {
+		isMultiRole = true
 	}
 
-	// command, _ := http2curl.GetCurlCommand(req)
-	// fmt.Println(command)
+	isHaveRole := false
+	if isMultiRole {
+		sel_Type := ""
+		doc, _ := goquery.NewDocumentFromReader(strings.NewReader(body))
+		doc.Find("select#Sel_Grp>option").Each(func(i int, option *goquery.Selection) {
+			op, _ := option.Attr("value")
+			if op[:3] == u.SelType {
+				isHaveRole = true
+				sel_Type = op
+			}
+		})
 
-	resp, err := client.Do(req)
-	if err != nil {
+		userID, _ := doc.Find("input#UserID").First().Attr("value")
+		roleCHK, _ := doc.Find("input#roleCHK").First().Attr("value")
+		typeName, _ := doc.Find("input#typeName").First().Attr("value")
+		pcInfo, _ := doc.Find("input#pcInfo").First().Attr("value")
+
+		// the last step
+		u.Client.R().
+			SetFormData(map[string]string{
+				"Sel_Type": sel_Type,
+				"subBtn1":  "%C8%B7%B6%A8",
+				"vUserID":  userID,
+				"roleCHK":  roleCHK,
+				"typeName": typeName,
+				"pcInfo":   pcInfo,
+			}).
+			SetHeader("referer", LoginBySecUrl).
+			Post(LoginBySecUrl)
+
+	}
+
+	if isMultiRole && !isHaveRole {
+		err = errors.New("you do not have the role by the selType")
 		return
 	}
-
-	defer resp.Body.Close()
 
 	isLogged := u.IsLogged()
 
@@ -207,61 +159,17 @@ func (u *JwUser) IsLogged() (isLogged bool) {
 
 	isLogged = false
 
-	MAINFRMURL := u.Url.String() + MenuPath
+	MAINFRMUrl := u.Url.String() + MenuPath
 
 	if u.IsBoundSec {
-		MAINFRMURL += "?vpn-0"
+		MAINFRMUrl += "?vpn-0"
 	}
 
-	client := &http.Client{}
+	resp, _ := u.Client.R().
+		SetHeader("referer", MAINFRMUrl).
+		Get(MAINFRMUrl)
 
-	r, _ := http.NewRequest(http.MethodGet, MAINFRMURL, nil)
-
-	for _, cookie := range u.Cookies {
-		r.AddCookie(cookie)
-	}
-
-	if u.IsBoundSec {
-		r.Header.Set("authority", u.Url.Host)
-		r.Header.Set("cache-control", "max-age=0")
-		r.Header.Set("sec-ch-ua", `" Not;A Brand";v="99", "Google Chrome";v="91", "Chromium";v="91"`)
-		r.Header.Set("sec-ch-ua-mobile", "?0")
-		r.Header.Set("dnt", "1")
-		r.Header.Set("upgrade-insecure-requests", "1")
-		r.Header.Set("user-agent", sec.UA)
-		r.Header.Set("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
-		r.Header.Set("sec-fetch-site", "same-origin")
-		r.Header.Set("sec-fetch-mode", "navigate")
-		r.Header.Set("sec-fetch-user", "?1")
-		r.Header.Set("sec-fetch-dest", "document")
-		r.Header.Set("referer", MAINFRMURL)
-		r.Header.Set("accept-language", "zh-CN,zh;q=0.9")
-	} else {
-		r.Header.Set("User-Agent", UserAgent)
-	}
-
-	resp, err := client.Do(r)
-	if err != nil {
-		return
-	}
-
-	b, _ := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return
-	}
-
-	defer resp.Body.Close()
-
-	body := util.GB18030ToUTF8(string(b))
-
-	// log.Println(util.GB18030ToUTF8(string(b)))
-
-	// log.Println(r.Cookies())
-
-	// log.Println(MAINFRMURL)
-
-	// command, _ := http2curl.GetCurlCommand(r)
-	// fmt.Println(command)
+	body := util.GB18030ToUTF8(resp.String())
 
 	// 检测是否登陆成功
 	if strings.Contains(body, "洛阳理工学院教务") {

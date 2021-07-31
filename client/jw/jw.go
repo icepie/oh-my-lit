@@ -2,9 +2,9 @@ package jw
 
 import (
 	"errors"
-	"net/http"
 	"net/url"
 
+	"github.com/go-resty/resty/v2"
 	"github.com/icepie/oh-my-lit/client/sec"
 )
 
@@ -25,10 +25,22 @@ var (
 	LoginBySecPath = "/cas_njjz.aspx"
 	// MAINFRMPath 主页
 	MAINFRMPath = "/MAINFRM.aspx"
-	// UserAgent UA
-	UserAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36"
+	// UA
+	UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36"
 	// SchoolCode 院校代号
 	SchoolCode = "11070"
+
+	// MainHeaders 主请求头
+	MainHeaders = map[string]string{
+		"dnt":              "1",
+		"x-requested-with": "XMLHttpRequest",
+		"sec-ch-ua-mobile": "1",
+		"User-Agent":       UA,
+		"sec-fetch-site":   "same-origin",
+		"sec-fetch-mode":   "cors",
+		"sec-fetch-dest":   "empty",
+		"Accept-Language":  "zh-CN,zh;q=0.9",
+	}
 
 	/* 身份
 	<select style="WIDTH: 136px" onchange="SelType(this)" name="Sel_Type" id="Sel_Type">
@@ -56,41 +68,58 @@ type JwUser struct {
 	SelType    string
 	Url        *url.URL
 	IsBoundSec bool
-	Cookies    []*http.Cookie
+	Client     *resty.Client
 }
 
-// NewJwUser 新建教务用户
-func NewJwUser(username string, password string, selType string) (user JwUser, err error) {
+// NewJwUser 新建教务用户
+func NewJwUser() *JwUser {
+	var u JwUser
+	u.Client = resty.New()
+	u.Client.SetHeaders(MainHeaders)
+	u.Url, _ = url.Parse(MianUrl)
+	return &u
+}
 
+// SetUsername 设置用户名
+func (u *JwUser) SetUsername(username string) *JwUser {
+	u.Username = username
+	return u
+}
+
+// SetPassword 设置密码
+func (u *JwUser) SetPassword(password string) *JwUser {
+	u.Password = password
+	return u
+}
+
+// SetSelType 设置登陆类型
+/*
+// STUType 学生
+STUType = "STU"
+// TEAType 教师教辅人员
+TEAType = "TEA"
+// SYSType 管理人员
+SYSType = "SYS"
+// ADMType 门户维护员
+ADMType = "ADM"
+*/
+func (u *JwUser) SetSelType(selType string) *JwUser {
 	if selType != STUType && selType != TEAType && selType != SYSType && selType != ADMType {
-		err = errors.New("SelType Error")
-		return
+		// log.Println("error: your selType not support!")
+		return u
 	}
-
-	user.Username = username
-	user.Password = password
-	user.SelType = selType
-	user.Url, _ = url.Parse(MianUrl)
-
-	return
+	u.SelType = selType
+	return u
 }
 
-// JwUser reset main URL
-func (u *JwUser) SetUrl(mianUrl string) (err error) {
-
-	mUrl, err := url.Parse(mianUrl)
-	if err != nil {
-		return
-	}
-
-	u.Url = mUrl
-
-	return
-
+// SetUrl JwUser reset main URL
+func (u *JwUser) SetUrl(url *url.URL) *JwUser {
+	u.Url = url
+	return u
 }
 
-// 绑定智慧门户帐号
-func (u *JwUser) BindSecUser(secUser sec.SecUser) (err error) {
+// BindSecUser 绑定智慧门户帐号
+func (u *JwUser) BindSecUser(secUser *sec.SecUser) (err error) {
 
 	portalIsLogged := secUser.IsPortalLogged()
 	if !portalIsLogged {
@@ -100,14 +129,15 @@ func (u *JwUser) BindSecUser(secUser sec.SecUser) (err error) {
 
 	// https://sec.lit.edu.cn/webvpn/LjIwNi4xNzAuMjE4LjE2Mg==/LjIwOC4xNzMuMTQ4LjE1OC4xNTguMTcwLjk0LjE1Mi4xNTAuMjE2LjEwMi4xOTcuMjA5/cas_njjz.aspx?vpn-0
 
-	// 更新Url
-	err = u.SetUrl(sec.JWUrlPerfix)
-	if err != nil {
-		return
-	}
+	secJWUrl, _ := url.Parse(sec.JWUrlPerfix)
 
-	// 覆盖Cookies
-	u.Cookies = secUser.Cookies
+	// 更新Url
+	u.SetUrl(secJWUrl)
+
+	// // 覆盖Client
+	u.Client.SetCookies(secUser.Client.GetClient().Jar.Cookies(secJWUrl))
+	// u.Client = secUser.Client
+	// u.Client.SetDebug(true)
 	u.IsBoundSec = true
 
 	return

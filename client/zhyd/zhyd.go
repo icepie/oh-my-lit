@@ -1,7 +1,7 @@
 package zhyd
 
 import (
-	"net/http"
+	"github.com/go-resty/resty/v2"
 )
 
 var (
@@ -25,46 +25,54 @@ var (
 	GetChargeRecordsUrl = ZhydHostUrl + "/zzgd/index"
 	// UA
 	UA = "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 11_2_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36"
+	// MainHeaders 主请求头
+	MainHeaders = map[string]string{
+		"User-Agent":      UA,
+		"Accept":          "*/*",
+		"Accept-Encoding": "gzip, deflate",
+		"Connection":      "keep-alive",
+	}
 )
 
 // ZhydUser 智能控电用户结构体
 type ZhydUser struct {
 	Username    string
 	Password    string
-	Cookies     []*http.Cookie
-	RealCookies []*http.Cookie
+	Client      *resty.Client
 }
 
-// NewZhydUser 新建智能控电用户
-func NewZhydUser(username string, password string) (user ZhydUser, err error) {
+// SetPassword 设置用户名
+func (u *ZhydUser) SetUsername(username string) *ZhydUser {
+	u.Username = username
+	return u
+}
 
-	user.Username = username
-	user.Password = password
+// SetPassword 设置密码
+func (u *ZhydUser) SetPassword(password string) *ZhydUser {
+	u.Password = password
+	return u
+}
 
-	// 先从主页拿到真实的登陆地址以及初始化cookies
-	client := &http.Client{
-		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			return http.ErrUseLastResponse
-		},
-	}
+// NewZhydUser 新建智能控电用户
+func NewZhydUser() *ZhydUser {
 
-	req, err := http.NewRequest("GET", ZhydHost, nil)
-	if err != nil {
-		return
-	}
+	var u ZhydUser
 
-	req.Header.Set("User-Agent", UA)
+	u.Client = resty.New()
+	u.Client.SetHeaders(MainHeaders)
 
-	resp, err := client.Do(req)
-	if err != nil {
-		return
-	}
+	// 拿个cookies
+	u.PerSetCooikes()
 
-	defer resp.Body.Close()
+	return &u
+}
 
-	user.Cookies = resp.Cookies()
-	// user.RealCookies = resp.Cookies()
+// PerSetCooikes 预先设置必要Cookies
+func (u *ZhydUser) PerSetCooikes() *ZhydUser {
 
-	return
+	// 先访问一下页面，获取cookie
+	u.Client.R().
+		Get(ZhydHost)
 
+	return u
 }

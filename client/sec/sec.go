@@ -1,9 +1,10 @@
 package sec
 
 import (
-	"io/ioutil"
-	"net/http"
+	"errors"
+	"strings"
 
+	"github.com/go-resty/resty/v2"
 	"github.com/icepie/oh-my-lit/client/util"
 )
 
@@ -11,8 +12,10 @@ import (
 var (
 	AuthorityUrl = "sec.lit.edu.cn"
 	// SecUrl 智慧门户主页
-	SecUrl     = "https://" + AuthorityUrl
+	SecUrl = "https://" + AuthorityUrl
+	// LibraryUrl
 	LibraryUrl = SecUrl + "/rump_frontend/connect/?target=Library&id=9"
+
 	// AuthPath 认证界面的特殊路径
 	//AuthPath = "LjIwNi4xNzAuMjE4LjE2Mg==/LjIwNy4xNTQuMjE3Ljk2LjE2MS4xNTkuMTY0Ljk3LjE1MS4xOTkuMTczLjE0NC4xOTguMjEy"
 	// PortalPath 门户界面的特殊路径
@@ -21,9 +24,9 @@ var (
 	// AuthlUrlPerfix = SecUrl + "/webvpn/" + AuthPath
 	// PortalUrlPerfix 门户页面前戳
 	//PortalUrlPerfix = SecUrl + "/webvpn/" + PortalPath
+
 	//JWUrlPerfix
 	JWUrlPerfix = SecUrl + "/webvpn/LjIwNi4xNzAuMjE4LjE2Mg==/LjIwOC4xNzMuMTQ4LjE1OC4xNTguMTcwLjk0LjE1Mi4xNTAuMjE2LjEwMi4xOTcuMjA5"
-	// JWUrl
 	// NeedCaptchaPath 检查是否需要验证码登陆的接口
 	NeedCaptchaPath = "/authserver/needCaptcha.html"
 	// CaptchaPath 获取验证码
@@ -32,6 +35,7 @@ var (
 	HomeIndexUrl = SecUrl + "/frontend_static/frontend/login/index.html"
 	// GetHomeParamUrl 主页参数
 	GetHomeParamUrl = SecUrl + "/rump_frontend/getHomeParam/"
+	// Home
 	// PortalIndexPath 门户首页
 	PortalIndexPath = "/pc/lit/index.html"
 	// PortalLoginPath 门户登陆地址 (第二层)
@@ -57,9 +61,30 @@ var (
 	// GetweekCourses 获取周课表接口
 	GetWeekCoursesPath = "/microapplication/api/course/getCourse"
 	// // GetDepartmentPhoneList 获取部门电话列表
-	// GetDepartmentPhoneList = "/microapplication/api/myclass/findMyclassmates"
+	// GetDepartmentPhoneList = "/microapplication/api/queryDepartmentPhone/querydepartmentphonelist"
+	// GetStaffPath 获取教职工接口
+	GetStaffPath = "/microapplication/api/index/getStaffByStaffNumber"
+	// GetClassStudents 获取班级学生接口
+	GetClassStudentsPath = "/microapplication/api/myclass/findTeachclassStudents"
+	// GetAllInvigilate 获取监考信息接口
+	GetAllInvigilatePath = "/microapplication/api/examArrangementController/findAllInvigilate"
+	// GetGetAssetsPath 获取资产接口
+	GetAssetsPath = "/microapplication/api/index/listAssetsByAssetsStaffNumberPage"
 	// UA
 	UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36"
+	// MainHeaders
+	// MainHeaders 主请求头
+	MainHeaders = map[string]string{
+		"authority":        AuthorityUrl,
+		"dnt":              "1",
+		"x-requested-with": "XMLHttpRequest",
+		"sec-ch-ua-mobile": "1",
+		"User-Agent":       UA,
+		"sec-fetch-site":   "same-origin",
+		"sec-fetch-mode":   "cors",
+		"sec-fetch-dest":   "empty",
+		"Accept-Language":  "zh-CN,zh;q=0.9",
+	}
 )
 
 // SecUser 智慧门户用户结构体
@@ -70,43 +95,42 @@ type SecUser struct {
 	//	AuthPath        string
 	AuthlUrlPerfix  string
 	PortalUrlPerfix string
-	Cookies         []*http.Cookie
+	Client          *resty.Client
 }
 
-// NewSecUser 新建智慧门户用户
-func NewSecUser(username string, password string) (user SecUser, err error) {
+// NewSecUser 新建智慧门户用户
+func NewSecUser() *SecUser {
 
-	user.Username = username
-	user.Password = password
+	var u SecUser
+
+	u.Client = resty.New()
+	u.Client.SetHeaders(MainHeaders)
 
 	// 刷新 webvpn path
-	user.prepare()
+	u.PerSetCooikes()
 
-	return
+	return &u
 }
 
-func (u *SecUser) prepare() {
-	// 先从主页拿到真实的登陆地址以及初始化cookies
-	client := &http.Client{}
+// SetPassword 设置用户名
+func (u *SecUser) SetUsename(username string) *SecUser {
+	u.Username = username
+	return u
+}
 
-	req, err := http.NewRequest("GET", SecUrl, nil)
-	if err != nil {
-		return
-	}
+// SetPassword 设置密码
+func (u *SecUser) SetPassword(password string) *SecUser {
+	u.Password = password
+	return u
+}
 
-	resp, err := client.Do(req)
-	if err != nil {
-		return
-	}
+func (u *SecUser) PerSetCooikes() (err error) {
 
-	defer resp.Body.Close()
+	// 先访问一下页面，获取cookie
+	resp, _ := u.Client.R().
+		Get(SecUrl)
 
-	bodyText, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return
-	}
-
-	u.AuthUrl, err = util.GetSubstringBetweenStringsByRE(string(bodyText), `<a href="`, `"`)
+	u.AuthUrl, err = util.GetSubstringBetweenStringsByRE(resp.String(), `<a href="`, `"`)
 	if err != nil {
 		return
 	}
@@ -116,7 +140,38 @@ func (u *SecUser) prepare() {
 		return
 	}
 
+	if len(authPath) == 0 {
+		u.PerSetCooikes()
+	}
+
 	u.AuthlUrlPerfix = SecUrl + authPath
 
-	u.Cookies = resp.Cookies()
+	return
+}
+
+// PerSetPortalPath 获取门户网页 Path
+func (u *SecUser) PerSetPortalPath() (err error) {
+
+	// 禁止重定向
+	tmpClient := u.Client.SetRedirectPolicy(resty.NoRedirectPolicy())
+
+	resp, _ := tmpClient.R().
+		SetHeader("accept", "application/json, text/plain, */*").
+		SetHeader("referer", SecUrl+"/frontend_static/frontend/login/index.html").
+		Get(LibraryUrl)
+
+	// log.Println(resp.RawResponse.Location())
+
+	location, err := resp.RawResponse.Location()
+	if err != nil {
+		return
+	}
+
+	u.PortalUrlPerfix = strings.TrimRight(location.String(), "/")
+
+	if len(u.PortalUrlPerfix) == 0 {
+		err = errors.New("get portal path error")
+	}
+
+	return
 }

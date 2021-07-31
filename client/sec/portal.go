@@ -3,55 +3,17 @@ package sec
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
-	"io/ioutil"
-	"log"
-	"net/http"
-	"strings"
+	"strconv"
 )
 
 // GetCurrentMember 获取当前用户信息
 func (u *SecUser) GetCurrentMember() (rte CurrentMemberRte, err error) {
 
-	client := &http.Client{}
+	resp, _ := u.Client.R().
+		SetHeader("referer", u.PortalUrlPerfix+PortalUserPath).
+		Get(u.PortalUrlPerfix + GetCurrentMemberPath + "?vpn-0")
 
-	req, err := http.NewRequest("GET", u.PortalUrlPerfix+GetCurrentMemberPath+"?vpn-0", nil)
-	if err != nil {
-		return
-	}
-
-	for _, cooike := range u.Cookies {
-		req.AddCookie(cooike)
-	}
-
-	req.Header.Set("authority", AuthorityUrl)
-	req.Header.Set("sec-ch-ua", `" Not;A Brand";v="99", "Google Chrome";v="91", "Chromium";v="91"`)
-	req.Header.Set("accept", "*/*")
-	req.Header.Set("dnt", "1")
-	req.Header.Set("x-requested-with", "XMLHttpRequest")
-	req.Header.Set("sec-ch-ua-mobile", "?0")
-	req.Header.Set("user-agent", UA)
-	req.Header.Set("sec-fetch-site", "same-origin")
-	req.Header.Set("sec-fetch-mode", "cors")
-	req.Header.Set("sec-fetch-dest", "empty")
-	req.Header.Set("referer", u.PortalUrlPerfix+PortalUserPath)
-	req.Header.Set("accept-language", "zh-CN,zh;q=0.9")
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return
-	}
-
-	defer resp.Body.Close()
-
-	bodyText, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return
-	}
-
-	// log.Println(string(bodyText))
-
-	err = json.Unmarshal(bodyText, &rte)
+	err = json.Unmarshal(resp.Body(), &rte)
 	if err != nil {
 		return
 	}
@@ -69,48 +31,17 @@ func (u *SecUser) GetCurrentMember() (rte CurrentMemberRte, err error) {
 	return
 }
 
-// GetStudent 通过学号获取学生信息
-func (u *SecUser) GetStudent(stuId string) (rte GetStudentRte, err error) {
+// GetStudentByStuID 通过学号获取学生信息
+func (u *SecUser) GetStudentByStuID(stuID string) (rte GetStudentRte, err error) {
 
-	client := &http.Client{}
+	resp, _ := u.Client.R().
+		SetHeader("referer", u.PortalUrlPerfix+PortalUserPath).
+		SetFormData(map[string]string{
+			"studentId": stuID,
+		}).
+		Post(u.PortalUrlPerfix + GetStuPath + "?vpn-0")
 
-	var data = strings.NewReader("studentId=" + stuId)
-	req, err := http.NewRequest("POST", u.PortalUrlPerfix+GetStuPath+"?vpn-0", data)
-	if err != nil {
-		return
-	}
-
-	for _, cooike := range u.Cookies {
-		req.AddCookie(cooike)
-	}
-
-	req.Header.Set("authority", AuthorityUrl)
-	req.Header.Set("sec-ch-ua", `" Not;A Brand";v="99", "Google Chrome";v="91", "Chromium";v="91"`)
-	req.Header.Set("accept", "*/*")
-	req.Header.Set("dnt", "1")
-	req.Header.Set("x-requested-with", "XMLHttpRequest")
-	req.Header.Set("sec-ch-ua-mobile", "?0")
-	req.Header.Set("user-agent", UA)
-	req.Header.Set("content-type", "application/x-www-form-urlencoded; charset=UTF-8")
-	req.Header.Set("origin", SecUrl)
-	req.Header.Set("sec-fetch-site", "same-origin")
-	req.Header.Set("sec-fetch-mode", "cors")
-	req.Header.Set("sec-fetch-dest", "empty")
-	req.Header.Set("referer", u.PortalUrlPerfix+PortalUserPath)
-	req.Header.Set("accept-language", "zh-CN,zh;q=0.9")
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return
-	}
-	defer resp.Body.Close()
-
-	bodyText, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Println(err)
-	}
-
-	err = json.Unmarshal(bodyText, &rte)
+	err = json.Unmarshal(resp.Body(), &rte)
 	if err != nil {
 		return
 	}
@@ -128,48 +59,253 @@ func (u *SecUser) GetStudent(stuId string) (rte GetStudentRte, err error) {
 	return
 }
 
-// GetClassmates 通过学号获取学生同班同学信息
-func (u *SecUser) GetClassmatesDetail(stuId string) (rte GetClassmatesDetailRte, err error) {
+// GetStudent 获取学生信息
+func (u *SecUser) GetStudent() (GetStudentRte, error) {
+	return u.GetStudentByStuID(u.Username)
+}
 
-	client := &http.Client{}
+// GetClassmatesByStuI 通过学号获取学生同班同学信息
+func (u *SecUser) GetClassmatesDetailByStuID(stuID string) (rte GetClassmatesDetailRte, err error) {
 
-	var data = strings.NewReader("userName=" + stuId)
-	req, err := http.NewRequest("POST", u.PortalUrlPerfix+GetClassmatesDetailPath+"?vpn-0", data)
+	resp, _ := u.Client.R().
+		SetHeader("referer", u.PortalUrlPerfix+PortalUserPath).
+		SetFormData(map[string]string{
+			"userName": stuID,
+		}).
+		Post(u.PortalUrlPerfix + GetClassmatesDetailPath + "?vpn-0")
+
+	err = json.Unmarshal(resp.Body(), &rte)
 	if err != nil {
 		return
 	}
 
-	for _, cooike := range u.Cookies {
-		req.AddCookie(cooike)
+	// 接口错误解析
+	if !rte.Success {
+		err = errors.New(rte.Msg)
 	}
 
-	req.Header.Set("authority", AuthorityUrl)
-	req.Header.Set("sec-ch-ua", `" Not;A Brand";v="99", "Google Chrome";v="91", "Chromium";v="91"`)
-	req.Header.Set("accept", "*/*")
-	req.Header.Set("dnt", "1")
-	req.Header.Set("x-requested-with", "XMLHttpRequest")
-	req.Header.Set("sec-ch-ua-mobile", "?0")
-	req.Header.Set("user-agent", UA)
-	req.Header.Set("content-type", "application/x-www-form-urlencoded; charset=UTF-8")
-	req.Header.Set("origin", SecUrl)
-	req.Header.Set("sec-fetch-site", "same-origin")
-	req.Header.Set("sec-fetch-mode", "cors")
-	req.Header.Set("sec-fetch-dest", "empty")
-	req.Header.Set("referer", u.PortalUrlPerfix+PortalUserPath)
-	req.Header.Set("accept-language", "zh-CN,zh;q=0.9")
+	return
+}
 
-	resp, err := client.Do(req)
+// GetClassmatesDetail 获取同班同学详情
+func (u *SecUser) GetClassmatesDetail() (GetClassmatesDetailRte, error) {
+	return u.GetClassmatesDetailByStuID(u.Username)
+}
+
+// GetClassmatesByStuID 通过学号获取学生同班同学列表
+//	pageNum := "1"
+//	pageSize := "99"
+func (u *SecUser) GetClassmatesByStuID(stuID string, pageNum int, pageSize int) (rte GetClassmatesRte, err error) {
+
+	resp, _ := u.Client.R().
+		SetHeader("referer", u.PortalUrlPerfix+PortalUserPath).
+		SetFormData(map[string]string{
+			"userName": stuID,
+			"pageNum":  strconv.Itoa(pageNum),
+			"pageSize": strconv.Itoa(pageSize),
+		}).
+		Post(u.PortalUrlPerfix + GetClassmatesPath + "?vpn-0")
+
+	err = json.Unmarshal(resp.Body(), &rte)
 	if err != nil {
 		return
 	}
-	defer resp.Body.Close()
 
-	bodyText, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Println(err)
+	// 接口错误解析
+	if !rte.Success {
+		err = errors.New(rte.Msg)
 	}
 
-	err = json.Unmarshal(bodyText, &rte)
+	return
+}
+
+// GetClassmates 获取同班同学
+func (u *SecUser) GetClassmates(pageNum int, pageSize int) (GetClassmatesRte, error) {
+	return u.GetClassmatesByStuID(u.Username, pageNum, pageSize)
+}
+
+// GetWeekCoursesByID 通过账号获取获取周课表
+// currentTime: 如 2021-10-29
+// role: {学生:1, 教师:2}
+func (u *SecUser) GetWeekCoursesByID(username string, currentTime string, role int) (rte GetWeekCoursesRte, err error) {
+
+	resp, _ := u.Client.R().
+		SetHeader("referer", u.PortalUrlPerfix+PortalUserPath).
+		SetFormData(map[string]string{
+			"userName":    username,
+			"currentTime": currentTime,
+			"role":        strconv.Itoa(role),
+		}).
+		Post(u.PortalUrlPerfix + GetWeekCoursesPath + "?vpn-0")
+
+	err = json.Unmarshal(resp.Body(), &rte)
+	if err != nil {
+		return
+	}
+
+	// 接口错误解析
+	if !rte.Success {
+		err = errors.New(rte.Msg)
+	}
+
+	// 接口错误解析
+	if !rte.Success {
+		err = errors.New(rte.Msg)
+	}
+
+	return
+}
+
+// GetWeekCourses 获取周课表安排
+// currentTime: 如 2021-10-29
+// role: {学生:1, 教师:2}
+func (u *SecUser) GetWeekCourses(currentTime string, role int) (rte GetWeekCoursesRte, err error) {
+	return u.GetWeekCoursesByID(u.Username, currentTime, role)
+}
+
+// GetExamArrangementsByStuID 通过学号获考试安排
+//	schoolYear := "2021" //  学年
+//	schoolTerm := "1" // {第一学期:0,第二学期:1}
+func (u *SecUser) GetExamArrangementsByStuID(stuID string, schoolYear int, schoolTerm int) (rte GetExamArrangementsRte, err error) {
+
+	resp, _ := u.Client.R().
+		SetHeader("referer", u.PortalUrlPerfix+PortalUserPath).
+		SetFormData(map[string]string{
+			"examinationStudentId":  stuID,
+			"examinationSchoolYear": strconv.Itoa(schoolYear),
+			"examinationTerm":       strconv.Itoa(schoolTerm),
+		}).
+		Post(u.PortalUrlPerfix + GetExamArrangementsPath + "?vpn-0")
+
+	err = json.Unmarshal(resp.Body(), &rte)
+	if err != nil {
+		return
+	}
+
+	// 接口错误解析
+	if !rte.Success {
+		err = errors.New(rte.Msg)
+	}
+
+	return
+}
+
+// GetExamArrangement 获取考试安排
+//	schoolYear := "2021" //  学年
+//	schoolTerm := "1" // {第一学期:0,第二学期:1}
+func (u *SecUser) GetExamArrangemen(schoolYear int, schoolTerm int) (rte GetExamArrangementsRte, err error) {
+	return u.GetExamArrangementsByStuID(u.Username, schoolYear, schoolTerm)
+}
+
+// GetOneCardConsumeRecordsByID 通过帐号获取一卡通充值记录
+//	pageNum := "1"
+//	pageSize := "99"
+func (u *SecUser) GetOneCardConsumeRecordsByID(ID string, pageNum int, pageSize int) (rte GetOneCardConsumeRecordsRte, err error) { // GetOneCardConsumeRecords 通过学号获取一卡通充值记录
+
+	resp, _ := u.Client.R().
+		SetHeader("referer", u.PortalUrlPerfix+PortalUserPath).
+		SetFormData(map[string]string{
+			"generaCardConsumeRecordNumber": ID,
+			"pageNum":                       strconv.Itoa(pageNum),
+			"pageSize":                      strconv.Itoa(pageSize),
+		}).
+		Post(u.PortalUrlPerfix + GetOneCardConsumeRecordsPath + "?vpn-0")
+
+	err = json.Unmarshal(resp.Body(), &rte)
+	if err != nil {
+		return
+	}
+
+	// 接口错误解析
+	if !rte.Success {
+		err = errors.New(rte.Msg)
+	}
+
+	return
+}
+
+// GetOneCardConsumeRecords 通帐号获取一卡通充值记录
+//	pageNum := "1"
+//	pageSize := "99"
+func (u *SecUser) GetOneCardConsumeRecords(pageNum int, pageSize int) (rte GetOneCardConsumeRecordsRte, err error) { // GetOneCardConsumeRecords 通过学号获取一卡通充值记录
+	return u.GetOneCardConsumeRecordsByID(u.Username, pageNum, pageSize)
+}
+
+// GetOneCardChargeRecordsByID 通过帐号获取一卡通充值记录
+//	pageNum := "1"
+//	pageSize := "99"
+func (u *SecUser) GetOneCardChargeRecordsByID(ID string, pageNum int, pageSize int) (rte GetOneCardChargeRecordsRte, err error) {
+
+	resp, _ := u.Client.R().
+		SetHeader("referer", u.PortalUrlPerfix+PortalUserPath).
+		SetFormData(map[string]string{
+			"generaCardRechargeRecordNumber": ID,
+			"pageNum":                        strconv.Itoa(pageNum),
+			"pageSize":                       strconv.Itoa(pageSize),
+		}).
+		Post(u.PortalUrlPerfix + GetOneCardChargeRecordsPath + "?vpn-0")
+
+	err = json.Unmarshal(resp.Body(), &rte)
+	if err != nil {
+		return
+	}
+
+	// 接口错误解析
+	if !rte.Success {
+		err = errors.New(rte.Msg)
+	}
+
+	return
+
+}
+
+// GetOneCardConsumeRecords 通帐号获取一卡通充值记录
+//	pageNum := "1"
+//	pageSize := "99"
+func (u *SecUser) GetOneCardChargeRecords(pageNum int, pageSize int) (rte GetOneCardChargeRecordsRte, err error) { // GetOneCardConsumeRecords 通过学号获取一卡通充值记录
+	return u.GetOneCardChargeRecordsByID(u.Username, pageNum, pageSize)
+}
+
+// GetOneCardBalanceByID 通过帐号获取一卡通剩余金额
+func (u *SecUser) GetOneCardBalanceByID(ID string) (rte GetOneCardBalanceRte, err error) {
+
+	resp, _ := u.Client.R().
+		SetHeader("referer", u.PortalUrlPerfix+PortalUserPath).
+		SetFormData(map[string]string{
+			"username": ID,
+		}).
+		Post(u.PortalUrlPerfix + GetOneCardBalancePath + "?vpn-0")
+
+	err = json.Unmarshal(resp.Body(), &rte)
+	if err != nil {
+		return
+	}
+
+	// 接口错误解析
+	if !rte.Success {
+		err = errors.New(rte.Msg)
+	}
+
+	return
+
+}
+
+// GetOneCardBalance 获取一卡通剩余金额
+func (u *SecUser) GetOneCardBalance() (rte GetOneCardBalanceRte, err error) {
+	return u.GetOneCardBalanceByID(u.Username)
+}
+
+// GetStaffByStaffID 通过职工号获取教职工信息
+func (u *SecUser) GetStaffByStaffID(staffID string) (rte GetStaffRte, err error) {
+
+	resp, _ := u.Client.R().
+		SetHeader("referer", u.PortalUrlPerfix+PortalUserPath).
+		SetFormData(map[string]string{
+			"staffNumber": staffID,
+		}).
+		Post(u.PortalUrlPerfix + GetStaffPath + "?vpn-0")
+
+	err = json.Unmarshal(resp.Body(), &rte)
 	if err != nil {
 		return
 	}
@@ -180,59 +316,31 @@ func (u *SecUser) GetClassmatesDetail(stuId string) (rte GetClassmatesDetailRte,
 	}
 
 	// 门户未登陆的情况
-	if rte.Count == 0 {
+	if len(rte.Obj.StaffName) == 0 {
 		err = errors.New("no result")
 	}
 
 	return
 }
 
-// GetClassmates 通过学号获取学生同班同学列表
-func (u *SecUser) GetClassmates(stuId string) (rte GetClassmatesRte, err error) {
+// GetStaff 获取教职工信息
+func (u *SecUser) GetStaff() (rte GetStaffRte, err error) {
+	return u.GetStaffByStaffID(u.Username)
+}
 
-	client := &http.Client{}
+// GetClassStudents 获取班级学生
+func (u *SecUser) GetClassStudents(classCode string, pageNum int, pageSize int) (rte GetClassStudentsRte, err error) {
 
-	// 反正一个班没那么多人, 给个理想的值..一次拿完
-	pageNum := "1"
-	pageSize := "99"
+	resp, _ := u.Client.R().
+		SetHeader("referer", u.PortalUrlPerfix+PortalUserPath).
+		SetFormData(map[string]string{
+			"classcode": classCode,
+			"pageNum":   strconv.Itoa(pageNum),
+			"pageSize":  strconv.Itoa(pageSize),
+		}).
+		Post(u.PortalUrlPerfix + GetClassStudentsPath + "?vpn-0")
 
-	var data = strings.NewReader("userName=" + stuId + "&pageNum=" + pageNum + "&pageSize=" + pageSize)
-	req, err := http.NewRequest("POST", u.PortalUrlPerfix+GetClassmatesPath+"?vpn-0", data)
-	if err != nil {
-		return
-	}
-
-	for _, cooike := range u.Cookies {
-		req.AddCookie(cooike)
-	}
-
-	req.Header.Set("authority", AuthorityUrl)
-	req.Header.Set("sec-ch-ua", `" Not;A Brand";v="99", "Google Chrome";v="91", "Chromium";v="91"`)
-	req.Header.Set("accept", "*/*")
-	req.Header.Set("dnt", "1")
-	req.Header.Set("x-requested-with", "XMLHttpRequest")
-	req.Header.Set("sec-ch-ua-mobile", "?0")
-	req.Header.Set("user-agent", UA)
-	req.Header.Set("content-type", "application/x-www-form-urlencoded; charset=UTF-8")
-	req.Header.Set("origin", SecUrl)
-	req.Header.Set("sec-fetch-site", "same-origin")
-	req.Header.Set("sec-fetch-mode", "cors")
-	req.Header.Set("sec-fetch-dest", "empty")
-	req.Header.Set("referer", u.PortalUrlPerfix+PortalUserPath)
-	req.Header.Set("accept-language", "zh-CN,zh;q=0.9")
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return
-	}
-	defer resp.Body.Close()
-
-	bodyText, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Println(err)
-	}
-
-	err = json.Unmarshal(bodyText, &rte)
+	err = json.Unmarshal(resp.Body(), &rte)
 	if err != nil {
 		return
 	}
@@ -240,58 +348,31 @@ func (u *SecUser) GetClassmates(stuId string) (rte GetClassmatesRte, err error) 
 	// 接口错误解析
 	if !rte.Success {
 		err = errors.New(rte.Msg)
+		return
 	}
 
-	// 门户未登陆的情况
-	if len(rte.Obj) == 0 {
-		err = errors.New("no result")
-	}
+	// if len(rte.Obj) == 0 {
+	// 	err = errors.New("no result")
+	// }
 
 	return
 }
 
-// GetOneCardBalance 通过学号获取一卡通剩余金额
-func (u *SecUser) GetOneCardBalance(stuId string) (rte GetOneCardBalanceRte, err error) {
+// GetAllInvigilateByStaffID 通过职工号获取监考安排
+//	schoolYear := "2021" //  学年
+//	schoolTerm := "1" // {第一学期:0,第二学期:1}
+func (u *SecUser) GetAllInvigilateByStaffID(StaffID string, schoolYear int, schoolTerm int) (rte GetAllInvigilateRte, err error) {
 
-	client := &http.Client{}
+	resp, _ := u.Client.R().
+		SetHeader("referer", u.PortalUrlPerfix+PortalUserPath).
+		SetFormData(map[string]string{
+			"invigilateStaffNumber": StaffID,
+			"invigilateSchoolYear":  strconv.Itoa(schoolYear),
+			"invigilateTerm":        strconv.Itoa(schoolTerm),
+		}).
+		Post(u.PortalUrlPerfix + GetAllInvigilatePath + "?vpn-0")
 
-	var data = strings.NewReader("username=" + stuId)
-	req, err := http.NewRequest("POST", u.PortalUrlPerfix+GetOneCardBalancePath+"?vpn-0", data)
-	if err != nil {
-		return
-	}
-
-	for _, cooike := range u.Cookies {
-		req.AddCookie(cooike)
-	}
-
-	req.Header.Set("authority", AuthorityUrl)
-	req.Header.Set("sec-ch-ua", `" Not;A Brand";v="99", "Google Chrome";v="91", "Chromium";v="91"`)
-	req.Header.Set("accept", "*/*")
-	req.Header.Set("dnt", "1")
-	req.Header.Set("x-requested-with", "XMLHttpRequest")
-	req.Header.Set("sec-ch-ua-mobile", "?0")
-	req.Header.Set("user-agent", UA)
-	req.Header.Set("content-type", "application/x-www-form-urlencoded; charset=UTF-8")
-	req.Header.Set("origin", SecUrl)
-	req.Header.Set("sec-fetch-site", "same-origin")
-	req.Header.Set("sec-fetch-mode", "cors")
-	req.Header.Set("sec-fetch-dest", "empty")
-	req.Header.Set("referer", u.PortalUrlPerfix+PortalUserPath)
-	req.Header.Set("accept-language", "zh-CN,zh;q=0.9")
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return
-	}
-	defer resp.Body.Close()
-
-	bodyText, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Println(err)
-	}
-
-	err = json.Unmarshal(bodyText, &rte)
+	err = json.Unmarshal(resp.Body(), &rte)
 	if err != nil {
 		return
 	}
@@ -304,48 +385,26 @@ func (u *SecUser) GetOneCardBalance(stuId string) (rte GetOneCardBalanceRte, err
 	return
 }
 
-// GetOneCardChargeRecords 通过学号获取一卡通充值记录
-func (u *SecUser) GetOneCardChargeRecords(stuId string, pageNum uint, pageSize uint) (rte GetOneCardChargeRecordsRte, err error) {
+// GetAllInvigilate 获取监考安排
+//	schoolYear := "2021" //  学年
+//	schoolTerm := "1" // {第一学期:0,第二学期:1}
+func (u *SecUser) GetAllInvigilate(schoolYear int, schoolTerm int) (rte GetAllInvigilateRte, err error) {
+	return u.GetAllInvigilateByStaffID(u.Username, schoolYear, schoolTerm)
+}
 
-	client := &http.Client{}
+// GetAssetsByStaffID 通过职工号获取资产
+func (u *SecUser) GetAssetsByStaffID(staffID string, pageNum int, pageSize int) (rte GetAssetsRte, err error) {
 
-	var data = strings.NewReader("generaCardRechargeRecordNumber=" + stuId + "&pageNum=" + fmt.Sprint(pageNum) + "&pageSize=" + fmt.Sprint(pageSize))
-	req, err := http.NewRequest("POST", u.PortalUrlPerfix+GetOneCardChargeRecordsPath+"?vpn-0", data)
-	if err != nil {
-		return
-	}
+	resp, _ := u.Client.R().
+		SetHeader("referer", u.PortalUrlPerfix+PortalUserPath).
+		SetFormData(map[string]string{
+			"assetsStaffNumber": staffID,
+			"pageNum":           strconv.Itoa(pageNum),
+			"pageSize":          strconv.Itoa(pageSize),
+		}).
+		Post(u.PortalUrlPerfix + GetAssetsPath + "?vpn-0")
 
-	for _, cooike := range u.Cookies {
-		req.AddCookie(cooike)
-	}
-
-	req.Header.Set("authority", AuthorityUrl)
-	req.Header.Set("sec-ch-ua", `" Not;A Brand";v="99", "Google Chrome";v="91", "Chromium";v="91"`)
-	req.Header.Set("accept", "*/*")
-	req.Header.Set("dnt", "1")
-	req.Header.Set("x-requested-with", "XMLHttpRequest")
-	req.Header.Set("sec-ch-ua-mobile", "?0")
-	req.Header.Set("user-agent", UA)
-	req.Header.Set("content-type", "application/x-www-form-urlencoded; charset=UTF-8")
-	req.Header.Set("origin", SecUrl)
-	req.Header.Set("sec-fetch-site", "same-origin")
-	req.Header.Set("sec-fetch-mode", "cors")
-	req.Header.Set("sec-fetch-dest", "empty")
-	req.Header.Set("referer", u.PortalUrlPerfix+PortalUserPath)
-	req.Header.Set("accept-language", "zh-CN,zh;q=0.9")
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return
-	}
-	defer resp.Body.Close()
-
-	bodyText, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Println(err)
-	}
-
-	err = json.Unmarshal(bodyText, &rte)
+	err = json.Unmarshal(resp.Body(), &rte)
 	if err != nil {
 		return
 	}
@@ -358,164 +417,7 @@ func (u *SecUser) GetOneCardChargeRecords(stuId string, pageNum uint, pageSize u
 	return
 }
 
-// GetOneCardConsumeRecords 通过学号获取一卡通充值记录
-func (u *SecUser) GetOneCardConsumeRecords(stuId string, pageNum uint, pageSize uint) (rte GetOneCardConsumeRecordsRte, err error) {
-
-	client := &http.Client{}
-
-	var data = strings.NewReader("generaCardConsumeRecordNumber=" + stuId + "&pageNum=" + fmt.Sprint(pageNum) + "&pageSize=" + fmt.Sprint(pageSize))
-	req, err := http.NewRequest("POST", u.PortalUrlPerfix+GetOneCardConsumeRecordsPath+"?vpn-0", data)
-	if err != nil {
-		return
-	}
-
-	for _, cooike := range u.Cookies {
-		req.AddCookie(cooike)
-	}
-
-	req.Header.Set("authority", AuthorityUrl)
-	req.Header.Set("sec-ch-ua", `" Not;A Brand";v="99", "Google Chrome";v="91", "Chromium";v="91"`)
-	req.Header.Set("accept", "*/*")
-	req.Header.Set("dnt", "1")
-	req.Header.Set("x-requested-with", "XMLHttpRequest")
-	req.Header.Set("sec-ch-ua-mobile", "?0")
-	req.Header.Set("user-agent", UA)
-	req.Header.Set("content-type", "application/x-www-form-urlencoded; charset=UTF-8")
-	req.Header.Set("origin", SecUrl)
-	req.Header.Set("sec-fetch-site", "same-origin")
-	req.Header.Set("sec-fetch-mode", "cors")
-	req.Header.Set("sec-fetch-dest", "empty")
-	req.Header.Set("referer", u.PortalUrlPerfix+PortalUserPath)
-	req.Header.Set("accept-language", "zh-CN,zh;q=0.9")
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return
-	}
-	defer resp.Body.Close()
-
-	bodyText, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Println(err)
-	}
-
-	err = json.Unmarshal(bodyText, &rte)
-	if err != nil {
-		return
-	}
-
-	// 接口错误解析
-	if !rte.Success {
-		err = errors.New(rte.Msg)
-	}
-
-	return
-}
-
-// GetExamArrangements 通过学号获取考试安排
-func (u *SecUser) GetExamArrangements(stuId string, schoolYear uint, term uint) (rte GetExamArrangementsRte, err error) {
-
-	client := &http.Client{}
-
-	var data = strings.NewReader("examinationStudentId=" + stuId + "&examinationSchoolYear=" + fmt.Sprint(schoolYear) + "&examinationTerm=" + fmt.Sprint(term))
-	req, err := http.NewRequest("POST", u.PortalUrlPerfix+GetExamArrangementsPath+"?vpn-0", data)
-	if err != nil {
-		return
-	}
-
-	for _, cooike := range u.Cookies {
-		req.AddCookie(cooike)
-	}
-
-	req.Header.Set("authority", AuthorityUrl)
-	req.Header.Set("sec-ch-ua", `" Not;A Brand";v="99", "Google Chrome";v="91", "Chromium";v="91"`)
-	req.Header.Set("accept", "*/*")
-	req.Header.Set("dnt", "1")
-	req.Header.Set("x-requested-with", "XMLHttpRequest")
-	req.Header.Set("sec-ch-ua-mobile", "?0")
-	req.Header.Set("user-agent", UA)
-	req.Header.Set("content-type", "application/x-www-form-urlencoded; charset=UTF-8")
-	req.Header.Set("origin", SecUrl)
-	req.Header.Set("sec-fetch-site", "same-origin")
-	req.Header.Set("sec-fetch-mode", "cors")
-	req.Header.Set("sec-fetch-dest", "empty")
-	req.Header.Set("referer", u.PortalUrlPerfix+PortalUserPath)
-	req.Header.Set("accept-language", "zh-CN,zh;q=0.9")
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return
-	}
-	defer resp.Body.Close()
-
-	bodyText, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Println(err)
-	}
-
-	err = json.Unmarshal(bodyText, &rte)
-	if err != nil {
-		return
-	}
-
-	// 接口错误解析
-	if !rte.Success {
-		err = errors.New(rte.Msg)
-	}
-
-	return
-}
-
-// GetWeekCourses 通过学号获取获取周课表 role: 学生为 1
-func (u *SecUser) GetWeekCourses(stuId string, currentTime string, role uint) (rte GetWeekCoursesRte, err error) {
-
-	client := &http.Client{}
-
-	var data = strings.NewReader("userName=" + stuId + "&currentTime=" + currentTime + "&role=" + fmt.Sprint(role))
-	req, err := http.NewRequest("POST", u.PortalUrlPerfix+GetWeekCoursesPath+"?vpn-0", data)
-	if err != nil {
-		return
-	}
-
-	for _, cooike := range u.Cookies {
-		req.AddCookie(cooike)
-	}
-
-	req.Header.Set("authority", AuthorityUrl)
-	req.Header.Set("sec-ch-ua", `" Not;A Brand";v="99", "Google Chrome";v="91", "Chromium";v="91"`)
-	req.Header.Set("accept", "*/*")
-	req.Header.Set("dnt", "1")
-	req.Header.Set("x-requested-with", "XMLHttpRequest")
-	req.Header.Set("sec-ch-ua-mobile", "?0")
-	req.Header.Set("user-agent", UA)
-	req.Header.Set("content-type", "application/x-www-form-urlencoded; charset=UTF-8")
-	req.Header.Set("origin", SecUrl)
-	req.Header.Set("sec-fetch-site", "same-origin")
-	req.Header.Set("sec-fetch-mode", "cors")
-	req.Header.Set("sec-fetch-dest", "empty")
-	req.Header.Set("referer", u.PortalUrlPerfix+PortalUserPath)
-	req.Header.Set("accept-language", "zh-CN,zh;q=0.9")
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return
-	}
-	defer resp.Body.Close()
-
-	bodyText, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Println(err)
-	}
-
-	err = json.Unmarshal(bodyText, &rte)
-	if err != nil {
-		return
-	}
-
-	// 接口错误解析
-	if !rte.Success {
-		err = errors.New(rte.Msg)
-	}
-
-	return
+// GetAssetsByStaff 获取资产
+func (u *SecUser) GetAssets(pageNum int, pageSize int) (rte GetAssetsRte, err error) {
+	return u.GetAssetsByStaffID(u.Username, pageNum, pageSize)
 }
