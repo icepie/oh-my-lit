@@ -15,12 +15,20 @@ var (
 	MianUrl = "http://" + MianHost // 120.194.42.205:9001
 	// DefaultPath 首页
 	DefaultPath = "/default.aspx"
-	// LoginPath 登陆地址
+	// LoginPath 登陆接口
 	LoginPath = "/_data/index_LOGIN.aspx"
-	// MenuPath 菜单地址
+	// MenuPath 菜单接口
 	MenuPath = "/frame/menu.aspx"
-	// SYSBannerPath 管理员菜单地址
-	SYSBannerPath = "/SYS/Main_banner.aspx"
+	// SysBannerPath 管理员菜单接口(通用)
+	SysBannerPath = "/SYS/Main_banner.aspx"
+	// StuMyInfoPath 学生学籍信息接口
+	StuMyInfoPath = "/xsxj/Stu_MyInfo_RPT.aspx"
+	// StuZXJGPath 学生正选结果
+	StuZXJGPath = "/wsxk/stu_zxjg_rpt.aspx"
+	// StuBYFAKCPath 学生理论课程结果
+	StuBYFAKCPath = "/jxjh/Stu_byfakc_rpt.aspx"
+	// StuBYFAHJPath 学生实践环节结果
+	StuBYFAHJPath = "/jxjh/Stu_byfahj_rpt.aspx"
 	// LoginBySecPath 智慧门户快速登陆
 	LoginBySecPath = "/cas_njjz.aspx"
 	// MAINFRMPath 主页
@@ -51,14 +59,14 @@ var (
 	</select>
 	*/
 
-	// STUType 学生
-	STUType = "STU"
-	// TEAType 教师教辅人员
-	TEAType = "TEA"
-	// SYSType 管理人员
-	SYSType = "SYS"
-	// ADMType 门户维护员
-	ADMType = "ADM"
+	// StuType 学生
+	StuType = "STU"
+	// TeaType 教师教辅人员
+	TeaType = "TEA"
+	// SysType 管理人员
+	SysType = "SYS"
+	// AdmType 门户维护员
+	AdmType = "ADM"
 )
 
 // JwUser 教务在线结构体
@@ -94,17 +102,17 @@ func (u *JwUser) SetPassword(password string) *JwUser {
 
 // SetSelType 设置登陆类型
 /*
-// STUType 学生
-STUType = "STU"
-// TEAType 教师教辅人员
-TEAType = "TEA"
-// SYSType 管理人员
-SYSType = "SYS"
-// ADMType 门户维护员
-ADMType = "ADM"
+	// StuType 学生
+	StuType = "STU"
+	// TeaType 教师教辅人员
+	TeaType = "TEA"
+	// SysType 管理人员
+	SysType = "SYS"
+	// AdmType 门户维护员
+	AdmType = "ADM"
 */
 func (u *JwUser) SetSelType(selType string) *JwUser {
-	if selType != STUType && selType != TEAType && selType != SYSType && selType != ADMType {
+	if selType != StuType && selType != TeaType && selType != SysType && selType != AdmType {
 		// log.Println("error: your selType not support!")
 		return u
 	}

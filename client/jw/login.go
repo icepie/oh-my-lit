@@ -161,10 +161,6 @@ func (u *JwUser) IsLogged() (isLogged bool) {
 
 	MAINFRMUrl := u.Url.String() + MenuPath
 
-	if u.IsBoundSec {
-		MAINFRMUrl += "?vpn-0"
-	}
-
 	resp, _ := u.Client.R().
 		SetHeader("referer", MAINFRMUrl).
 		Get(MAINFRMUrl)
