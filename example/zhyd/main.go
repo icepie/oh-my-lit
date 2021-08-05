@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net/url"
 	"os"
 
 	"github.com/icepie/oh-my-lit/client/zhyd"
@@ -14,10 +15,11 @@ func main() {
 
 	log.Println("智慧控电测试")
 
-	zhydUser, err := zhyd.NewZhydUser("B19071121", "")
-	if err != nil {
-		log.Println("实例化用户失败: ", err)
-	}
+	zhydUser := zhyd.NewZhydUser().
+		SetUsename("B19071121").
+		SetPassword("")
+
+	//zhydUser.Client.SetDebug(true)
 
 	b, err := zhydUser.IsNeedCaptcha()
 	if err != nil {
@@ -59,7 +61,7 @@ func main() {
 		log.Fatal("登陆失败: ", err)
 	}
 
-	isLogged, err := zhydUser.IsLogged()
+	isLogged := zhydUser.IsLogged()
 	if isLogged {
 		de, err := zhydUser.GetDormElectricity()
 		if err != nil {
@@ -83,7 +85,6 @@ func main() {
 		log.Println(cr)
 
 	} else {
-		log.Println("似乎未登陆: ", err)
+		log.Println("似乎未登陆!")
 	}
-
 }
