@@ -1,6 +1,7 @@
 package jw
 
 import (
+	"errors"
 	"strconv"
 	"strings"
 
@@ -39,6 +40,11 @@ func (u *JwUser) GetJwTime() (jwTime JwTime, err error) {
 	// 对教务时间进行处理
 	// [2021年08月06日 星期五 2021-2022学年第一学期 [假期]]
 	jwtimeData := strings.Fields(rawData)
+
+	if len(jwtimeData) < 2 {
+		err = errors.New("fatl to get jwtime")
+		return
+	}
 
 	for i, subStr := range jwtimeData {
 		if i != len(jwTime.RawData)-1 {
