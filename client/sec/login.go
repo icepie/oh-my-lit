@@ -37,7 +37,7 @@ func (u *SecUser) IsNeedCaptcha() (isNeed bool, err error) {
 			"_":        fmt.Sprint(time.Now().Unix()),
 		}).
 		SetHeader("referer", u.AuthUrl).
-		Get(u.AuthlUrlPerfix + NeedCaptchaPath)
+		Get(u.AuthUrlPerfix + NeedCaptchaPath)
 
 	if resp.StatusCode() != 200 {
 		err = reqErr
@@ -69,7 +69,7 @@ func (u *SecUser) GetCaptche() (pix []byte, err error) {
 		}).
 		SetHeader("referer", u.AuthUrl).
 		SetHeader("accept", "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8").
-		Get(u.AuthlUrlPerfix + CaptchaPath)
+		Get(u.AuthUrlPerfix + CaptchaPath)
 
 	if err != nil {
 		return
