@@ -99,6 +99,14 @@ func (u *HealthUser) FirstReport(firstTemp float64, secondTemp float64, thirdTem
 		VillageIsCase:            lr.VillageIsCase,
 	}
 
+	if secondTemp == 0 {
+		param.TemperatureTwo = ""
+	}
+
+	if thirdTemp == 0 {
+		param.TemperatureThree = ""
+	}
+
 	err = u.FirstReportByRaw(param)
 
 	return
