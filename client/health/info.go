@@ -3,7 +3,7 @@ package health
 import (
 	"encoding/json"
 	"errors"
-	"strconv"
+	"fmt"
 	"time"
 )
 
@@ -12,8 +12,8 @@ func (u *HealthUser) GetLastRecord() (lastRecord LastRecord, err error) {
 
 	resp, err := u.Client.R().
 		SetQueryParams(map[string]string{
-			"teamId": strconv.Itoa(u.UserInfo.TeamID),
-			"userId": strconv.Itoa(u.UserInfo.UserID),
+			"teamId": fmt.Sprint(u.UserInfo.TeamID),
+			"userId": fmt.Sprint(u.UserInfo.UserID),
 		}).SetResult(Result{}).
 		Get(LastRecordUrl)
 

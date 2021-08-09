@@ -17,6 +17,12 @@ var (
 	LoginUrl = MianUrl + "/healthyLogin"
 	// LastRecordUrl 获取上次记录
 	LastRecordUrl = MianUrl + "/lastHealthyRecord"
+	// FirstRecordUrl 第一次上报
+	FirstRecordUrl = MianUrl + "/addHealthyRecord"
+	// SecondRecordUrl 第二次上报
+	SecondRecordUrl = MianUrl + "/addTwoHealthyRecord"
+	// ThirdRecordUrl 第三次上报
+	ThirdRecordUrl = MianUrl + "/addThreeHealthyRecord"
 	// MainHeaders 主请求头
 	MainHeaders = map[string]string{
 		"Proxy-Connection": "keep-alive",

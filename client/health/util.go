@@ -10,3 +10,5 @@ func getSha256(str string) string {
 	h.Write([]byte(str))
 	return hex.EncodeToString(h.Sum(nil))
 }
+
+
