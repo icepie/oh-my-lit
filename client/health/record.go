@@ -35,7 +35,7 @@ func (u *HealthUser) FirstReportByRaw(param FirstRecordParam) (err error) {
 }
 
 // FirstReport 进行今日第一次上报
-func (u *HealthUser) FirstReport(firstTemp float32, secondTemp float32, thirdTemp float32) (err error) {
+func (u *HealthUser) FirstReport(firstTemp float64, secondTemp float64, thirdTemp float64) (err error) {
 
 	lr, err := u.GetLastRecord()
 	if err != nil {
@@ -132,7 +132,7 @@ func (u *HealthUser) SecondReportByRaw(param ExtraRecordParam) (err error) {
 }
 
 // SecondReport 进行今日第二次上报
-func (u *HealthUser) SecondReport(temp float32) (err error) {
+func (u *HealthUser) SecondReport(temp float64) (err error) {
 
 	lr, err := u.GetLastRecord()
 	if err != nil {
@@ -179,7 +179,7 @@ func (u *HealthUser) ThirdReportByRaw(param ExtraRecordParam) (err error) {
 }
 
 // ThirdReport 进行今日第三次上报
-func (u *HealthUser) ThirdReport(temp float32) (err error) {
+func (u *HealthUser) ThirdReport(temp float64) (err error) {
 
 	lr, err := u.GetLastRecord()
 	if err != nil {
