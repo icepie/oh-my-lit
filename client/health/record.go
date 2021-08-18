@@ -58,7 +58,7 @@ func (u *HealthUser) FirstReport(firstTemp float64, secondTemp float64, thirdTem
 		ContactTime:              lr.ContactTime,
 		CureTime:                 lr.CureTime,
 		CurrentAddress:           lr.CurrentAddress,
-		CurrentCity:              lr.ContactCity,
+		CurrentCity:              lr.CurrentCity,
 		CurrentDistrict:          lr.CurrentDistrict,
 		CurrentLocation:          "",
 		CurrentProvince:          lr.CurrentProvince,
