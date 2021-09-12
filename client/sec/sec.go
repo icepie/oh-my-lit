@@ -3,6 +3,7 @@ package sec
 import (
 	"errors"
 	"strings"
+	"time"
 
 	"github.com/go-resty/resty/v2"
 	"github.com/icepie/oh-my-lit/client/util"
@@ -105,6 +106,7 @@ func NewSecUser() *SecUser {
 
 	u.Client = resty.New()
 	u.Client.SetHeaders(MainHeaders)
+	u.Client.SetTimeout(5 * time.Second)
 
 	// 刷新 webvpn path
 	u.PerSetCooikes()

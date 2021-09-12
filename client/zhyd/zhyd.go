@@ -1,6 +1,8 @@
 package zhyd
 
 import (
+	"time"
+
 	"github.com/go-resty/resty/v2"
 )
 
@@ -36,9 +38,9 @@ var (
 
 // ZhydUser 智能控电用户结构体
 type ZhydUser struct {
-	Username    string
-	Password    string
-	Client      *resty.Client
+	Username string
+	Password string
+	Client   *resty.Client
 }
 
 // SetPassword 设置用户名
@@ -60,6 +62,7 @@ func NewZhydUser() *ZhydUser {
 
 	u.Client = resty.New()
 	u.Client.SetHeaders(MainHeaders)
+	u.Client.SetTimeout(5 * time.Second)
 
 	// 拿个cookies
 	u.PerSetCooikes()

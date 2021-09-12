@@ -2,6 +2,7 @@ package health
 
 import (
 	"errors"
+	"time"
 
 	"github.com/go-resty/resty/v2"
 )
@@ -74,6 +75,7 @@ func NewHealthUser() *HealthUser {
 
 	// u.Client.SetDebug(true)
 	u.Client.SetHeaders(MainHeaders)
+	u.Client.SetTimeout(5 * time.Second)
 
 	return &u
 }
