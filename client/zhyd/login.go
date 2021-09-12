@@ -164,7 +164,7 @@ func (u *ZhydUser) Login() (err error) {
 			return
 		}
 	}
-	return errors.New("login error" + err.Error())
+	return
 }
 
 // LoginWithCap 验证码登陆
