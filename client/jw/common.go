@@ -1,6 +1,7 @@
 package jw
 
 import (
+	"bytes"
 	"errors"
 	"strconv"
 	"strings"
@@ -74,6 +75,57 @@ func (u *JwUser) GetJwTime() (jwTime JwTime, err error) {
 		// 尝试转为整形
 		weekNum, _ := strconv.Atoi(weekStr)
 		jwTime.Week = uint(weekNum)
+	}
+
+	return
+}
+
+// GetClassID 获取班级ID
+func (u *JwUser) GetClassID(name string) (id string, err error) {
+
+	idMap := make(map[string]string)
+
+	body, err := u.GetClassSelPage()
+	if err != nil {
+		return
+	}
+
+	doc, err := goquery.NewDocumentFromReader(bytes.NewReader([]byte(body)))
+	if err != nil {
+		return
+	}
+
+	sel := doc.Find("td#theXZBJ>select")
+
+	sel.Find("option").Each(func(i int, option *goquery.Selection) {
+		idMap[option.Text()] = option.AttrOr("value", "")
+	})
+
+	id = idMap[name]
+
+	if len(id) == 0 {
+		err = errors.New("not found class id")
+	}
+
+	return
+}
+
+// GetClassID 获取学生ID
+func (u *JwUser) GetStuID(name string) (id string, err error) {
+
+	body, err := u.GetListXSRpt(name)
+	if err != nil {
+		return
+	}
+
+	if strings.Contains(body, "@") || !strings.Contains(body, "|") {
+		err = errors.New("not found student id")
+		return
+	}
+
+	id = body[0:12]
+	if len(id) == 0 {
+		err = errors.New("not found student id")
 	}
 
 	return

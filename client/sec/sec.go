@@ -106,7 +106,7 @@ func NewSecUser() *SecUser {
 
 	u.Client = resty.New()
 	u.Client.SetHeaders(MainHeaders)
-	u.Client.SetTimeout(5 * time.Second)
+	u.Client.SetTimeout(60 * time.Second)
 
 	// 刷新 webvpn path
 	u.PerSetCooikes()

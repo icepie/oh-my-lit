@@ -217,7 +217,7 @@ func (u *SecUser) PortalLogin() (err error) {
 
 	// 确保账号登陆成功
 	if !u.IsPortalLogged() {
-		err = errors.New("fail to  login")
+		err = errors.New("fail to login")
 	}
 
 	return
