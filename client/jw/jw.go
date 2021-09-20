@@ -31,6 +31,8 @@ var (
 	StuBYFAHJPath = "/jxjh/Stu_byfahj_rpt.aspx"
 	// SysListXSPath 管理员查询学生姓名结果
 	SysListXSPath = "/XSCJ/Private/list_XS.aspx"
+	// SysXSGRCJPath 管理员查询学生成绩结果
+	SysXSGRCJPath = "/XSCJ/f_xsgrcj_rpt.aspx"
 	// SysClassSelPath 管理员查询班级课表
 	SysClassSelPath = "/ZNPK/ClassSel_rpt.aspx"
 	// ClassSelPath 公用课表接口

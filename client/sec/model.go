@@ -159,80 +159,51 @@ type GetClassmatesRte struct {
 	Success bool `json:"success"`
 }
 
+// 课程结构
+type Course struct {
+	CourseAdressCode            string      `json:"courseAdressCode"`
+	CourseCategoryName          interface{} `json:"courseCategoryName"`
+	CourseClassCode             interface{} `json:"courseClassCode"`
+	CourseClassName             interface{} `json:"courseClassName"`
+	CourseClassRoomCode         interface{} `json:"courseClassRoomCode"`
+	CourseClassRoomName         interface{} `json:"courseClassRoomName"`
+	CourseCode                  string      `json:"courseCode"`
+	CourseCredit                interface{} `json:"courseCredit"`
+	CourseDate                  string      `json:"courseDate"`
+	CourseDepartmentCourse      interface{} `json:"courseDepartmentCourse"`
+	CourseExaminationMethodCode interface{} `json:"courseExaminationMethodCode"`
+	CourseHours                 interface{} `json:"courseHours"`
+	CourseID                    interface{} `json:"courseId"`
+	CourseName                  string      `json:"courseName"`
+	CoursePlan                  interface{} `json:"coursePlan"`
+	CourseSchoolYear            string      `json:"courseSchoolYear"`
+	CourseSection               string      `json:"courseSection"`
+	CourseSectionWeek           interface{} `json:"courseSectionWeek"`
+	CourseSingleDoubleWeek      string      `json:"courseSingleDoubleWeek"`
+	CourseStudentID             interface{} `json:"courseStudentId"`
+	CourseStudentName           interface{} `json:"courseStudentName"`
+	CourseSubjectCourseNumber   interface{} `json:"courseSubjectCourseNumber"`
+	CourseTeacherName           string      `json:"courseTeacherName"`
+	CourseTeacherNumber         interface{} `json:"courseTeacherNumber"`
+	CourseTeachingNumber        interface{} `json:"courseTeachingNumber"`
+	CourseTerm                  string      `json:"courseTerm"`
+	CourseTotolHours            interface{} `json:"courseTotolHours"`
+	CourseWeek                  interface{} `json:"courseWeek"`
+	CourseWeekNumber            interface{} `json:"courseWeekNumber"`
+	CourseWeekly                string      `json:"courseWeekly"`
+	TeacherName                 string      `json:"teacherName"`
+}
+
 // GetWeekCoursesRte 获取周课表返回结构
 type GetWeekCoursesRte struct {
 	Attributes struct {
-		CourseListTopTwo []struct {
-			CourseAdressCode            string      `json:"courseAdressCode"`
-			CourseCategoryName          interface{} `json:"courseCategoryName"`
-			CourseClassCode             interface{} `json:"courseClassCode"`
-			CourseClassName             interface{} `json:"courseClassName"`
-			CourseClassRoomCode         interface{} `json:"courseClassRoomCode"`
-			CourseClassRoomName         interface{} `json:"courseClassRoomName"`
-			CourseCode                  string      `json:"courseCode"`
-			CourseCredit                interface{} `json:"courseCredit"`
-			CourseDate                  string      `json:"courseDate"`
-			CourseDepartmentCourse      interface{} `json:"courseDepartmentCourse"`
-			CourseExaminationMethodCode interface{} `json:"courseExaminationMethodCode"`
-			CourseHours                 interface{} `json:"courseHours"`
-			CourseID                    interface{} `json:"courseId"`
-			CourseName                  string      `json:"courseName"`
-			CoursePlan                  interface{} `json:"coursePlan"`
-			CourseSchoolYear            string      `json:"courseSchoolYear"`
-			CourseSection               string      `json:"courseSection"`
-			CourseSectionWeek           interface{} `json:"courseSectionWeek"`
-			CourseSingleDoubleWeek      string      `json:"courseSingleDoubleWeek"`
-			CourseStudentID             interface{} `json:"courseStudentId"`
-			CourseStudentName           interface{} `json:"courseStudentName"`
-			CourseSubjectCourseNumber   interface{} `json:"courseSubjectCourseNumber"`
-			CourseTeacherName           string      `json:"courseTeacherName"`
-			CourseTeacherNumber         interface{} `json:"courseTeacherNumber"`
-			CourseTeachingNumber        interface{} `json:"courseTeachingNumber"`
-			CourseTerm                  string      `json:"courseTerm"`
-			CourseTotolHours            interface{} `json:"courseTotolHours"`
-			CourseWeek                  interface{} `json:"courseWeek"`
-			CourseWeekNumber            interface{} `json:"courseWeekNumber"`
-			CourseWeekly                string      `json:"courseWeekly"`
-			TeacherName                 string      `json:"teacherName"`
-		} `json:"courseListTopTwo"`
-		CourseTime string `json:"courseTime"`
+		CourseListTopTwo []Course `json:"courseListTopTwo"`
+		CourseTime       string   `json:"courseTime"`
 	} `json:"attributes"`
-	Count interface{} `json:"count"`
-	Msg   string      `json:"msg"`
-	Obj   []struct {
-		CourseAdressCode            string      `json:"courseAdressCode"`
-		CourseCategoryName          interface{} `json:"courseCategoryName"`
-		CourseClassCode             interface{} `json:"courseClassCode"`
-		CourseClassName             interface{} `json:"courseClassName"`
-		CourseClassRoomCode         interface{} `json:"courseClassRoomCode"`
-		CourseClassRoomName         interface{} `json:"courseClassRoomName"`
-		CourseCode                  string      `json:"courseCode"`
-		CourseCredit                interface{} `json:"courseCredit"`
-		CourseDate                  string      `json:"courseDate"`
-		CourseDepartmentCourse      interface{} `json:"courseDepartmentCourse"`
-		CourseExaminationMethodCode interface{} `json:"courseExaminationMethodCode"`
-		CourseHours                 interface{} `json:"courseHours"`
-		CourseID                    interface{} `json:"courseId"`
-		CourseName                  string      `json:"courseName"`
-		CoursePlan                  interface{} `json:"coursePlan"`
-		CourseSchoolYear            string      `json:"courseSchoolYear"`
-		CourseSection               string      `json:"courseSection"`
-		CourseSectionWeek           interface{} `json:"courseSectionWeek"`
-		CourseSingleDoubleWeek      string      `json:"courseSingleDoubleWeek"`
-		CourseStudentID             interface{} `json:"courseStudentId"`
-		CourseStudentName           interface{} `json:"courseStudentName"`
-		CourseSubjectCourseNumber   interface{} `json:"courseSubjectCourseNumber"`
-		CourseTeacherName           string      `json:"courseTeacherName"`
-		CourseTeacherNumber         interface{} `json:"courseTeacherNumber"`
-		CourseTeachingNumber        interface{} `json:"courseTeachingNumber"`
-		CourseTerm                  string      `json:"courseTerm"`
-		CourseTotolHours            interface{} `json:"courseTotolHours"`
-		CourseWeek                  interface{} `json:"courseWeek"`
-		CourseWeekNumber            interface{} `json:"courseWeekNumber"`
-		CourseWeekly                string      `json:"courseWeekly"`
-		TeacherName                 string      `json:"teacherName"`
-	} `json:"obj"`
-	Success bool `json:"success"`
+	Count   interface{} `json:"count"`
+	Msg     string      `json:"msg"`
+	Obj     []Course    `json:"obj"`
+	Success bool        `json:"success"`
 }
 
 // GetOneCardBalanceRte 获取一卡通余额返回结构

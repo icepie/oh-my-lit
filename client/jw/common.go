@@ -1,7 +1,6 @@
 package jw
 
 import (
-	"bytes"
 	"errors"
 	"strconv"
 	"strings"
@@ -90,7 +89,7 @@ func (u *JwUser) GetClassID(name string) (id string, err error) {
 		return
 	}
 
-	doc, err := goquery.NewDocumentFromReader(bytes.NewReader([]byte(body)))
+	doc, err := goquery.NewDocumentFromReader(strings.NewReader(body))
 	if err != nil {
 		return
 	}
