@@ -129,3 +129,24 @@ func (u *JwUser) GetStuID(name string) (id string, err error) {
 
 	return
 }
+
+// 成绩排名参数构造
+func (u *JwUser) XscjbmLeftRptToHidKC(body string) string {
+
+	doc, _ := goquery.NewDocumentFromReader(strings.NewReader(body))
+
+	hid_kc := `'TTTTTTTTTTTTTTTT'`
+
+	doc.Find("table#ID_Table>tbody>tr").Each(func(i int, tr *goquery.Selection) {
+
+		v, isExist := tr.Find("td>input").First().Attr("value")
+
+		if isExist {
+
+			hid_kc = hid_kc + "," + `'` + v + `'`
+		}
+
+	})
+
+	return hid_kc
+}

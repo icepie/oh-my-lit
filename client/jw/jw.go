@@ -39,6 +39,10 @@ var (
 	ClassSelPath = "/ZNPK/KBFB_ClassSel.aspx"
 	// LoginBySecPath 智慧门户快速登陆
 	LoginBySecPath = "/cas_njjz.aspx"
+	// XscjbmLeft 有效成绩排名 left
+	SysXscjbmLeftPath = "/XSCJ/g_xscjbm_left.aspx"
+	// SysXscjbmRightPath 有效成绩排名 right
+	SysXscjbmRightPath = "/XSCJ/g_xscjbm_right.aspx"
 	// MAINFRMPath 主页
 	MAINFRMPath = "/MAINFRM.aspx"
 	// UA
