@@ -421,3 +421,22 @@ func (u *SecUser) GetAssetsByStaffID(staffID string, pageNum int, pageSize int) 
 func (u *SecUser) GetAssets(pageNum int, pageSize int) (rte GetAssetsRte, err error) {
 	return u.GetAssetsByStaffID(u.Username, pageNum, pageSize)
 }
+
+// GetDepartmentPhoneList 获取部门电话
+func (u *SecUser) GetDepartmentPhoneList() (rte DepartmentPhoneListRte, err error) {
+	resp, _ := u.Client.R().
+		SetHeader("referer", u.PortalUrlPerfix+PortalUserPath).
+		Get(u.PortalUrlPerfix + GetDepartmentPhoneListPath + "?vpn-0")
+
+	err = json.Unmarshal(resp.Body(), &rte)
+	if err != nil {
+		return
+	}
+
+	// 接口错误解析
+	if !rte.Success {
+		err = errors.New(rte.Msg)
+	}
+
+	return
+}
