@@ -61,8 +61,8 @@ var (
 	GetExamArrangementsPath = "/microapplication/api/examArrangementController/findAllExamArrangements"
 	// GetweekCourses 获取周课表接口
 	GetWeekCoursesPath = "/microapplication/api/course/getCourse"
-	// // GetDepartmentPhoneList 获取部门电话列表
-	// GetDepartmentPhoneList = "/microapplication/api/queryDepartmentPhone/querydepartmentphonelist"
+	// GetDepartmentPhoneList 获取部门电话列表
+	GetDepartmentPhoneListPath = "/microapplication/api/queryDepartmentPhone/querydepartmentphonelist"
 	// GetStaffPath 获取教职工接口
 	GetStaffPath = "/microapplication/api/index/getStaffByStaffNumber"
 	// GetClassStudents 获取班级学生接口
