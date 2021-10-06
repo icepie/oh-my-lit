@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
 
@@ -38,25 +37,13 @@ func (u *ZhydUser) GetDormElectricity() (rte []DormElectricity, err error) {
 			case 1:
 				de.Room = s.Text()
 			case 2:
-				electricity := s.Text()
-				if len(electricity) > 0 {
-					de.Electricity, _ = strconv.ParseFloat(electricity, 64)
-				}
+				de.Electricity = s.Text()
 			case 3:
-				balance := s.Text()
-				if len(balance) > 0 {
-					de.Balance, _ = strconv.ParseFloat(balance, 64)
-				}
+				de.Balance = s.Text()
 			case 4:
-				electricitySubsidy := s.Text()
-				if len(electricitySubsidy) > 0 {
-					de.ElectricitySubsidy, _ = strconv.ParseFloat(electricitySubsidy, 64)
-				}
+				de.ElectricitySubsidy = s.Text()
 			case 5:
-				balanceSubsidy := s.Text()
-				if len(balanceSubsidy) > 0 {
-					de.BalanceSubsidy, _ = strconv.ParseFloat(balanceSubsidy, 64)
-				}
+				de.BalanceSubsidy = s.Text()
 			}
 
 		})
@@ -92,10 +79,7 @@ func (u *ZhydUser) GetElectricityDetails() (rte []ElectricityDetails, err error)
 			case 1:
 				ed.Room = s.Text()
 			case 2:
-				electricity := s.Text()
-				if len(electricity) > 0 {
-					ed.Electricity, _ = strconv.ParseFloat(electricity, 64)
-				}
+				ed.Electricity = s.Text()
 			}
 		})
 
@@ -118,7 +102,7 @@ func (u *ZhydUser) GetElectricityDetails() (rte []ElectricityDetails, err error)
 
 			v := s.Find("span.mui-badge.mui-badge-primary").First().Text()
 			if len(v) > 0 {
-				d.Value, _ = strconv.ParseFloat(v, 64)
+				d.Value = v
 			}
 
 			ed.Details = append(ed.Details, d)
