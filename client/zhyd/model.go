@@ -16,10 +16,10 @@ type DormElectricity struct {
 	Name               string
 	BuildName          string
 	Room               string
-	Electricity        float64
-	Balance            float64
-	ElectricitySubsidy float64
-	BalanceSubsidy     float64
+	Electricity        string
+	Balance            string
+	ElectricitySubsidy string
+	BalanceSubsidy     string
 }
 
 // ElectricityDetails 宿舍用电详情结构
@@ -27,14 +27,14 @@ type ElectricityDetails struct {
 	Name        string
 	BuildName   string
 	Room        string
-	Electricity float64
+	Electricity string
 	Details     []Detail
 }
 
 // Detail 日详情结构
 type Detail struct {
 	Time  time.Time
-	Value float64
+	Value string
 }
 
 // ChargeRecords 充值记录结构
