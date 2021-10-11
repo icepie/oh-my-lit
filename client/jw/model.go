@@ -8,4 +8,5 @@ type JwTime struct {
 	IsVacation bool   `json:"is_vacation"`
 	RawData    string `json:"raw_data"`
 	OnlineNum  uint   `json:"online_num"`
+	Sub        string `json:"sub"`
 }

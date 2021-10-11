@@ -359,3 +359,12 @@ type GetAssetsRte struct {
 	} `json:"obj"`
 	Success bool `json:"success"`
 }
+
+// DepartmentPhoneListRte 获取部门电话返回结构
+type DepartmentPhoneListRte struct {
+	Attributes interface{} `json:"attributes"`
+	Count      interface{} `json:"count"`
+	Msg        string      `json:"msg"`
+	Obj        interface{} `json:"obj"`
+	Success    bool        `json:"success"`
+}
