@@ -115,7 +115,7 @@ func NewSecUser() *SecUser {
 }
 
 // SetPassword 设置用户名
-func (u *SecUser) SetUsename(username string) *SecUser {
+func (u *SecUser) SetUsername(username string) *SecUser {
 	u.Username = username
 	return u
 }

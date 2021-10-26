@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"html"
-	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -173,7 +172,7 @@ func (u *SecUser) login(captcha string) (err error) {
 
 	body = resp.String()
 
-	log.Println(body)
+	// log.Println(body)
 
 	// 判断是否有错误
 	if strings.Contains(body, "credential.errors") {

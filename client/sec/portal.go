@@ -156,14 +156,14 @@ func (u *SecUser) GetWeekCoursesByID(username string, currentTime string, role i
 	return
 }
 
-// GetWeekCourses 获取周课表安排
+// GetWeekCourses 获取周课表
 // currentTime: 如 2021-10-29
 // role: {学生:1, 教师:2}
 func (u *SecUser) GetWeekCourses(currentTime string, role int) (rte GetWeekCoursesRte, err error) {
 	return u.GetWeekCoursesByID(u.Username, currentTime, role)
 }
 
-// GetExamArrangementsByStuID 通过学号获考试安排
+// GetExamArrangementsByStuID 通过学号获取考试安排
 //	schoolYear := "2021" //  学年
 //	schoolTerm := "1" // {第一学期:0,第二学期:1}
 func (u *SecUser) GetExamArrangementsByStuID(stuID string, schoolYear int, schoolTerm int) (rte GetExamArrangementsRte, err error) {
