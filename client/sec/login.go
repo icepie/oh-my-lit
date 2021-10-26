@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"html"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -109,15 +110,15 @@ func (u *SecUser) login(captcha string) (err error) {
 	body := resp.String()
 
 	// 获取所有可需参数
-	actionUrl, err := util.GetSubstringBetweenStringsByRE(body, `id="casLoginForm" class="fm-v clearfix" action="`, `"`)
+	actionUrl, err := util.GetSubstringBetweenStringsByRE(body, `id="form" action="`, `"`)
 	if err != nil {
 		return
 	}
 
-	lt, err := util.GetSubstringBetweenStringsByRE(body, `name="lt" value="`, `"`)
-	if err != nil {
-		return
-	}
+	// lt, err := util.GetSubstringBetweenStringsByRE(body, `name="lt" value="`, `"`)
+	// if err != nil {
+	// 	return
+	// }
 
 	execution, err := util.GetSubstringBetweenStringsByRE(body, `name="execution" value="`, `"`)
 	if err != nil {
@@ -129,30 +130,36 @@ func (u *SecUser) login(captcha string) (err error) {
 		return
 	}
 
-	rmShown, err := util.GetSubstringBetweenStringsByRE(body, `name="rmShown" value="`, `"`)
+	salt, err := util.GetSubstringBetweenStringsByRE(body, `id="salt" value="`, `"`)
 	if err != nil {
 		return
 	}
-
-	//log.Println(actionUrl, lt, execution, eventId, rmShown)
 
 	// 这个地址需要html解码
 	decodeurl := html.UnescapeString(actionUrl)
 
 	// var data = strings.NewReader("username=" + u.Username + "&password=" + u.Password + captchaParam + "&lt=" + lt + "&execution=" + execution + "&_eventId=" + eventId + "&rmShown=" + rmShown)
 
+	dealPassword, err := loginCrypto(u.Password, salt, "1234567890abcdef")
+	if err != nil {
+		return
+	}
+
 	req := u.Client.R().
 		SetHeader("referer", u.AuthUrl).
 		SetHeader("authority", actionUrl).
 		SetFormData(map[string]string{
-			"username":  u.Username,
-			"password":  u.Password,
-			"lt":        lt,
+			"username": u.Username,
+			"password": dealPassword,
+			// "lt":        lt,
 			"execution": execution,
 			"_eventId":  eventId,
-			"rmShown":   rmShown,
+			// "salt":    salt,
+			"rememberMe":  "true", // 一周内免登录 on/off
+			"_rememberMe": "on",
 		})
 
+	// 预定.....
 	if len(captcha) > 0 {
 		req.SetFormData(map[string]string{
 			"captchaResponse": captcha,
@@ -166,17 +173,19 @@ func (u *SecUser) login(captcha string) (err error) {
 
 	body = resp.String()
 
+	log.Println(body)
+
 	// 判断是否有错误
-	if strings.Contains(body, "callback_err_login") {
-		loginErrStr, _ := util.GetSubstringBetweenStringsByRE(body, `callback_err_login">`, `</div>`)
+	if strings.Contains(body, "credential.errors") {
+		loginErrStr, _ := util.GetSubstringBetweenStringsByRE(body, `credential.errors">`, `</span>`)
 		err = errors.New(loginErrStr)
 		return
 	}
 
 	// 确保账号登陆成功
-	if !u.IsLogged() {
-		u.login(captcha)
-	}
+	// if !u.IsLogged() {
+	// 	u.login(captcha)
+	// }
 
 	// 获取门户path
 	err = u.PerSetPortalPath()
