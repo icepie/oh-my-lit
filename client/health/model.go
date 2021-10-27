@@ -154,3 +154,10 @@ type ExtraRecordParam struct {
 	Temperature       string `json:"temperature"`
 	TemperatureNormal int64  `json:"temperatureNormal"`
 }
+
+// HealthyReportCount 上报统计结构
+type HealthyReportCount struct {
+	NotReported int64 `json:"notReported"`
+	RecordTotal int64 `json:"recordTotal"`
+	Reported    int64 `json:"reported"`
+}

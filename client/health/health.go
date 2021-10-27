@@ -24,6 +24,8 @@ var (
 	SecondRecordUrl = MianUrl + "/addTwoHealthyRecord"
 	// ThirdRecordUrl 第三次上报
 	ThirdRecordUrl = MianUrl + "/addThreeHealthyRecord"
+	// HealthyReportCount 上报统计
+	HealthyReportCountUrl = MianUrl + "/healthyReportCount"
 	// MainHeaders 主请求头
 	MainHeaders = map[string]string{
 		"Proxy-Connection": "keep-alive",
