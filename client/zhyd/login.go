@@ -2,9 +2,7 @@ package zhyd
 
 import (
 	"errors"
-	"fmt"
 	"strings"
-	"time"
 
 	"github.com/icepie/oh-my-lit/client/util"
 )
@@ -17,55 +15,55 @@ func (u *ZhydUser) IsLogged() bool {
 	return !strings.Contains(resp.String(), "统一身份认证")
 }
 
-// IsNeedCaptcha 判断是否需要验证码登陆
-func (u *ZhydUser) IsNeedCaptcha() (isNeed bool, err error) {
+// // IsNeedCaptcha 判断是否需要验证码登陆
+// func (u *ZhydUser) IsNeedCaptcha() (isNeed bool, err error) {
 
-	resp, reqErr := u.Client.R().
-		SetQueryParams(map[string]string{
-			"username": u.Username,
-			"_":        fmt.Sprint(time.Now().Unix()),
-		}).
-		Get(NeedCaptchaUrl)
+// 	resp, reqErr := u.Client.R().
+// 		SetQueryParams(map[string]string{
+// 			"username": u.Username,
+// 			"_":        fmt.Sprint(time.Now().Unix()),
+// 		}).
+// 		Get(NeedCaptchaUrl)
 
-	if resp.StatusCode() != 200 {
-		err = reqErr
-		return
-	}
+// 	if resp.StatusCode() != 200 {
+// 		err = reqErr
+// 		return
+// 	}
 
-	body := resp.String()
+// 	body := resp.String()
 
-	// 最后判断是否需要验证码进行登陆
-	if strings.HasPrefix(body, "false") {
-		isNeed = false
-	} else if strings.HasPrefix(body, "true") {
-		isNeed = true
-	} else {
-		err = errors.New("can not get the info")
-	}
+// 	// 最后判断是否需要验证码进行登陆
+// 	if strings.HasPrefix(body, "false") {
+// 		isNeed = false
+// 	} else if strings.HasPrefix(body, "true") {
+// 		isNeed = true
+// 	} else {
+// 		err = errors.New("can not get the info")
+// 	}
 
-	return
+// 	return
 
-}
+// }
 
-// GetCaptche 获取验证码 (JPEG)
-func (u *ZhydUser) GetCaptche() (pix []byte, err error) {
+// // GetCaptche 获取验证码 (JPEG)
+// func (u *ZhydUser) GetCaptche() (pix []byte, err error) {
 
-	resp, err := u.Client.R().
-		SetQueryParams(map[string]string{
-			"username": u.Username,
-			"_":        fmt.Sprint(time.Now().Unix()),
-		}).
-		SetHeader("accept", "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8").
-		Get(CaptchaUrl)
+// 	resp, err := u.Client.R().
+// 		SetQueryParams(map[string]string{
+// 			"username": u.Username,
+// 			"_":        fmt.Sprint(time.Now().Unix()),
+// 		}).
+// 		SetHeader("accept", "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8").
+// 		Get(CaptchaUrl)
 
-	if err != nil {
-		return
-	}
+// 	if err != nil {
+// 		return
+// 	}
 
-	pix = resp.Body()
+// 	pix = resp.Body()
 
-	return
-}
+// 	return
+// }
 
 // 登陆凑合用
 func (u *ZhydUser) login(captcha string) (err error) {
@@ -141,12 +139,12 @@ func (u *ZhydUser) login(captcha string) (err error) {
 			"_rememberMe": "on",
 		})
 
-	// 预定.....
-	if len(captcha) > 0 {
-		req.SetFormData(map[string]string{
-			"captchaResponse": captcha,
-		})
-	}
+	// // 预定.....
+	// if len(captcha) > 0 {
+	// 	req.SetFormData(map[string]string{
+	// 		"captchaResponse": captcha,
+	// 	})
+	// }
 
 	resp, err = req.Post(LoginUrl)
 	if err != nil {
@@ -177,7 +175,7 @@ func (u *ZhydUser) Login() (err error) {
 	return
 }
 
-// LoginWithCap 验证码登陆
-func (u *ZhydUser) LoginWithCap(captcha string) error {
-	return u.login(captcha)
-}
+// // LoginWithCap 验证码登陆
+// func (u *ZhydUser) LoginWithCap(captcha string) error {
+// 	return u.login(captcha)
+// }

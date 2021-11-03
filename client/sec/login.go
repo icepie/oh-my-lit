@@ -2,11 +2,9 @@ package sec
 
 import (
 	"errors"
-	"fmt"
 	"html"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/go-resty/resty/v2"
 	"github.com/icepie/oh-my-lit/client/util"
@@ -28,58 +26,58 @@ func (u *SecUser) IsPortalLogged() (isLogged bool) {
 	return err == nil
 }
 
-// IsNeedCaptcha 判断是否需要验证码登陆
-func (u *SecUser) IsNeedCaptcha() (isNeed bool, err error) {
+// // IsNeedCaptcha 判断是否需要验证码登陆
+// func (u *SecUser) IsNeedCaptcha() (isNeed bool, err error) {
 
-	resp, reqErr := u.Client.R().
-		SetQueryParams(map[string]string{
-			"username": u.Username,
-			"_":        fmt.Sprint(time.Now().Unix()),
-		}).
-		SetHeader("referer", u.AuthUrl).
-		Get(u.AuthUrlPerfix + NeedCaptchaPath)
+// 	resp, reqErr := u.Client.R().
+// 		SetQueryParams(map[string]string{
+// 			"username": u.Username,
+// 			"_":        fmt.Sprint(time.Now().Unix()),
+// 		}).
+// 		SetHeader("referer", u.AuthUrl).
+// 		Get(u.AuthUrlPerfix + NeedCaptchaPath)
 
-	if resp.StatusCode() != 200 {
-		err = reqErr
-		return
-	}
+// 	if resp.StatusCode() != 200 {
+// 		err = reqErr
+// 		return
+// 	}
 
-	body := resp.String()
+// 	body := resp.String()
 
-	// 最后判断是否需要验证码进行登陆
-	if strings.HasPrefix(body, "false") {
-		isNeed = false
-	} else if strings.HasPrefix(body, "true") {
-		isNeed = true
-	} else {
-		err = errors.New("can not get the info")
-	}
+// 	// 最后判断是否需要验证码进行登陆
+// 	if strings.HasPrefix(body, "false") {
+// 		isNeed = false
+// 	} else if strings.HasPrefix(body, "true") {
+// 		isNeed = true
+// 	} else {
+// 		err = errors.New("can not get the info")
+// 	}
 
-	return
+// 	return
 
-}
+// }
 
-// GetCaptche 获取验证码 (JPEG)
-func (u *SecUser) GetCaptche() (pix []byte, err error) {
+// // GetCaptche 获取验证码 (JPEG)
+// func (u *SecUser) GetCaptche() (pix []byte, err error) {
 
-	resp, err := u.Client.R().
-		SetQueryParams(map[string]string{
-			"username": u.Username,
-			"_":        fmt.Sprint(time.Now().Unix()),
-		}).
-		SetHeader("referer", u.AuthUrl).
-		SetHeader("accept", "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8").
-		Get(u.AuthUrlPerfix + CaptchaPath)
+// 	resp, err := u.Client.R().
+// 		SetQueryParams(map[string]string{
+// 			"username": u.Username,
+// 			"_":        fmt.Sprint(time.Now().Unix()),
+// 		}).
+// 		SetHeader("referer", u.AuthUrl).
+// 		SetHeader("accept", "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8").
+// 		Get(u.AuthUrlPerfix + CaptchaPath)
 
-	if err != nil {
-		return
-	}
+// 	if err != nil {
+// 		return
+// 	}
 
-	pix = resp.Body()
+// 	pix = resp.Body()
 
-	return
+// 	return
 
-}
+// }
 
 // login 通用登陆
 func (u *SecUser) login(captcha string) (err error) {
@@ -158,12 +156,12 @@ func (u *SecUser) login(captcha string) (err error) {
 			"_rememberMe": "on",
 		})
 
-	// 预定.....
-	if len(captcha) > 0 {
-		req.SetFormData(map[string]string{
-			"captchaResponse": captcha,
-		})
-	}
+	// // 预定.....
+	// if len(captcha) > 0 {
+	// 	req.SetFormData(map[string]string{
+	// 		"captchaResponse": captcha,
+	// 	})
+	// }
 
 	resp, _ = req.Post(decodeurl)
 	if err != nil {
@@ -197,10 +195,10 @@ func (u *SecUser) Login() (err error) {
 	return u.login("")
 }
 
-// LoginWithCap 第一层验证码登陆
-func (u *SecUser) LoginWithCap(captcha string) (err error) {
-	return u.login(captcha)
-}
+// // LoginWithCap 第一层验证码登陆
+// func (u *SecUser) LoginWithCap(captcha string) (err error) {
+// 	return u.login(captcha)
+// }
 
 // PortalLogin 第二层门户登陆
 func (u *SecUser) PortalLogin() (err error) {
