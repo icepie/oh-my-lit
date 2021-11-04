@@ -43,6 +43,8 @@ var (
 	SysXscjbmLeftPath = "/XSCJ/g_xscjbm_left.aspx"
 	// SysXscjbmRightPath 有效成绩排名 right
 	SysXscjbmRightPath = "/XSCJ/g_xscjbm_right.aspx"
+	// LookxlRptPath 查看校历
+	LookxlRptPath = "/_data/index_Lookxl.aspx"
 	// MAINFRMPath 主页
 	MAINFRMPath = "/MAINFRM.aspx"
 	// UA
