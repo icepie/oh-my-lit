@@ -61,7 +61,7 @@ func (u *SecUser) GetStudentByStuID(stuID string) (rte GetStudentRte, err error)
 
 // GetStudent 获取学生信息
 func (u *SecUser) GetStudent() (GetStudentRte, error) {
-	return u.GetStudentByStuID(u.Username)
+	return u.GetStudentByStuID(u.IDAesEncrypt)
 }
 
 // GetClassmatesByStuI 通过学号获取学生同班同学信息
@@ -89,7 +89,7 @@ func (u *SecUser) GetClassmatesDetailByStuID(stuID string) (rte GetClassmatesDet
 
 // GetClassmatesDetail 获取同班同学详情
 func (u *SecUser) GetClassmatesDetail() (GetClassmatesDetailRte, error) {
-	return u.GetClassmatesDetailByStuID(u.Username)
+	return u.GetClassmatesDetailByStuID(u.IDAesEncrypt)
 }
 
 // GetClassmatesByStuID 通过学号获取学生同班同学列表
@@ -120,7 +120,7 @@ func (u *SecUser) GetClassmatesByStuID(stuID string, pageNum int, pageSize int) 
 
 // GetClassmates 获取同班同学
 func (u *SecUser) GetClassmates(pageNum int, pageSize int) (GetClassmatesRte, error) {
-	return u.GetClassmatesByStuID(u.Username, pageNum, pageSize)
+	return u.GetClassmatesByStuID(u.IDAesEncrypt, pageNum, pageSize)
 }
 
 // GetWeekCoursesByID 通过账号获取获取周课表
@@ -159,7 +159,7 @@ func (u *SecUser) GetWeekCoursesByID(username string, currentTime string, role i
 // currentTime: 如 2021-10-29
 // role: {学生:1, 教师:2}
 func (u *SecUser) GetWeekCourses(currentTime string, role int) (rte GetWeekCoursesRte, err error) {
-	return u.GetWeekCoursesByID(u.Username, currentTime, role)
+	return u.GetWeekCoursesByID(u.IDAesEncrypt, currentTime, role)
 }
 
 // GetExamArrangementsByStuID 通过学号获取考试安排
@@ -193,7 +193,7 @@ func (u *SecUser) GetExamArrangementsByStuID(stuID string, schoolYear int, schoo
 //	schoolYear := "2021" //  学年
 //	schoolTerm := "1" // {第一学期:0,第二学期:1}
 func (u *SecUser) GetExamArrangemen(schoolYear int, schoolTerm int) (rte GetExamArrangementsRte, err error) {
-	return u.GetExamArrangementsByStuID(u.Username, schoolYear, schoolTerm)
+	return u.GetExamArrangementsByStuID(u.IDAesEncrypt, schoolYear, schoolTerm)
 }
 
 // GetOneCardConsumeRecordsByID 通过帐号获取一卡通充值记录
@@ -227,7 +227,7 @@ func (u *SecUser) GetOneCardConsumeRecordsByID(ID string, pageNum int, pageSize 
 //	pageNum := "1"
 //	pageSize := "99"
 func (u *SecUser) GetOneCardConsumeRecords(pageNum int, pageSize int) (rte GetOneCardConsumeRecordsRte, err error) { // GetOneCardConsumeRecords 通过学号获取一卡通充值记录
-	return u.GetOneCardConsumeRecordsByID(u.Username, pageNum, pageSize)
+	return u.GetOneCardConsumeRecordsByID(u.IDAesEncrypt, pageNum, pageSize)
 }
 
 // GetOneCardChargeRecordsByID 通过帐号获取一卡通充值记录
@@ -262,7 +262,7 @@ func (u *SecUser) GetOneCardChargeRecordsByID(ID string, pageNum int, pageSize i
 //	pageNum := "1"
 //	pageSize := "99"
 func (u *SecUser) GetOneCardChargeRecords(pageNum int, pageSize int) (rte GetOneCardChargeRecordsRte, err error) { // GetOneCardConsumeRecords 通过学号获取一卡通充值记录
-	return u.GetOneCardChargeRecordsByID(u.Username, pageNum, pageSize)
+	return u.GetOneCardChargeRecordsByID(u.IDAesEncrypt, pageNum, pageSize)
 }
 
 // GetOneCardBalanceByID 通过帐号获取一卡通剩余金额
@@ -291,7 +291,7 @@ func (u *SecUser) GetOneCardBalanceByID(ID string) (rte GetOneCardBalanceRte, er
 
 // GetOneCardBalance 获取一卡通剩余金额
 func (u *SecUser) GetOneCardBalance() (rte GetOneCardBalanceRte, err error) {
-	return u.GetOneCardBalanceByID(u.Username)
+	return u.GetOneCardBalanceByID(u.IDAesEncrypt)
 }
 
 // GetStaffByStaffID 通过职工号获取教职工信息
@@ -324,7 +324,7 @@ func (u *SecUser) GetStaffByStaffID(staffID string) (rte GetStaffRte, err error)
 
 // GetStaff 获取教职工信息
 func (u *SecUser) GetStaff() (rte GetStaffRte, err error) {
-	return u.GetStaffByStaffID(u.Username)
+	return u.GetStaffByStaffID(u.IDAesEncrypt)
 }
 
 // GetClassStudents 获取班级学生
@@ -418,7 +418,7 @@ func (u *SecUser) GetAssetsByStaffID(staffID string, pageNum int, pageSize int) 
 
 // GetAssetsByStaff 获取资产
 func (u *SecUser) GetAssets(pageNum int, pageSize int) (rte GetAssetsRte, err error) {
-	return u.GetAssetsByStaffID(u.Username, pageNum, pageSize)
+	return u.GetAssetsByStaffID(u.IDAesEncrypt, pageNum, pageSize)
 }
 
 // GetDepartmentPhoneList 获取部门电话
