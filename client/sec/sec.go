@@ -46,17 +46,17 @@ var (
 	// GetCurrentMemberPath 获取当前门户用户的接口
 	GetCurrentMemberPath = "/portal/myCenter/getMemberInfoForCurrentMember"
 	// GetStuPath 获取学生信息接口
-	GetStuPath = "/microapplication/api/index/getStudentByStudentId"
+	GetStuPath = "/microapplication/api/v1/index/getStudentByStudentId"
 	//  GetClassmatesDetail 获取学生同班同学信息接口
 	GetClassmatesDetailPath = "/microapplication/api/myclass/findMyclassmatesDetailCount"
 	// GetClassmatesPath 获取学生同班同学列表接口
 	GetClassmatesPath = "/microapplication/api/myclass/findMyclassmates"
 	// GetOneCardBalancePath 获取一卡通余额接口
-	GetOneCardBalancePath = "/microapplication/api/index/getBalanceAndConsumeThisMonthAndLastMonth"
+	GetOneCardBalancePath = "/microapplication/api/v1/index/getBalanceAndConsumeThisMonthAndLastMonth"
 	// GetOneCardChargeRecordsPath 获取一卡通充值记录接口
-	GetOneCardChargeRecordsPath = "/microapplication/api/index/listGeneraCardRechargeRecordByGeneraCardRechargeRecordNumberPage"
+	GetOneCardChargeRecordsPath = "/microapplication/api/v1/index/listGeneraCardRechargeRecordByGeneraCardRechargeRecordNumberPage"
 	// GetOneCardChargeRecordsUrl 获取一卡通消费记录接口
-	GetOneCardConsumeRecordsPath = "/microapplication/api/index/ListGeneraCardConsumeRecordByGeneraCardConsumeRecordNumberPage"
+	GetOneCardConsumeRecordsPath = "/microapplication/api/v1/index/ListGeneraCardConsumeRecordByGeneraCardConsumeRecordNumberPage"
 	// GetExamArrangementsPath 获取考试安排接口
 	GetExamArrangementsPath = "/microapplication/api/examArrangementController/findAllExamArrangements"
 	// GetweekCourses 获取周课表接口
