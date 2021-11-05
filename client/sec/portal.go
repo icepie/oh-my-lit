@@ -96,7 +96,6 @@ func (u *SecUser) GetClassmatesDetail() (GetClassmatesDetailRte, error) {
 //	pageNum := "1"
 //	pageSize := "99"
 func (u *SecUser) GetClassmatesByStuID(stuID string, pageNum int, pageSize int) (rte GetClassmatesRte, err error) {
-
 	resp, _ := u.Client.R().
 		SetHeader("referer", u.PortalUrlPerfix+PortalUserPath).
 		SetFormData(map[string]string{

@@ -24,30 +24,41 @@ type CurrentMemberRte struct {
 	Count      interface{} `json:"count"`
 	Msg        string      `json:"msg"`
 	Obj        struct {
-		LastLoginTime           string      `json:"lastLoginTime"`
-		MemberAcademicNumber    string      `json:"memberAcademicNumber"`
-		MemberCreateTime        int64       `json:"memberCreateTime"`
-		MemberID                string      `json:"memberId"`
-		MemberIDNumber          string      `json:"memberIdNumber"`
-		MemberImage             interface{} `json:"memberImage"`
-		MemberMailbox           interface{} `json:"memberMailbox"`
-		MemberNickname          string      `json:"memberNickname"`
-		MemberOtherBirthday     interface{} `json:"memberOtherBirthday"`
-		MemberOtherClass        interface{} `json:"memberOtherClass"`
-		MemberOtherDepartment   interface{} `json:"memberOtherDepartment"`
-		MemberOtherGrade        interface{} `json:"memberOtherGrade"`
-		MemberOtherMajor        interface{} `json:"memberOtherMajor"`
-		MemberOtherNation       interface{} `json:"memberOtherNation"`
-		MemberOtherNative       interface{} `json:"memberOtherNative"`
-		MemberOtherSchoolNumber interface{} `json:"memberOtherSchoolNumber"`
-		MemberPhone             interface{} `json:"memberPhone"`
-		MemberPwd               interface{} `json:"memberPwd"`
-		MemberSex               int64       `json:"memberSex"`
-		MemberSign              interface{} `json:"memberSign"`
-		MemberState             int64       `json:"memberState"`
-		MemberUsername          string      `json:"memberUsername"`
-		RoleCodeList            []string    `json:"roleCodeList"`
-		RoleList                []struct {
+		DeptCodeList             interface{} `json:"deptCodeList"`
+		DeptList                 interface{} `json:"deptList"`
+		LastLoginTime            string      `json:"lastLoginTime"`
+		MemberAcademicNumber     string      `json:"memberAcademicNumber"`
+		MemberAesEncrypt         string      `json:"memberAesEncrypt"`
+		MemberAppLastLoginTime   interface{} `json:"memberAppLastLoginTime"`
+		MemberCasLastLoginTime   interface{} `json:"memberCasLastLoginTime"`
+		MemberCreateTime         int64       `json:"memberCreateTime"`
+		MemberID                 string      `json:"memberId"`
+		MemberIDAesEncrypt       string      `json:"memberIdAesEncrypt"`
+		MemberIDNumber           string      `json:"memberIdNumber"`
+		MemberIDNumberSign       interface{} `json:"memberIdNumberSign"`
+		MemberImage              interface{} `json:"memberImage"`
+		MemberMailbox            interface{} `json:"memberMailbox"`
+		MemberNickname           string      `json:"memberNickname"`
+		MemberOtherBirthday      interface{} `json:"memberOtherBirthday"`
+		MemberOtherClass         interface{} `json:"memberOtherClass"`
+		MemberOtherDepartment    interface{} `json:"memberOtherDepartment"`
+		MemberOtherGrade         interface{} `json:"memberOtherGrade"`
+		MemberOtherMajor         interface{} `json:"memberOtherMajor"`
+		MemberOtherNation        interface{} `json:"memberOtherNation"`
+		MemberOtherNative        interface{} `json:"memberOtherNative"`
+		MemberOtherSchoolNumber  interface{} `json:"memberOtherSchoolNumber"`
+		MemberPcLastLoginTime    interface{} `json:"memberPcLastLoginTime"`
+		MemberPhone              interface{} `json:"memberPhone"`
+		MemberPwd                string      `json:"memberPwd"`
+		MemberSalt               interface{} `json:"memberSalt"`
+		MemberSex                int64       `json:"memberSex"`
+		MemberSign               interface{} `json:"memberSign"`
+		MemberState              int64       `json:"memberState"`
+		MemberUpdatePasswordTime interface{} `json:"memberUpdatePasswordTime"`
+		MemberUsername           string      `json:"memberUsername"`
+		QuicklyTicket            interface{} `json:"quicklyTicket"`
+		RoleCodeList             []string    `json:"roleCodeList"`
+		RoleList                 []struct {
 			RoleCode    string      `json:"roleCode"`
 			RoleComment interface{} `json:"roleComment"`
 			RoleName    string      `json:"roleName"`
