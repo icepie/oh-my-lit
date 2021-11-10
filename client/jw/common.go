@@ -2,7 +2,7 @@ package jw
 
 import (
 	"errors"
-	"log"
+
 	"strconv"
 	"strings"
 
@@ -70,13 +70,10 @@ func (u *JwUser) GetJwTime() (jwTime JwTime, err error) {
 	if strings.Contains(jwtimeData[len(jwtimeData)-1], "假期") {
 		jwTime.IsVacation = true
 	} else {
-		log.Println(jwtimeData)
 
 		// 周数处理
 		weekStr := strings.ReplaceAll(jwtimeData[3], "第", "")
 		weekStr = strings.ReplaceAll(weekStr, "周", "")
-
-		log.Println(weekStr)
 
 		// 尝试转为整形
 		weekNum, _ := strconv.Atoi(weekStr)
