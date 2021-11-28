@@ -16,6 +16,10 @@ var (
 	MuyunUrl = MianUrl + "/web/"
 	// LoginUrl 登录接口
 	LoginUrl = MianUrl + "/healthyLogin"
+	// GetTokenUrl 获取 Token
+	GetTokenUrl = MianUrl + "/getToken"
+	// SecLoginUrl 门户统一登录接口
+	SecLoginUrl = "http://ids.lit.edu.cn/authserver/login?service=" + GetTokenUrl
 	// LastRecordUrl 获取上次记录
 	LastRecordUrl = MianUrl + "/lastHealthyRecord"
 	// FirstRecordUrl 第一次上报
@@ -60,10 +64,11 @@ var (
 
 // HealthUser 健康平台用户结构体
 type HealthUser struct {
-	Username string
-	Password string
-	UserInfo UserInfo
-	Client   *resty.Client // 测试用
+	Username    string
+	Password    string
+	SecPassword string
+	UserInfo    UserInfo
+	Client      *resty.Client // 测试用
 }
 
 // NewHealthUser 新建健康平台用户
@@ -83,7 +88,7 @@ func NewHealthUser() *HealthUser {
 }
 
 // SetPassword 设置用户名
-func (u *HealthUser) SetUsename(username string) *HealthUser {
+func (u *HealthUser) SetUsername(username string) *HealthUser {
 	u.Username = username
 	return u
 }
@@ -91,6 +96,12 @@ func (u *HealthUser) SetUsename(username string) *HealthUser {
 // SetPassword 设置密码
 func (u *HealthUser) SetPassword(password string) *HealthUser {
 	u.Password = password
+	return u
+}
+
+// SetSecPassword 设置门户密码
+func (u *HealthUser) SetSecPassword(secPassword string) *HealthUser {
+	u.SecPassword = secPassword
 	return u
 }
 
