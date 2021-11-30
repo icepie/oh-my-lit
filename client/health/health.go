@@ -58,8 +58,8 @@ var (
 
 	// TimeLayout 时间格式
 	TimeLayout = "2006-01-02 15:04:05"
-	// TimeLayout2 时间格式
-	TimeLayout2 = "2006-01-02"
+	// TimeLayoutLite 时间格式
+	TimeLayoutLite = "2006-01-02"
 )
 
 // HealthUser 健康平台用户结构体
