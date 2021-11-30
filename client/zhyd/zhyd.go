@@ -62,7 +62,7 @@ func NewZhydUser() *ZhydUser {
 
 	u.Client = resty.New()
 	u.Client.SetHeaders(MainHeaders)
-	u.Client.SetTimeout(5 * time.Second)
+	u.Client.SetTimeout(20 * time.Second)
 
 	// 拿个cookies
 	u.PerSetCooikes()
