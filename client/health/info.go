@@ -42,47 +42,9 @@ func (u *HealthUser) GetLastRecord() (lastRecord LastRecord, err error) {
 // rtime: 次数 [0,1,2,3] 0: 为三次是否全上报 1: 第一次 2: 第二次  3: 第三次
 func (u *HealthUser) IsReportedToday(rtime uint) (isReported bool, err error) {
 
-	isReported = false
-
-	if rtime > 3 {
-		err = errors.New("rtime error")
-		return
-	}
-
 	lastRecord, err := u.GetLastRecord()
 	if err != nil {
-		return
-	}
-
-	// 查询最近上报时间是否为今天 (北京时间东八区)
-	var cstZone = time.FixedZone("CST", 8*3600) // 东八区
-	nowTime := time.Now().In(cstZone)
-
-	createTime, err := time.Parse(TimeLayout, lastRecord.CreateTime)
-	if err != nil {
-		return
-	}
-
-	if createTime.Format(TimeLayoutLite) == nowTime.Format(TimeLayoutLite) {
-
-		if rtime == 0 {
-			if len(lastRecord.Temperature) != 0 && len(lastRecord.TemperatureTwo) != 0 && len(lastRecord.TemperatureThree) != 0 {
-				isReported = true
-			}
-
-		} else if rtime == 1 {
-			if len(lastRecord.Temperature) != 0 {
-				isReported = true
-			}
-		} else if rtime == 2 {
-			if len(lastRecord.TemperatureTwo) != 0 {
-				isReported = true
-			}
-		} else if len(lastRecord.TemperatureThree) != 0 {
-			isReported = true
-		}
-
-		return
+		return IsReportedTodayByRaw(lastRecord, rtime)
 	}
 
 	return
@@ -90,7 +52,7 @@ func (u *HealthUser) IsReportedToday(rtime uint) (isReported bool, err error) {
 
 // IsReportedTodayByRaw 今日是否上报
 // rtime: 次数 [0,1,2,3] 0: 为三次是否全上报 1: 第一次 2: 第二次  3: 第三次
-func (u *HealthUser) IsReportedTodayByRaw(lastRecord LastRecord, rtime uint) (isReported bool, err error) {
+func IsReportedTodayByRaw(lastRecord LastRecord, rtime uint) (isReported bool, err error) {
 
 	isReported = false
 
