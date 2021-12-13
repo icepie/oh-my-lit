@@ -266,7 +266,7 @@ type GetOneCardConsumeRecordsRte struct {
 	Success bool `json:"success"`
 }
 
-type GetExamArrangement struct {
+type ExamArrangement struct {
 	ExaminationAdressCode  interface{} `json:"examinationAdressCode"`
 	ExaminationAdressName  string      `json:"examinationAdressName"`
 	ExaminationCourseCode  string      `json:"examinationCourseCode"`
@@ -283,11 +283,11 @@ type GetExamArrangement struct {
 
 // GetExamArrangementsRte 获取考试安排返回结构
 type GetExamArrangementsRte struct {
-	Attributes interface{}          `json:"attributes"`
-	Count      interface{}          `json:"count"`
-	Msg        string               `json:"msg"`
-	Obj        []GetExamArrangement `json:"obj"`
-	Success    bool                 `json:"success"`
+	Attributes interface{}       `json:"attributes"`
+	Count      interface{}       `json:"count"`
+	Msg        string            `json:"msg"`
+	Obj        []ExamArrangement `json:"obj"`
+	Success    bool              `json:"success"`
 }
 
 // GetClassStudentsRte 获取班级学生返回结构
