@@ -266,26 +266,28 @@ type GetOneCardConsumeRecordsRte struct {
 	Success bool `json:"success"`
 }
 
+type GetExamArrangement struct {
+	ExaminationAdressCode  interface{} `json:"examinationAdressCode"`
+	ExaminationAdressName  string      `json:"examinationAdressName"`
+	ExaminationCourseCode  string      `json:"examinationCourseCode"`
+	ExaminationCourseName  string      `json:"examinationCourseName"`
+	ExaminationEndTime     string      `json:"examinationEndTime"`
+	ExaminationSchoolYear  string      `json:"examinationSchoolYear"`
+	ExaminationSeat        string      `json:"examinationSeat"`
+	ExaminationStartTime   string      `json:"examinationStartTime"`
+	ExaminationStudentID   string      `json:"examinationStudentId"`
+	ExaminationStudentName string      `json:"examinationStudentName"`
+	ExaminationTerm        string      `json:"examinationTerm"`
+	ExaminationTime        string      `json:"examinationTime"`
+}
+
 // GetExamArrangementsRte 获取考试安排返回结构
 type GetExamArrangementsRte struct {
-	Attributes interface{} `json:"attributes"`
-	Count      interface{} `json:"count"`
-	Msg        string      `json:"msg"`
-	Obj        []struct {
-		ExaminationAdressCode  interface{} `json:"examinationAdressCode"`
-		ExaminationAdressName  string      `json:"examinationAdressName"`
-		ExaminationCourseCode  string      `json:"examinationCourseCode"`
-		ExaminationCourseName  string      `json:"examinationCourseName"`
-		ExaminationEndTime     string      `json:"examinationEndTime"`
-		ExaminationSchoolYear  string      `json:"examinationSchoolYear"`
-		ExaminationSeat        string      `json:"examinationSeat"`
-		ExaminationStartTime   string      `json:"examinationStartTime"`
-		ExaminationStudentID   string      `json:"examinationStudentId"`
-		ExaminationStudentName string      `json:"examinationStudentName"`
-		ExaminationTerm        string      `json:"examinationTerm"`
-		ExaminationTime        string      `json:"examinationTime"`
-	} `json:"obj"`
-	Success bool `json:"success"`
+	Attributes interface{}          `json:"attributes"`
+	Count      interface{}          `json:"count"`
+	Msg        string               `json:"msg"`
+	Obj        []GetExamArrangement `json:"obj"`
+	Success    bool                 `json:"success"`
 }
 
 // GetClassStudentsRte 获取班级学生返回结构
