@@ -9,7 +9,7 @@
 
 ## Document
 
-todo...
+[godoc](https://pkg.go.dev/github.com/icepie/oh-my-lit)
 
 ## Link
 
