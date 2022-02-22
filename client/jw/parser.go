@@ -2,7 +2,6 @@ package jw
 
 import (
 	"errors"
-	"log"
 	"strconv"
 	"strings"
 
@@ -59,14 +58,24 @@ func XKJGRptToSchedule(body string) (courses []CourseInfo, err error) {
 
 			tmp := strings.Split(tp, "/")
 
-			if len(tmp) < 2 {
+			if len(tmp) == 0 {
 				continue
 			}
 
-			// 地点
-			place := tmp[1]
-			if place == "" && strings.HasPrefix(className, "m") {
-				place = "MOOC"
+			var place string
+
+			if len(tmp) > 1 {
+				place = tmp[1]
+			}
+
+			if place == "" {
+				if strings.HasPrefix(className, "m") {
+					place = "MOOC"
+				} else if strings.Contains(className, "体育") {
+					place = "GYM"
+				} else {
+					place = "UNKNOWN"
+				}
 			}
 
 			// 时间
@@ -101,9 +110,10 @@ func XKJGRptToSchedule(body string) (courses []CourseInfo, err error) {
 				course.Weeks = buildWeeks(timeList[2])
 			}
 			course.Day = buildDay(timeList[0])
+
 			course.Sections = buildSections(timeList[1])
 			course.Start = course.Sections[0]
-			course.Duration = course.Sections[1] - course.Sections[0] + 1
+			course.Duration = len(course.Sections)
 
 			// log.Println(course)
 
@@ -212,7 +222,7 @@ func buildDay(dayStr string) (day int) {
 
 // chDaytoNum 根据星期转换为数字
 func chDaytoNum(day string) int {
-	dayMap := map[string]int{"一": 1, "二": 2, "三": 3, "四": 4, "五": 5, "六": 6, "日": 7}
+	dayMap := map[string]int{"一": 1, "二": 2, "三": 3, "四": 4, "五": 5, "六": 6, "七": 7}
 	return dayMap[day]
 }
 
@@ -226,7 +236,6 @@ func BuildAirSchedule(raw []CourseInfo) (ret [20][7][5][]CourseInfo) {
 				s = 0
 			} else {
 				s = (c.Start - 1) / 2
-				log.Println(s)
 			}
 
 			if c.Day == 0 {
@@ -234,6 +243,15 @@ func BuildAirSchedule(raw []CourseInfo) (ret [20][7][5][]CourseInfo) {
 			} else {
 				ret[week-1][c.Day-1][s] = append(ret[week-1][c.Day-1][s], c)
 			}
+
+			if c.Duration == 4 {
+				if c.Day == 0 {
+					ret[week-1][6][s+2] = append(ret[week-1][6][s+2], c)
+				} else {
+					ret[week-1][c.Day-1][s] = append(ret[week-1][c.Day-1][s+2], c)
+				}
+			}
+
 		}
 	}
 	return ret
