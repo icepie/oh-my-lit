@@ -2,6 +2,7 @@ package jw
 
 import (
 	"errors"
+	"log"
 	"strconv"
 	"strings"
 
@@ -221,12 +222,18 @@ func BuildAirSchedule(raw []CourseInfo) (ret [20][7][5][]CourseInfo) {
 	for _, c := range raw {
 		for _, week := range c.Weeks {
 			var s int
-			if c.Start-1 == 0 {
+			if c.Start == 1 {
 				s = 0
 			} else {
 				s = (c.Start - 1) / 2
+				log.Println(s)
 			}
-			ret[week-1][c.Day-1][s] = append(ret[week-1][c.Day-1][s], c)
+
+			if c.Day == 0 {
+				ret[week-1][6][s] = append(ret[week-1][6][s], c)
+			} else {
+				ret[week-1][c.Day-1][s] = append(ret[week-1][c.Day-1][s], c)
+			}
 		}
 	}
 	return ret
