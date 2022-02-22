@@ -32,6 +32,8 @@ func XKJGRptToSchedule(body string) (courses []CourseInfo, err error) {
 		// 课程名称
 		classNameFull := strings.Split(tr.Find("td").Eq(1).Text(), "]")
 
+		// log.Println(classNameFull)
+
 		if len(classNameFull) < 2 {
 			return
 		}
@@ -49,6 +51,8 @@ func XKJGRptToSchedule(body string) (courses []CourseInfo, err error) {
 		timePlace, _ := tr.Find("td").Eq(10).Html()
 
 		timePlaceList := strings.Split(strings.TrimSuffix(timePlace, "<br/>"), "<br/>")
+
+		// log.Println(timePlaceList)
 
 		for _, tp := range timePlaceList {
 
@@ -69,14 +73,17 @@ func XKJGRptToSchedule(body string) (courses []CourseInfo, err error) {
 
 			time = strings.TrimRight(strings.TrimPrefix(time, "["), "]")
 			time = strings.ReplaceAll(strings.ReplaceAll(time, "[", " "), "]", " ")
+			time = strings.ReplaceAll(time, "  ", " ")
 
 			timeList := strings.Split(time, " ")
-
-			// log.Println(timeList[0])
 
 			if len(timeList) < 3 {
 				continue
 			}
+
+			// log.Println(timeList)
+
+			// log.Println(len(timeList))
 
 			// 定义课程
 			var course CourseInfo
