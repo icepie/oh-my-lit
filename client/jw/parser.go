@@ -244,14 +244,6 @@ func BuildAirSchedule(raw []CourseInfo) (ret [20][7][5][]CourseInfo) {
 				ret[week-1][c.Day-1][s] = append(ret[week-1][c.Day-1][s], c)
 			}
 
-			if c.Duration == 4 {
-				if c.Day == 0 {
-					ret[week-1][6][s+2] = append(ret[week-1][6][s+2], c)
-				} else {
-					ret[week-1][c.Day-1][s] = append(ret[week-1][c.Day-1][s+2], c)
-				}
-			}
-
 		}
 	}
 	return ret
