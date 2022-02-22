@@ -18,8 +18,6 @@ func XKJGRptToSchedule(body string) (courses []CourseInfo, err error) {
 
 	doc, _ := goquery.NewDocumentFromReader(strings.NewReader(body))
 
-	// log.Println(doc.Html())
-
 	// 找到那张表
 	tbody := doc.Find("table#pageRpt").Find("table").Eq(1).Find("tbody")
 
@@ -74,7 +72,9 @@ func XKJGRptToSchedule(body string) (courses []CourseInfo, err error) {
 
 			timeList := strings.Split(time, " ")
 
-			if len(timeList) != 3 {
+			// log.Println(timeList[0])
+
+			if len(timeList) < 3 {
 				continue
 			}
 
@@ -87,9 +87,13 @@ func XKJGRptToSchedule(body string) (courses []CourseInfo, err error) {
 			course.Teacher = teacher
 			course.Location = place
 			course.Time = time
-			course.Weeks = buildWeeks(timeList[0])
-			course.Day = buildDay(timeList[1])
-			course.Sections = buildSections(timeList[2])
+			if len(timeList) == 4 {
+				course.Weeks = buildWeeks(timeList[2] + timeList[3])
+			} else {
+				course.Weeks = buildWeeks(timeList[2])
+			}
+			course.Day = buildDay(timeList[0])
+			course.Sections = buildSections(timeList[1])
 			course.Start = course.Sections[0]
 			course.Duration = course.Sections[1] - course.Sections[0] + 1
 
