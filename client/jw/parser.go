@@ -84,6 +84,9 @@ func XKJGRptToSchedule(body string) (courses []CourseInfo, err error) {
 				}
 			}
 
+			// 定义课程
+			var course CourseInfo
+
 			// 时间
 			time := tmp[0]
 
@@ -97,29 +100,38 @@ func XKJGRptToSchedule(body string) (courses []CourseInfo, err error) {
 				continue
 			}
 
-			// 定义课程
-			var course CourseInfo
+			// 使用格式一
+			if strings.HasPrefix(tmp[0], "[") {
+				course.Time = time
+				course.Day = buildDay(timeList[1])
+				course.Weeks = buildWeeks(timeList[0])
+				course.Sections = buildSections(timeList[2])
+				//使用格式二
+			} else {
+				course.Time = time
+				if len(timeList) == 4 {
+					course.Weeks = buildWeeks(timeList[2] + timeList[3])
+				} else {
+					course.Weeks = buildWeeks(timeList[2])
+				}
+				course.Day = buildDay(timeList[0])
+				course.Sections = buildSections(timeList[1])
+			}
+
+			// log.Println(timeList)
+
+			// log.Println(len(timeList))
 
 			course.Code = classCode
 			course.Titile = className
 			course.Credit = credit
 			course.Teacher = teacher
 			course.Location = place
-			course.Time = time
-			if len(timeList) == 4 {
-				course.Weeks = buildWeeks(timeList[2] + timeList[3])
-			} else {
-				course.Weeks = buildWeeks(timeList[2])
-			}
-			course.Day = buildDay(timeList[0])
-
-			course.Sections = buildSections(timeList[1])
 			course.Start = course.Sections[0]
 			course.Duration = len(course.Sections)
+			courses = append(courses, course)
 
 			// log.Println(course)
-
-			courses = append(courses, course)
 
 		}
 
@@ -224,6 +236,7 @@ func buildDay(dayStr string) (day int) {
 
 // chDaytoNum 根据星期转换为数字
 func chDaytoNum(day string) int {
+	day = strings.ReplaceAll(day, "日", "七")
 	dayMap := map[string]int{"一": 1, "二": 2, "三": 3, "四": 4, "五": 5, "六": 6, "七": 7}
 	return dayMap[day]
 }
