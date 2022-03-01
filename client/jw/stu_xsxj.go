@@ -10,11 +10,11 @@ import (
 // GetStuMyInfoRpt 获取学生学籍信息原数据
 func (u *JwUser) GetStuMyInfoRpt() (body string, err error) {
 
-	StuMyInfoUrl := u.Url.String() + StuMyInfoPath
+	theUrl := u.Url.String() + StuMyInfoPath
 
 	resp, _ := u.Client.R().
-		SetHeader("referer", StuMyInfoUrl).
-		Get(StuMyInfoUrl)
+		SetHeader("referer", theUrl).
+		Get(theUrl)
 
 	body = util.GB18030ToUTF8(resp.String())
 

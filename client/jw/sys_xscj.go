@@ -33,7 +33,7 @@ func (u *JwUser) GetListXSRpt(stuID string) (body string, err error) {
 // flag {0: 主修, 1: 辅修}
 func (u *JwUser) GetCXGRCJRpt(timeMode uint, mode uint, flag uint, year uint, term uint, stuID string) (body string, err error) {
 
-	StuMyInfoUrl := u.Url.String() + SysXSGRCJPath
+	theUrl := u.Url.String() + SysXSGRCJPath
 
 	resp, _ := u.Client.R().
 		SetFormData(map[string]string{
@@ -45,8 +45,8 @@ func (u *JwUser) GetCXGRCJRpt(timeMode uint, mode uint, flag uint, year uint, te
 			"zfx_flag": fmt.Sprint(flag),
 			"sel_xs":   stuID,
 		}).
-		SetHeader("referer", StuMyInfoUrl).
-		Post(StuMyInfoUrl)
+		SetHeader("referer", theUrl).
+		Post(theUrl)
 
 	body = util.GB18030ToUTF8(resp.String())
 

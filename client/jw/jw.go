@@ -33,6 +33,8 @@ var (
 	SysListXSPath = "/XSCJ/Private/list_XS.aspx"
 	// SysXSGRCJPath 管理员查询学生成绩结果
 	SysXSGRCJPath = "/XSCJ/f_xsgrcj_rpt.aspx"
+	// SysZNPKDayfreeSelPath 管理员查询空教室结果
+	SysZNPKDayfreeSelPath = "/ZNPK/DayfreeSel_Rpt.aspx"
 	// SysClassSelPath 管理员查询班级课表
 	SysClassSelPath = "/ZNPK/ClassSel_rpt.aspx"
 	// ClassSelPath 公用课表接口

@@ -10,11 +10,11 @@ import (
 // GetStuXKJGRpt 获取学生理论课程原始数据
 func (u *JwUser) GetStuBYFAKCRpt() (body string, err error) {
 
-	StuBYFAKCUrl := u.Url.String() + StuBYFAKCPath
+	theUrl := u.Url.String() + StuBYFAKCPath
 
 	resp, _ := u.Client.R().
-		SetHeader("referer", StuBYFAKCUrl).
-		Get(StuBYFAKCUrl)
+		SetHeader("referer", theUrl).
+		Get(theUrl)
 
 	body = util.GB18030ToUTF8(resp.String())
 
