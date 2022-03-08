@@ -9,7 +9,7 @@ import (
 )
 
 // GetClassSelRpt 获取班级课表
-func (u *JwUser) GetClassSelRpt(year uint, term uint, calssID string) (body string, err error) {
+func (u *JwUser) GetClassSelRpt(year int, term int, calssID string) (body string, err error) {
 
 	StuMyInfoUrl := u.Url.String() + SysClassSelPath
 
