@@ -192,7 +192,21 @@ func (u *SecUser) login(captcha string) (err error) {
 
 // Login 第一层普通登陆
 func (u *SecUser) Login() (err error) {
-	return u.login("")
+
+	for i := 0; i < 3; i++ {
+		err = u.login("")
+		if err != nil {
+			if err.Error() == "no result" {
+				continue
+			} else {
+				break
+			}
+		} else {
+			break
+		}
+	}
+
+	return
 }
 
 // // LoginWithCap 第一层验证码登陆

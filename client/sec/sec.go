@@ -27,7 +27,7 @@ var (
 	//PortalUrlPerfix = SecUrl + "/webvpn/" + PortalPath
 
 	//JWUrlPerfix
-	JWUrlPerfix = SecUrl + "/webvpn/LjIwNi4xNzAuMjE4LjE2Mg==/LjIwOC4xNzMuMTQ4LjE1OC4xNTguMTcwLjk0LjE1Mi4xNTAuMjE2LjEwMi4xOTcuMjA5"
+	JWUrlPerfix = SecUrl + "/webvpn/LjE1Ni4xNzEuMjE2LjE2NQ==/LjE1OC4xNzQuMTQ2LjE2MS4xNTkuMTczLjE0NS4xNTguMTk5LjE2Ni45NS4xNTIuMTU4"
 	// NeedCaptchaPath 检查是否需要验证码登陆的接口
 	NeedCaptchaPath = "/authserver/needCaptcha.html"
 	// CaptchaPath 获取验证码
