@@ -33,8 +33,8 @@ type ElectricityDetails struct {
 
 // Detail 日详情结构
 type Detail struct {
-	Time  time.Time `json:"time"`
-	Value string    `json:"value"`
+	Time  string `json:"time"`
+	Value string `json:"value"`
 }
 
 // ChargeRecords 充值记录结构
@@ -52,6 +52,7 @@ type ChargeRecords struct {
 	RoomID      string `json:"roomId"`
 	Electricity string `json:"syl"`
 }
+
 type CustomTime struct {
 	Time time.Time
 }
@@ -68,4 +69,8 @@ func (ct *CustomTime) UnmarshalJSON(b []byte) error {
 	var err error
 	ct.Time, err = time.ParseInLocation(TwoTimeLayout, body, Location)
 	return err
+}
+
+func (ct CustomTime) MarshalJSON() ([]byte, error) {
+	return []byte(`"` + ct.Time.Format("2006-01-02 15:04:05") + `"`), nil
 }

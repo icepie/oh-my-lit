@@ -95,10 +95,12 @@ func (u *ZhydUser) GetElectricityDetails() (rte []ElectricityDetails, err error)
 
 			var d Detail
 
-			d.Time, err = time.ParseInLocation(TimeLayout, timeStr, Location)
+			dTime, err := time.ParseInLocation(TimeLayout, timeStr, Location)
 			if err != nil {
 				return
 			}
+
+			d.Time = dTime.Format("2006-01-02 15:04:05")
 
 			v := s.Find("span.mui-badge.mui-badge-primary").First().Text()
 			if len(v) > 0 {
