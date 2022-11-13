@@ -13,28 +13,28 @@ var Location = time.FixedZone("GMT", 8*3600)
 
 // DormElectricity 宿舍用电余额结构
 type DormElectricity struct {
-	Name               string
-	BuildName          string
-	Room               string
-	Electricity        string
-	Balance            string
-	ElectricitySubsidy string
-	BalanceSubsidy     string
+	Name               string `json:"name"`
+	BuildName          string `json:"build_name"`
+	Room               string `json:"room"`
+	Electricity        string `json:"electricity"`
+	Balance            string `json:"balance"`
+	ElectricitySubsidy string `json:"electricity_subsidy"`
+	BalanceSubsidy     string `json:"balance_subsidy"`
 }
 
 // ElectricityDetails 宿舍用电详情结构
 type ElectricityDetails struct {
-	Name        string
-	BuildName   string
-	Room        string
-	Electricity string
-	Details     []Detail
+	Name        string   `json:"name"`
+	BuildName   string   `json:"build_name"`
+	Room        string   `json:"room"`
+	Electricity string   `json:"electricity"`
+	Details     []Detail `json:"details"`
 }
 
 // Detail 日详情结构
 type Detail struct {
-	Time  time.Time
-	Value string
+	Time  time.Time `json:"time"`
+	Value string    `json:"value"`
 }
 
 // ChargeRecords 充值记录结构
