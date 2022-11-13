@@ -79,8 +79,6 @@ func XKJGRptToSchedule(body string) (courses []CourseInfo, err error) {
 					place = "MOOC"
 				} else if strings.Contains(className, "体育") {
 					place = "GYM"
-				} else {
-					place = "UNKNOWN"
 				}
 			}
 
