@@ -10,7 +10,7 @@ import (
 // GetStuDJKSCJ 获取学生等级成绩
 func (u *JwUser) GetStuDJKSCJ() (body string, err error) {
 
-	StuZXJGUrl := u.Url.String() + StuZXJGPath
+	StuZXJGUrl := u.Url.String() + StuDJKSCJPath
 
 	resp, _ := u.Client.R().
 		SetHeader("referer", StuZXJGUrl).
