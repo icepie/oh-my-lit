@@ -30,7 +30,7 @@ var (
 	// StuBYFAHJPath 学生实践环节结果
 	StuBYFAHJPath = "/jxjh/Stu_byfahj_rpt.aspx"
 	// StuDJKSCJPath 学生等级成绩
-	StuDJKSCJPath = "/xscj/Stu_djkscj.aspx"
+	StuDJKSCJPath = "/xscj/Stu_djkscj_rpt.aspx"
 	// SysListXSPath 管理员查询学生姓名结果
 	SysListXSPath = "/XSCJ/Private/list_XS.aspx"
 	// SysXSGRCJPath 管理员查询学生成绩结果
