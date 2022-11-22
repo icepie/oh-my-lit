@@ -10,7 +10,7 @@ import (
 // GetStuMyInfoRpt 获取学生学籍信息原数据
 func (u *JwUser) GetStuMyInfoRpt() (body string, err error) {
 
-	theUrl := u.Url.String() + StuMyInfoPath
+	theUrl := u.Url.String() + StuDJKSCJPath
 
 	resp, _ := u.Client.R().
 		SetHeader("referer", theUrl).
