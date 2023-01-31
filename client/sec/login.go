@@ -163,7 +163,7 @@ func (u *SecUser) login(captcha string) (err error) {
 	// 	})
 	// }
 
-	resp, _ = req.Post(decodeurl)
+	resp, _ = req.Post(SecUrl + decodeurl)
 	if err != nil {
 		return
 	}
@@ -218,6 +218,11 @@ func (u *SecUser) Login() (err error) {
 func (u *SecUser) PortalLogin() (err error) {
 
 	if len(u.PortalUrlPerfix) == 0 {
+		err = errors.New("please login first")
+		return
+	}
+
+	if !u.IsLogged() {
 		err = errors.New("please login first")
 		return
 	}
