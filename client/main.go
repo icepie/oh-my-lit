@@ -13,7 +13,7 @@ func main() {
 	var next string
 	for {
 
-		data, err := jwcUser.GetGGTZPost(next)
+		data, err := jwcUser.GetGGTZPostList(next)
 		if err != nil {
 			panic(err)
 		}
@@ -26,6 +26,15 @@ func main() {
 
 		if data.Next == "" {
 			break
+		}
+
+		for _, post := range data.Posts {
+			data, err := jwcUser.GetGGTZPost(post.Url)
+			if err != nil {
+				panic(err)
+			}
+
+			log.Println(data)
 		}
 
 		log.Println(data.Posts)

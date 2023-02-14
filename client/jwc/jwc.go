@@ -1,6 +1,7 @@
 package jwc
 
 import (
+	"log"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -11,7 +12,9 @@ const (
 	// ggtz
 	GGTZ_URL = "https://www.lit.edu.cn/jwc/xb2021/ggtz.htm"
 	// gttz by page
-	GGTZ_PAGE_URL = "https://www.lit.edu.cn/jwc/xb2021/"
+	GGTZ_PAGE_URL = "https://www.lit.edu.cn/jwc/xb2021"
+	// post url
+	POST_URL = "https://www.lit.edu.cn/jwc"
 )
 
 type Post struct {
@@ -38,13 +41,13 @@ func NewJwCUser() *JwCUser {
 	return &u
 }
 
-// GetGGTZ 获取公告通知
-func (u *JwCUser) GetGGTZ(nextPath string) (string, error) {
+// GetGGTZPage 获取公告通知
+func (u *JwCUser) getGGTZPage(nextPath string) (string, error) {
 
 	var url string
 
 	if nextPath != "" {
-		url = GGTZ_PAGE_URL + nextPath
+		url = GGTZ_PAGE_URL + "/" + nextPath
 	} else {
 		url = GGTZ_URL
 	}
@@ -56,10 +59,48 @@ func (u *JwCUser) GetGGTZ(nextPath string) (string, error) {
 	return resp.String(), nil
 }
 
-// 获取公告通知
-func (u *JwCUser) GetGGTZPost(nextPath string) (list PostList, err error) {
+// getPost 获取公告通知
+func (u *JwCUser) getGGTZPostPage(postPath string) (string, error) {
 
-	data, err := u.GetGGTZ(nextPath)
+	url := POST_URL + "/" + postPath
+
+	resp, err := u.Client.R().Get(url)
+	if err != nil {
+		return "", err
+	}
+	return resp.String(), nil
+}
+
+//
+
+func (u *JwCUser) GetGGTZPost(postPath string) (string, error) {
+
+	data, err := u.getGGTZPostPage(postPath)
+	if err != nil {
+		return "", err
+	}
+
+	doc, err := goquery.NewDocumentFromReader(strings.NewReader(data))
+	if err != nil {
+		return "", err
+	}
+
+	log.Println(doc.Html())
+
+	// var content string
+
+	// doc.Find("div#vsb_content").First().Find("p").Each(func(_ int, s *goquery.Selection) {
+	// 	// For each item found, get the band and title
+	// 	content += s.Text()
+	// })
+
+	return "", nil
+}
+
+// 获取公告通知
+func (u *JwCUser) GetGGTZPostList(nextPath string) (list PostList, err error) {
+
+	data, err := u.getGGTZPage(nextPath)
 	if err != nil {
 		return
 	}
@@ -77,6 +118,8 @@ func (u *JwCUser) GetGGTZPost(nextPath string) (list PostList, err error) {
 		// For each item found, get the band and title
 		title := s.Find("a").Text()
 		url, _ := s.Find("a").Attr("href")
+
+		url = strings.Replace(url, "../", "", -1)
 		date := s.Find("span").Text()
 		// log.Println(title, url, date)
 		posts = append(posts, Post{
