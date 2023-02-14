@@ -18,10 +18,6 @@ func main() {
 			panic(err)
 		}
 
-		if data.Next != "" {
-			log.Println(data.Next)
-		}
-
 		next = data.Next
 
 		if data.Next == "" {
