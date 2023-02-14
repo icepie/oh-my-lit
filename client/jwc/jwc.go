@@ -38,8 +38,8 @@ type Post struct {
 }
 
 type PostList struct {
-	Posts []Post
-	Next  string
+	Posts []Post `json:"posts"`
+	Next  string `json:"next"`
 }
 
 // JwUser 教务在线结构体
@@ -107,6 +107,10 @@ func (u *JwCUser) GetGGTZPost(postPath string) (content PostContent, err error) 
 	//     <li>附件【<a href="/system/_content/download.jsp?urltype=news.DownloadAttachUrl&amp;owner=1404874179&amp;wbfileid=9607F8947E5547D2CA3A541D32E985A6&amp;deal=1" target="_blank">小学期计划安排表.xls</a>】已下载<span id="nattach2278921"><script language="javascript">getClickTimes(2278921,1404874179,"wbnewsfile","attach")</script></span>次</li>
 	// </ul>
 
+	// 标题
+
+	title := doc.Find("h1").Text()
+
 	html, err := doc.Find("div.v_news_content").Html()
 	if err != nil {
 		return
@@ -156,6 +160,10 @@ func (u *JwCUser) GetGGTZPost(postPath string) (content PostContent, err error) 
 			})
 		}
 	})
+
+	if title != "" {
+		content.Content = fmt.Sprintf("# %s\n\n", title) + content.Content
+	}
 
 	if len(content.Attachment) > 0 {
 
